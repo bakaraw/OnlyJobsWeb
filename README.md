@@ -20,6 +20,8 @@
 
 - turn on `mysql` and `apache` in your `xampp` control panel
 
+- create a file named `.env` in the projects folder and copy the contents of `.env.example` to the `.env`
+
 - in the projects folder, open powershell or cmd and run the following: 
 
 ```sh
