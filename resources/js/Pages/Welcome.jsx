@@ -7,6 +7,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
             <p class="text-4xl">OnlyJobs</p>
             <Link href={route('login')} className="text-black"> Log in </Link>
             <Link href={route('register')} className="text-black"> Register</Link>
+            <Link href={route('about')} className="text-black"> About Us </Link>
+
         </div>
 
     );
