@@ -12,13 +12,11 @@ return new class extends Migration
 
             $table->id('skill_id');
             $table->string('skill_name')->unique();
-
-
         });
     }
-
     public function down(): void
     {
-        //
+        Schema::dropIfExists('skills');
+
     }
 };

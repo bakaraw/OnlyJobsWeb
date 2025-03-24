@@ -17,16 +17,12 @@ return new class extends Migration
             $table->string("Undergrad");
             $table->string("master");
             $table->string("Phd");
-
-
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('education');
+
     }
 };

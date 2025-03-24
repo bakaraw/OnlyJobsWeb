@@ -11,59 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jobPost', function (Blueprint $table) {
-
-            $table->id('job_id')->primary()->autoIncrement();
-            $table->string('company_name');
+        Schema::create('job_post', function (Blueprint $table) {
+            $table->id('job_id');
             $table->string('job_title')->unique();
             $table->text('job_description');
             $table->string('job_status');
-            $table->timestamp('job_createdAt')->useCurrent()->unique();
+            $table->timestamp('job_createdAt')->useCurrent();
             $table->string('job_location');
             $table->string('job_salary');
             $table->string('job_salaryType');
-            $table->decimal('min_Salary');
-            $table->decimal('max_salary');
+            $table->decimal('min_Salary', 10, 2);
+            $table->decimal('max_salary', 10, 2);
             $table->string('job_salary_status');
-            $table->string('skills_required')->nullable();
-            $table->string('certificate_required')->nullable();
-            $table->string('education_required')->nullable();
             $table->integer('year_of_experience');
 
+            //foreign key
+            $table->string('job_post_company_name');
+            $table->string('job_post_application_list')->nullable();
+            $table->string('skill_id')->nullable();
+            $table->string('job_post_certificate')->nullable();
+            $table->string('education_id')->nullable();
 
-            $table->foreign("CompanyName")
-                ->references("company_id")
-                ->on("Company")
-                ->onDelete('cascade');
-
-            $table->foreign("certificateRequired")
-                ->references("certificate_id")
-                ->on("certification")
-                ->onDelete('cascade');
-
-
-            $table->foreign("educationRequired")
-                ->references("educationId")
-                ->on("education")
-                ->onDelete('cascade');
-
-            $table->foreign("skillsRequired")
-                ->references("skill_id")
-                ->on("skills")
-                ->onDelete('cascade');
         });
-
-
-
-
     }
-
-        /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('jobPost');
+        Schema::dropIfExists('job_post');
 
     }
 };

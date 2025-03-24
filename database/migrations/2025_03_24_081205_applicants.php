@@ -13,30 +13,26 @@ return new class extends Migration
     {
         Schema::create('applicants', function (Blueprint $table) {
 
-        $table->id('applicantId');
-        $table->integer('jobSeekerId');
-        $table->string('jobPosting_id');
-        $table->string('jobStatus');
+        $table->id('applicant_id');
+        $table->integer('applicant_jobseeker_id');
+        $table->string('applicant_jobposting_id');
+        $table->string('applicant_job_status');
 
-        $table->foreign('jobSeekerId')
-            ->references('jobSeeker_id')
-            ->on('JobSeeker');
-
-        $table->foreign('jobPosting_id')
-        ->references('job_id')
-        ->on('JobPost');
-
-
-
+//        $table->foreignId('jobseeker_id')
+//            ->references('jobSeeker_id')
+//            ->on('Job_seeker')
+//            ->onDelete('cascade');
+//
+//        $table->foreignId('jobposting_id')
+//        ->references('job_id')
+//        ->on('job_post');
         });
 
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('applicants');
+
     }
 };

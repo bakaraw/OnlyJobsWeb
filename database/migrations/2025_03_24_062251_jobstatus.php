@@ -15,16 +15,11 @@ return new class extends Migration
 
             $table->id();
             $table->string('status');
-            $table->string('open');
-            $table->string('closed');
-            $table->string('temporary');
+            $table->enum('open', ['yes', 'no'])->default('no'); // Ensuring clear options
+            $table->enum('closed', ['yes', 'no'])->default('no');
+            $table->enum('temporary', ['yes', 'no'])->default('no');
         });
-        //
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('job_status');
