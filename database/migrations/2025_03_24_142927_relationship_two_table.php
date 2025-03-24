@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::table('job_post', function (Blueprint $table) {
             // Ensure referenced tables exist before adding foreign keys
 
-            if (Schema::hasTable('application_list') && !Schema::hasColumn('job_post', 'job_post_application_list')) {
-                $table->foreignId('applicationId')
-                    ->constrained('application_list', 'applicationId')
-                    ->onDelete('cascade');
-            }
+                if (Schema::hasTable('application_list') && !Schema::hasColumn('job_post', 'job_post_application_list')) {
+                    $table->foreignId('applicationId')
+                        ->constrained('application_list', 'applicationId')
+                        ->onDelete('cascade');
+                }
 
             if (Schema::hasTable('company') && !Schema::hasColumn('job_post', 'job_post_company_name')) {
                 $table->foreignId('job_post_company_name')
