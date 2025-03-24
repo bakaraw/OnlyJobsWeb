@@ -25,16 +25,10 @@ return new class extends Migration
             $table->unsignedBigInteger('education')->unique();
             $table->unsignedBigInteger('certification')->unique();
             $table->unsignedBigInteger('Skill')->unique();
-
             $table->integer('yearOfExperience')->unique();
 
-//
-//            $table->foreignId('applied_list')
-//                ->references('appliedId')
-//                ->on('application_list')
-//                ->onDelete('cascade');
 
-            $table->foreignId('account_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
 
 //            $table->foreign('certification')
