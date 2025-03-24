@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\Company;
 use App\Models\JobSeeker;
 use App\Models\User;
@@ -71,9 +72,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user); // Ensure the user is logged in
+        Auth::login($user);
 
-        // ✅ Redirect based on user type
-        return redirect()->route($user->account_type === 'jobseeker' ? 'jobseeker.dashboard' : 'company.dashboard');
+        return redirect()->route($user->account_type === 'jobseeker'
+            ? 'jobseeker.dashboard'
+            : 'company.dashboard');
     }
 };

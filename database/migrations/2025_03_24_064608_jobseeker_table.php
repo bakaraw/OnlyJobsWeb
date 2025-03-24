@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('job_seeker', function (Blueprint $table) {
 
-            $table->id('jobSeeker_id');
+            $table->id('jobSeeker_id')->primary();
             $table->string('jobSeeker_name')->unique();
             $table->string('jobSeeker_email');
-            $table->integer('jobSeeker_phone');
-            $table->string('jobSeeker_address');
+            $table->integer('jobSeeker_phone')->nullable();
+            $table->string('jobSeeker_address')->nullable();
 
-            $table->unsignedBigInteger('applied_list')->unique();
+            $table->unsignedBigInteger('applied_list')->unique()->nullable();
 
-            $table->unsignedBigInteger('workHistory')->unique();
-            $table->unsignedBigInteger('education')->unique();
-            $table->unsignedBigInteger('certification')->unique();
-            $table->unsignedBigInteger('Skill')->unique();
-            $table->integer('yearOfExperience')->unique();
+            $table->unsignedBigInteger('workHistory')->unique()->nullable();
+            $table->unsignedBigInteger('education')->unique()->nullable();
+            $table->unsignedBigInteger('certification')->unique()->nullable();
+            $table->unsignedBigInteger('Skill')->unique()->nullable();
+            $table->integer('yearOfExperience')->unique()->nullable();
 
-
+            $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
 
