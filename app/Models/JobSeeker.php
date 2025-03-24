@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Inertia\Testing\Concerns\Has;
+
+class JobSeeker extends Model
+{
+    use HasFactory;
+
+    protected $table = 'job_seeker';
+    protected $primaryKey = 'jobSeeker_id';
+
+    protected $fillable = [
+        'jobSeeker_name',
+        'jobSeeker_email',
+        'jobSeeker_phone',
+        'jobSeeker_address',
+        'applied_list',
+        'workHistory',
+        'education',
+        'certification',
+        'skills',
+        'yearOfExperience',
+        'user_id'
+    ];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'account_id');
+    }
+}

@@ -16,23 +16,15 @@ return new class extends Migration
             $table->string('company_name')->unique();
             $table->string('company_address');
             $table->string('company_phone');
-
-
             $table->string('company_email')->unique();
+
+
             $table->string('job_posting')->unique();
             $table->string('company_job_list')->unique();
             $table->string('company_application_list')->unique();
 
-            $table->foreignId('account_id')->constrained('users')->onDelete('cascade');
-//
-//            $table->foreignId('job_list')
-//                ->references("job_list_id")
-//                ->on("job_list")
-//                ->onDelete('cascade');
-//
-//            $table->foreignId('application_list')
-//                ->references("applicationId")
-//                ->on("application_list");
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+
         });
     }
 
