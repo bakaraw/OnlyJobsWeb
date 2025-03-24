@@ -24,6 +24,7 @@ class Company extends Model
         'company_application_list',
         'user_id'
     ];
+    public $timestamps = false;
 
     public function user(): BelongsTo
     {

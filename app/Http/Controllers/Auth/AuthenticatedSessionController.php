@@ -33,9 +33,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
-    }
+        $user = Auth::user();
 
+        return redirect()->route($user->account_type === 'jobseeker' ? 'jobseeker.dashboard' : 'company.dashboard');
+    }
     /**
      * Destroy an authenticated session.
      */
@@ -44,9 +45,8 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/'); // Ensure user is redirected to the welcome page
     }
 }
