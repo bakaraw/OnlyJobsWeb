@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\JobSeeker;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -32,21 +34,46 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-
+            'account_type' => 'required|in:jobseeker,company',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'account_type' => $request->account_type,
         ]);
+
+        // Store JobSeeker or Company data
+        if ($request->account_type === 'jobseeker') {
+            $jobSeeker = JobSeeker::create([
+                'jobSeeker_name' => $user->name,
+                'jobSeeker_email' => $user->email,
+                'jobSeeker_phone' => $request->phone ?? null,
+                'jobSeeker_address' => $request->address ?? null,
+                'user_id' => $user->id,
+            ]);
+            $user->account_id = $jobSeeker->id;
+        } elseif ($request->account_type === 'company') {
+            $company = Company::create([
+                'company_name' => $user->name,
+                'company_email' => $user->email,
+                'company_phone' => $request->phone ?? null,
+                'company_address' => $request->address ?? null,
+                'user_id' => $user->id,
+            ]);
+            $user->account_id = $company->id;
+        }
+
+        $user->save();
 
         event(new Registered($user));
 
-        Auth::login($user);
+        Auth::login($user); // Ensure the user is logged in
 
-        return redirect(route('dashboard', absolute: false));
+        // ✅ Redirect based on user type
+        return redirect()->route($user->account_type === 'jobseeker' ? 'jobseeker.dashboard' : 'company.dashboard');
     }
-}
+};

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->enum('account_type', ['jobseeker', 'company']);
             $table->rememberToken();
             $table->timestamps();
-
             $table->unsignedBigInteger('account_id')->nullable();
 
 
