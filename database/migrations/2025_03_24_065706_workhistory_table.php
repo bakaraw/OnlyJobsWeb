@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
 
-        Schema::create("workHistory", function (Blueprint $table) {
+        Schema::create("work_history", function (Blueprint $table) {
 
-            $table->id('workHistory_id');
+            $table->id('work_history_id');
             $table->string('workName');
             $table->date('position');
             $table->date('startDate');
@@ -21,17 +21,15 @@ return new class extends Migration
             $table->string('workSkill');
 
 
-            $table->foreign('workSkill')
-                ->references("skill_id")
-                ->on('skills')
-                ->onDelete('cascade');
-
+//            $table->foreignId('workSkill')
+//                ->references("skill_id")
+//                ->on('skills')
+//                ->onDelete('cascade');
         });
-
     }
-
     public function down(): void
     {
-        //
+        Schema::dropIfExists('work_history');
+
     }
 };

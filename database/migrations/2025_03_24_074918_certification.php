@@ -19,12 +19,9 @@ return new class extends Migration
             $table->string('certificationDate');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('certification');
+
     }
 };

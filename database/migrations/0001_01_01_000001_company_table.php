@@ -12,29 +12,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('company', function (Blueprint $table) {
-            $table->id('company_id')->primary()->autoIncrement() ;
-            $table->string('CompanyName')->unique();
-            $table->string('CompanyAddress');
-            $table->integer('CompanyPhone');
-            $table->string('CompanyEmail');
-            $table->string('JobPosting')->unique();
-            $table->string('jobList')->unique();
+            $table->id('company_id');
+            $table->string('company_name')->unique();
+            $table->string('company_address');
+            $table->string('company_phone');
+
+
+            $table->string('company_email')->unique();
+            $table->string('job_posting')->unique();
+            $table->string('company_job_list')->unique();
+            $table->string('company_application_list')->unique();
+
             $table->foreignId('account_id')->constrained('users')->onDelete('cascade');
-
-            $table->foreign('jobList')
-                ->references("jobList_id")
-                ->on("jobList")
-                ->onDelete('cascade');
+//
+//            $table->foreignId('job_list')
+//                ->references("job_list_id")
+//                ->on("job_list")
+//                ->onDelete('cascade');
+//
+//            $table->foreignId('application_list')
+//                ->references("applicationId")
+//                ->on("application_list");
         });
-
-
-
-
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('company');
