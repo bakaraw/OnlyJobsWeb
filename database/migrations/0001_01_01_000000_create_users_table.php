@@ -17,8 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('account_type', ['jobseeker', 'company']);
             $table->rememberToken();
             $table->timestamps();
+            $table->unsignedBigInteger('account_id')->nullable();
+
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -36,12 +40,10 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::dropIfExists('company'); // Drop company first
+        Schema::dropIfExists('job_seeker'); // Drop job_seeker second
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
