@@ -26,8 +26,6 @@ return new class extends Migration
             $table->integer('year_of_experience');
 
             //foreign key
-            $table->string('job_post_company_name');
-            $table->string('job_post_application_list')->nullable();
             $table->string('skill_id')->nullable();
             $table->string('job_post_certificate')->nullable();
             $table->string('education_id')->nullable();
