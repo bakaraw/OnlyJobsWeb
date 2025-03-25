@@ -14,30 +14,31 @@ return new class extends Migration
 
 
         Schema::table('job_post', function (Blueprint $table) {
-            // Certificate relationship - reference the primary key
-            if (Schema::hasTable('certification') && !Schema::hasColumn('job_post', 'job_post_certificate_id')) {
+            // Certificate relationship – reference the primary key 'certificationId' in 'certification'
+            if (!Schema::hasColumn('job_post', 'job_post_certificate_id')) {
                 $table->foreignId('job_post_certificate_id')
-                    ->nullable() // Use nullable if not all job posts have a certificate associated
+                    ->nullable()
                     ->constrained('certification', 'certificationId')
                     ->onDelete('cascade');
             }
 
-            // Education relationship - reference the primary key
-            if (Schema::hasTable('education') && !Schema::hasColumn('job_post', 'education_id')) {
+            // Education relationship – reference the primary key 'educationId' in 'education'
+            if (!Schema::hasColumn('job_post', 'education_id')) {
                 $table->foreignId('education_id')
                     ->nullable()
                     ->constrained('education', 'educationId')
                     ->onDelete('cascade');
             }
 
-            // Skill relationship - reference the primary key
-            if (Schema::hasTable('skills') && !Schema::hasColumn('job_post', 'skill_id')) {
+            // Skill relationship – reference the primary key 'skill_id' in 'skills'
+            if (!Schema::hasColumn('job_post', 'skill_id')) {
                 $table->foreignId('skill_id')
                     ->nullable()
                     ->constrained('skills', 'skill_id')
                     ->onDelete('cascade');
             }
         });
+
 
         Schema::table('applicants', function (Blueprint $table) {
 
@@ -60,20 +61,33 @@ return new class extends Migration
      */
     public function down(): void
     {
-
-        Schema::table('job_post', function (Blueprint $table) {
-            $table->dropForeign(['job_post_certificate']);
-            $table->dropForeign(['education_id']);
-            $table->dropForeign(['skill_id']);
-        });
-
-        Schema::table('work_history', function (Blueprint $table) {
-            $table->dropForeign(['workSkill']);
-        });
-
-        Schema::table('applicants', function (Blueprint $table) {
-            $table->dropForeign(['applicant_jobseeker_id']);
-            $table->dropForeign(['applicant_jobposting_id']);
-        });
+//        // Remove foreign keys and drop columns from job_post table
+//        Schema::table('job_post', function (Blueprint $table) {
+//            // Drop the foreign key constraints then the columns
+//            if (Schema::hasColumn('job_post', 'job_post_certificate_id')) {
+//                $table->dropForeign(['job_post_certificate_id']);
+//                $table->dropColumn('job_post_certificate_id');
+//            }
+//            if (Schema::hasColumn('job_post', 'education_id')) {
+//                $table->dropForeign(['education_id']);
+//                $table->dropColumn('education_id');
+//            }
+//            if (Schema::hasColumn('job_post', 'skill_id')) {
+//                $table->dropForeign(['skill_id']);
+//                $table->dropColumn('skill_id');
+//            }
+////        });
+//
+//        // Remove foreign keys and drop columns from applicants table
+//        Schema::table('applicants', function (Blueprint $table) {
+//            if (Schema::hasColumn('applicants', 'applicant_jobseeker_id')) {
+//                $table->dropForeign(['applicant_jobseeker_id']);
+//                $table->dropColumn('applicant_jobseeker_id');
+//            }
+//            if (Schema::hasColumn('applicants', 'applicant_jobposting_id')) {
+//                $table->dropForeign(['applicant_jobposting_id']);
+//                $table->dropColumn('applicant_jobposting_id');
+//            }
+//        });
     }
 };
