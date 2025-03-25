@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->string('job_posting')->unique()->nullable();
             $table->string('company_job_list')->unique()->nullable();
-            $table->string('company_application_list')->unique()->nullable();
+            $table->string('company_applicant_list')->unique()->nullable();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps(); // Add this line

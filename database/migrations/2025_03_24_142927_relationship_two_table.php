@@ -14,44 +14,33 @@ return new class extends Migration
 
 
         Schema::table('job_post', function (Blueprint $table) {
-            // Ensure referenced tables exist before adding foreign keys
-
-                if (Schema::hasTable('application_list') && !Schema::hasColumn('job_post', 'job_post_application_list')) {
-                    $table->foreignId('applicationId')
-                        ->constrained('application_list', 'applicationId')
-                        ->onDelete('cascade');
-                }
-
-            if (Schema::hasTable('company') && !Schema::hasColumn('job_post', 'job_post_company_name')) {
-                $table->foreignId('job_post_company_name')
-                    ->references('company_id')
-                    ->on('company')
+            // Certificate relationship - reference the primary key
+            if (Schema::hasTable('certification') && !Schema::hasColumn('job_post', 'job_post_certificate_id')) {
+                $table->foreignId('job_post_certificate_id')
+                    ->nullable() // Use nullable if not all job posts have a certificate associated
+                    ->constrained('certification', 'certificationId')
                     ->onDelete('cascade');
             }
 
-            if (Schema::hasTable('certification') && !Schema::hasColumn('job_post', 'job_post_certificate')) {
-                $table->foreignId('job_post_certificate')
-                    ->references('certificationId')
-                    ->on('certification')
-                    ->onDelete('cascade');
-            }
-
+            // Education relationship - reference the primary key
             if (Schema::hasTable('education') && !Schema::hasColumn('job_post', 'education_id')) {
                 $table->foreignId('education_id')
-                ->references('education_id')
-                    ->on('education')
+                    ->nullable()
+                    ->constrained('education', 'educationId')
                     ->onDelete('cascade');
             }
 
+            // Skill relationship - reference the primary key
             if (Schema::hasTable('skills') && !Schema::hasColumn('job_post', 'skill_id')) {
                 $table->foreignId('skill_id')
-                ->references('skill_id')
-                    ->on('skills')
+                    ->nullable()
+                    ->constrained('skills', 'skill_id')
                     ->onDelete('cascade');
             }
         });
 
         Schema::table('applicants', function (Blueprint $table) {
+
             if (Schema::hasTable('job_seeker') && !Schema::hasColumn('applicants', 'applicant_jobseeker_id')) {
                 $table->foreignId('applicant_jobseeker_id')
                     ->constrained('job_seeker', 'jobSeeker_id')
@@ -73,8 +62,6 @@ return new class extends Migration
     {
 
         Schema::table('job_post', function (Blueprint $table) {
-            $table->dropForeign(['job_post_application_list']);
-            $table->dropForeign(['job_post_company_name']);
             $table->dropForeign(['job_post_certificate']);
             $table->dropForeign(['education_id']);
             $table->dropForeign(['skill_id']);

@@ -34,11 +34,11 @@ return new class extends Migration {
                     ->onDelete('cascade');
             }
 
-            if (Schema::hasTable('application_list')) {
+            if (Schema::hasTable('appliedId')) {
                 if (!Schema::hasColumn('job_seeker', 'applied_list')) {
                     $table->foreignId('applied_list')
-                        ->references('applicationId')
-                        ->on('application_list')
+                        ->references('appliedId')
+                        ->on('applied_list')
                         ->onDelete('cascade');
                 }
             }
@@ -48,6 +48,7 @@ return new class extends Migration {
 
 
         Schema::table('company', function (Blueprint $table) {
+
             if (Schema::hasTable('job_list') && !Schema::hasColumn('company', 'company_job_list')) {
                 $table->foreignId('company_job_list')
                     ->nullable() // Make it nullable
@@ -56,14 +57,13 @@ return new class extends Migration {
                     ->onDelete('cascade');
             }
 
-            if (Schema::hasTable('application_list')) {
-                if (!Schema::hasColumn('company', 'company_application_list')) {
-                    $table->foreignId('company_application_list')
-                        ->references('applicationId')
-                        ->on('application_list')
-                        ->onDelete('cascade');
-                }
+            if (Schema::hasTable('applicants') && !Schema::hasColumn('company', 'company_applicant_list')) {
+                $table->foreignId('company_applicant_list')
+                    ->nullable()  // Make it nullable if needed
+                    ->constrained('applicants', 'applicant_id')  // Assuming applicants table uses 'id' as the primary key
+                    ->onDelete('cascade');
             }
+
         });
 
     }
@@ -72,9 +72,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('job_post', function (Blueprint $table) {
-            if (Schema::hasColumn('job_post', 'application_list')) {
-                $table->dropForeign(['application_list']);
-            }
             if (Schema::hasColumn('job_post', 'job_post_company_name')) {
                 $table->dropForeign(['job_post_company_name']);
             }
@@ -95,13 +92,17 @@ return new class extends Migration {
             }
         });
 
-        Schema::table('applicants', function (Blueprint $table) {
-            if (Schema::hasColumn('applicants', 'applicant_jobseeker_id')) {
-                $table->dropForeign(['applicant_jobseeker_id']);
+        Schema::table('company', function (Blueprint $table) {
+            // Drop foreign key for company_job_list
+            if (Schema::hasColumn('company', 'company_job_list')) {
+                $table->dropForeign(['company_job_list']);
             }
-            if (Schema::hasColumn('applicants', 'applicant_jobposting_id')) {
-                $table->dropForeign(['applicant_jobposting_id']);
+
+            // Drop foreign key for company_applicant_list
+            if (Schema::hasColumn('company', 'company_applicant_list')) {
+                $table->dropForeign(['company_applicant_list']);
             }
         });
+
     }
 };

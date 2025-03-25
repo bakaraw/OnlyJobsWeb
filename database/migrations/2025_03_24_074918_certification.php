@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create("certification", function (Blueprint $table) {
 
             $table->id('certificationId')->primary();
-            $table->string('certificationName');
+            $table->string('certificationName')->unique();
             $table->string('certificationType');
             $table->string('certificationDate');
         });
