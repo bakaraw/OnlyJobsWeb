@@ -16,42 +16,59 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 </ContentLayout>
             }
         >
-            <ContentLayout>
-                <div className='grid grid-cols-4 gap-2'>
-                    {/* Filter section on the left side */}
-                    <div className='col-span-1 rounded-lg bg-light'>
-                        <div className='px-6 py-4 font-medium text-md min-h-[500px]'>
-                            <div className='flex flex-col space-y-1'>
-                                <p>Experience Level</p>
-                                <Checkbox label="Entry Level" className='ml-4' />
-                                <Checkbox label="Intermediate Level" className='ml-4' />
-                                <Checkbox label="Expert Level" className='ml-4' />
-                                <div className='flex items-center'>
-                                    <Checkbox className='ml-4 mt-1' />
-                                    <input
-                                        type="text"
-                                        placeholder="Years of Experience"
-                                        className="mt-1 border-secondary rounded px-2 py-1 focus:ring-secondary focus:border-secondary"
-                                    />
-                                </div>
-                                <div>
-                                    <p className='mt-4'>Job Type</p>
-                                </div>
-                                <Checkbox label="Full time" className='ml-4' />
-                                <Checkbox label="Part time" className='ml-4' />
-                                <Checkbox label="Contractual" className='ml-4' />
+            <div className='grid grid-cols-4 gap-2'>
+                {/* Filter section on the left side */}
+                <div className='col-span-1 rounded-lg bg-light'>
+                    <div className='px-6 py-4 font-medium text-md min-h-[500px]'>
+                        <div className='flex flex-col space-y-1'>
+                            <p>Experience Level</p>
+                            <Checkbox label="Entry Level" className='ml-4' />
+                            <Checkbox label="Intermediate Level" className='ml-4' />
+                            <Checkbox label="Expert Level" className='ml-4' />
+                            <div className='flex items-center'>
+                                <Checkbox className='ml-4 mt-1' />
+                                <input
+                                    type="text"
+                                    placeholder="Years of Experience"
+                                    className="mt-1 border-secondary rounded px-2 py-1 focus:ring-secondary focus:border-secondary"
+                                />
                             </div>
-                        </div>
-                    </div>
+                            <div>
+                                <p className='mt-4'>Job Type</p>
+                            </div>
+                            <Checkbox label="Full time" className='ml-4' />
+                            <Checkbox label="Part time" className='ml-4' />
+                            <Checkbox label="Contractual" className='ml-4' />
 
-                    {/* Job listing section */}
-                    <div className='col-span-3 rounded-lg shadow-xl'>
-                        <div className=''>
+                            <div>
+                                <p className='mt-4'>Location</p>
+                                <select className='border-secondary rounded px-2 py-1 w-64 focus:ring-dark focus:border-secondary'>
+                                    <option value="option 1">Option 1</option>
+                                    <option value="option 2">Option 2</option>
+                                    <option value="option 3">Option 3</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <p className='mt-4'>Skills</p>
+                                <select className='border-secondary rounded px-2 py-1 w-64 focus:ring-dark focus:border-secondary'>
+                                    <option value="option 1">Option 1</option>
+                                    <option value="option 2">Option 2</option>
+                                    <option value="option 3">Option 3</option>
+                                </select>
+                            </div>
 
                         </div>
                     </div>
                 </div>
-            </ContentLayout>
+
+                {/* Job listing section */}
+                <div className='col-span-3 rounded-lg shadow-xl'>
+                    <div className=''>
+
+                    </div>
+                </div>
+            </div>
         </MainPageLayout>
     );
 

@@ -1,5 +1,6 @@
 import NavBar from "@/Components/NavBar"
 import { usePage, Head } from "@inertiajs/react"; // Import Link for navigation
+import ContentLayout from "./ContentLayout";
 
 export default function MainPageLayout({ header, children }) {
     const { url } = usePage();
@@ -36,8 +37,9 @@ export default function MainPageLayout({ header, children }) {
                         {header}
                     </header>
                 )}
-
-                <div className="">{children}</div>
+                <ContentLayout>
+                    {children}
+                </ContentLayout>
             </div>
         </>
     );
