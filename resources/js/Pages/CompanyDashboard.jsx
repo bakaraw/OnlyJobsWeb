@@ -6,7 +6,6 @@ export default function CompanyDashboard({ auth }) {
         return <p>Loading or Unauthorized...</p>;
     }
 
-
     return (
         <AuthenticatedLayout>
             <div>
