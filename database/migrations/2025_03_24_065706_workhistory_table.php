@@ -29,7 +29,7 @@ return new class extends Migration
     }
     public function down(): void
     {
-        Schema::dropIfExists('work_history');
+//        Schema::dropIfExists('work_history');
 
     }
 };

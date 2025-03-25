@@ -71,38 +71,38 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::table('job_post', function (Blueprint $table) {
-            if (Schema::hasColumn('job_post', 'job_post_company_name')) {
-                $table->dropForeign(['job_post_company_name']);
-            }
-            if (Schema::hasColumn('job_post', 'job_post_certificate')) {
-                $table->dropForeign(['job_post_certificate']);
-            }
-            if (Schema::hasColumn('job_post', 'education_id')) {
-                $table->dropForeign(['education_id']);
-            }
-            if (Schema::hasColumn('job_post', 'skill_id')) {
-                $table->dropForeign(['skill_id']);
-            }
-        });
-
-        Schema::table('work_history', function (Blueprint $table) {
-            if (Schema::hasColumn('work_history', 'workSkill')) {
-                $table->dropForeign(['workSkill']);
-            }
-        });
-
-        Schema::table('company', function (Blueprint $table) {
-            // Drop foreign key for company_job_list
-            if (Schema::hasColumn('company', 'company_job_list')) {
-                $table->dropForeign(['company_job_list']);
-            }
-
-            // Drop foreign key for company_applicant_list
-            if (Schema::hasColumn('company', 'company_applicant_list')) {
-                $table->dropForeign(['company_applicant_list']);
-            }
-        });
+//        Schema::table('job_post', function (Blueprint $table) {
+//            if (Schema::hasColumn('job_post', 'job_post_company_name')) {
+//                $table->dropForeign(['job_post_company_name']);
+//            }
+//            if (Schema::hasColumn('job_post', 'job_post_certificate')) {
+//                $table->dropForeign(['job_post_certificate']);
+//            }
+//            if (Schema::hasColumn('job_post', 'education_id')) {
+//                $table->dropForeign(['education_id']);
+//            }
+//            if (Schema::hasColumn('job_post', 'skill_id')) {
+//                $table->dropForeign(['skill_id']);
+//            }
+//        });
+//
+//        Schema::table('work_history', function (Blueprint $table) {
+//            if (Schema::hasColumn('work_history', 'workSkill')) {
+//                $table->dropForeign(['workSkill']);
+//            }
+//        });
+//
+//        Schema::table('company', function (Blueprint $table) {
+//            // Drop foreign key for company_job_list
+//            if (Schema::hasColumn('company', 'company_job_list')) {
+//                $table->dropForeign(['company_job_list']);
+//            }
+//
+//            // Drop foreign key for company_applicant_list
+//            if (Schema::hasColumn('company', 'company_applicant_list')) {
+//                $table->dropForeign(['company_applicant_list']);
+//            }
+//        });
 
     }
 };

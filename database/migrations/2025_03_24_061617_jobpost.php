@@ -27,7 +27,7 @@ return new class extends Migration
 
             //foreign key
             $table->string('skill_id')->nullable();
-            $table->string('job_post_certificate')->nullable();
+            $table->string('job_post_certificate_id')->nullable();
             $table->string('education_id')->nullable();
 
         });
