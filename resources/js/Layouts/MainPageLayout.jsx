@@ -10,13 +10,13 @@ export default function MainPageLayout({ header, children }) {
         case '':
             pageName = 'Home'
             break;
-        case 'findwork':
+        case 'find_work':
             pageName = 'Find Work';
             break;
-        case 'aboutus':
+        case 'about_us':
             pageName = 'About Us';
             break;
-        case 'contactus':
+        case 'contact_us':
             pageName = 'Contact Us';
             break;
         default:
@@ -33,9 +33,7 @@ export default function MainPageLayout({ header, children }) {
 
                 {header && (
                     <header>
-                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                            {header}
-                        </div>
+                        {header}
                     </header>
                 )}
 
