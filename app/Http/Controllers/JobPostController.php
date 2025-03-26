@@ -31,8 +31,8 @@ class JobPostController extends Controller
             'max_salary'=> 'required|numeric',
             'year_of_experience' => 'required|integer',
             'skill_id' => 'nullable|exists:skills,id',
-            'job_post_certificate_id' => 'nullable|exists:certifications,id',
-            'education_id' => 'nullable|exists:educations,id',
+            'job_post_certificate_id' => 'nullable|exists:certification,certificate_id',
+            'education_id' => 'nullable|exists:education,education_id',
             'job_status' => 'nullable|string,id'
         ]);
 

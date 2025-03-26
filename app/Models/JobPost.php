@@ -31,12 +31,12 @@ class JobPost extends Model
 
     public function certification()
     {
-        return $this->belongsTo(Certification::class, 'job_post_certificate_id', 'certificationIde');
+        return $this->belongsTo(Certification::class, 'job_post_certificate_id', 'certificate_id');
     }
 
     public function education()
     {
-        return $this->belongsTo(Education::class, 'education_id', 'educationId');
+        return $this->belongsTo(Education::class, 'education_id', 'education_id');
     }
 
     public function jobStatus()

@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 
-export default function JobSeekerDashboard({ auth }) {
+export default function Jobseeker_dashboard({ auth }) {
     if (!auth || !auth.user) {
         return <p>Loading or Unauthorized...</p>;
     }
