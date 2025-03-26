@@ -14,4 +14,10 @@ class skills extends Model
         'skill_name',
     ];
 
+    public function skills()
+    {
+        return $this->belongsTo(JobPost::class, 'job_post_skill_id', 'skill_id');
+    }
+
+
 }

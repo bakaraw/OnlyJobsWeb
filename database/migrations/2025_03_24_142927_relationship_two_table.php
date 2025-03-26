@@ -14,6 +14,7 @@ return new class extends Migration
 
 
         Schema::table('job_post', function (Blueprint $table) {
+
             // Certificate relationship – reference the primary key 'certificationId' in 'certification'
             if (!Schema::hasColumn('job_post', 'job_post_certificate_id')) {
                 $table->foreignId('job_post_certificate_id')
@@ -37,6 +38,15 @@ return new class extends Migration
                     ->constrained('skills', 'skill_id')
                     ->onDelete('cascade');
             }
+
+            // Skill relationship – reference the primary key 'skill_id' in 'skills'
+            if (!Schema::hasColumn('job_post', 'job_status')) {
+                $table->foreignId('job_status')
+                    ->nullable()
+                    ->constrained('job_status', 'status_id')
+                    ->onDelete('cascade');
+            }
+
         });
 
 

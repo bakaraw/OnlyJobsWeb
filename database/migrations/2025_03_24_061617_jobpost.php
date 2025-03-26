@@ -14,21 +14,19 @@ return new class extends Migration {
             $table->id('job_id');
             $table->string('job_title')->unique();
             $table->text('job_description');
-            $table->string('job_status');
-            $table->timestamp('job_createdAt')->useCurrent();
             $table->string('job_location');
             $table->string('job_salary');
-            $table->string('job_salaryType');
+            $table->string('job_type');
             $table->decimal('min_Salary', 10, 2);
             $table->decimal('max_salary', 10, 2);
-            $table->string('job_salary_status');
             $table->integer('year_of_experience');
 
             //foreign key
+            $table->unsignedBigInteger('job_status')->nullable('open');
             $table->unsignedBigInteger('skill_id')->nullable();
             $table->unsignedBigInteger('job_post_certificate_id')->nullable();
             $table->unsignedBigInteger('education_id')->nullable();
-
+            $table->timestamps();
 
         });
 
