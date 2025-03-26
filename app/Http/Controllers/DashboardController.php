@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function jobseeker()
     {
-        return Inertia::render('JobSeekerDashboard', [
+        return Inertia::render('Jobseeker_dashboard', [
             'auth' => [
                 'user' => auth()->user(),
             ],
@@ -20,7 +20,7 @@ class DashboardController extends Controller
 
     public function company()
     {
-        return Inertia::render('CompanyDashboard', [
+        return Inertia::render('company_dashboard', [
             'auth' => [
                 'user' => auth()->user(),
             ],

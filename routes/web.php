@@ -29,6 +29,8 @@ Route::get('/findwork', function () {
     return Inertia::render('FindWork');
 })->name('/findwork');
 
+
+
 Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
     ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])
     ->name('jobseeker.dashboard');
@@ -36,6 +38,7 @@ Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
 Route::get('/company/dashboard', [DashboardController::class, 'company'])
     ->middleware(['auth', RoleMiddleware::class . ':company'])
     ->name('company.dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

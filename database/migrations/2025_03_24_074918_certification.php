@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create("certification", function (Blueprint $table) {
 
-            $table->id('certificationId')->primary();
-            $table->string('certificationName')->unique();
-            $table->string('certificationType');
-            $table->string('certificationDate');
+            $table->id('certificate_id')->primary();
+            $table->string('certification_name')->unique();
+            $table->string('certification_type');
+            $table->string('certification_date');
         });
     }
     public function down(): void
