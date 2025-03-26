@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 
-export default function Company_dashboard({ auth }) {
+export default function CompanyDashboard({ auth }) {
     if (!auth || !auth.user) {
         return <p>Loading or Unauthorized...</p>;
     }
