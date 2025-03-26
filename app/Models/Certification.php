@@ -11,10 +11,16 @@ class Certification extends Model
     use HasFactory;
 
     protected $fillable = [
+        'certificate_id',
         'certification_name',
-        'certification_description',
-        'certification_id'
+        'certification_type',
+        'certification_date'
     ];
+
+    public function certification()
+    {
+        return $this->belongsTo(JobPost::class, 'job_post_certificate_id', 'certificate_id');
+    }
 
 
 

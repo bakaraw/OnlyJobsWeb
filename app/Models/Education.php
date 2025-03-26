@@ -11,11 +11,17 @@ class Education extends Model
     use HasFactory;
 
     protected $fillable = [
-        'educationId',
-        'schoolName',
+        'education_id',
+        'school_name',
         'Undergrad',
         'master',
         'Phd'
     ];
 
+
+
+    public function education()
+    {
+        return $this->belongsTo(JobPost::class, 'education_id', 'education_id');
+    }
 }

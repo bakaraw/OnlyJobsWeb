@@ -29,8 +29,8 @@ class JobSeeker extends Model
     ];
 
 
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'account_id');
+        return $this->belongsTo(User::class);
     }
 }
