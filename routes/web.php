@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewsController;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])->name('jobseeker.dashboard');
     Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
+    Route::post('/company/createjob', [JobPostController::class, 'store']);
+
 });
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [

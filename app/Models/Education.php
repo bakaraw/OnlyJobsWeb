@@ -18,4 +18,8 @@ class Education extends Model
         'Phd'
     ];
 
+    public function education()
+    {
+        return $this->belongsTo(JobPost::class, 'education_id', 'educationId');
+    }
 }

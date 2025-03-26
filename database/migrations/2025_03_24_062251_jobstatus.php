@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('job_status', function (Blueprint $table) {
 
-            $table->id();
-            $table->string('status');
+            $table->id('status_id');
             $table->enum('open', ['yes', 'no'])->default('no'); // Ensuring clear options
             $table->enum('closed', ['yes', 'no'])->default('no');
             $table->enum('temporary', ['yes', 'no'])->default('no');
