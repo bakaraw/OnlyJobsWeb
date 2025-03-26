@@ -34,7 +34,9 @@ export default function MainPageLayout({ header, children }) {
 
                 {header && (
                     <header>
-                        {header}
+                        <ContentLayout>
+                            {header}
+                        </ContentLayout>
                     </header>
                 )}
                 <ContentLayout>

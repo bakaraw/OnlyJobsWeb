@@ -27,6 +27,14 @@ Route::get('/find_work', function () {
     return Inertia::render('FindWork');
 })->name('find_work');
 
+Route::get('/about_us', function () {
+    return Inertia::render('AboutUs');
+})->name('about_us');
+
+Route::get('/contact_us', function () {
+    return Inertia::render('ContactUs');
+})->name('contact_us');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

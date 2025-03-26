@@ -10,10 +10,8 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
         <MainPageLayout
             header={
                 <ContentLayout>
-                    <ContentLayout>
-                        <p className="text-3xl">Find the best jobs for you</p>
-                        <p className='mt-3'>Browse jobs posted on here or search the job you want</p>
-                    </ContentLayout>
+                    <p className="text-3xl">Find the best jobs for you</p>
+                    <p className='mt-3'>Browse jobs posted on here or search the job you want</p>
                 </ContentLayout>
             }
         >
