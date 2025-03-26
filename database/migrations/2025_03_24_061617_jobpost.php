@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -26,15 +25,23 @@ return new class extends Migration
             $table->integer('year_of_experience');
 
             //foreign key
-            $table->string('skill_id')->nullable();
-            $table->string('job_post_certificate_id')->nullable();
-            $table->string('education_id')->nullable();
+            $table->unsignedBigInteger('skill_id')->nullable();
+            $table->unsignedBigInteger('job_post_certificate_id')->nullable();
+            $table->unsignedBigInteger('education_id')->nullable();
+
 
         });
+
     }
+
     public function down(): void
     {
-        Schema::dropIfExists('job_post');
+//        Schema::table('job_post', function (Blueprint $table) {
+//            $table->dropForeign(['skill_id']);
+//            $table->dropForeign(['job_post_certificate_id']);
+//            $table->dropForeign(['education_id']);
+//        });
 
+        Schema::dropIfExists('job_post');
     }
 };

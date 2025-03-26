@@ -61,33 +61,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-//        // Remove foreign keys and drop columns from job_post table
-//        Schema::table('job_post', function (Blueprint $table) {
-//            // Drop the foreign key constraints then the columns
-//            if (Schema::hasColumn('job_post', 'job_post_certificate_id')) {
-//                $table->dropForeign(['job_post_certificate_id']);
-//                $table->dropColumn('job_post_certificate_id');
-//            }
-//            if (Schema::hasColumn('job_post', 'education_id')) {
-//                $table->dropForeign(['education_id']);
-//                $table->dropColumn('education_id');
-//            }
-//            if (Schema::hasColumn('job_post', 'skill_id')) {
-//                $table->dropForeign(['skill_id']);
-//                $table->dropColumn('skill_id');
-//            }
-////        });
-//
-//        // Remove foreign keys and drop columns from applicants table
-//        Schema::table('applicants', function (Blueprint $table) {
-//            if (Schema::hasColumn('applicants', 'applicant_jobseeker_id')) {
-//                $table->dropForeign(['applicant_jobseeker_id']);
-//                $table->dropColumn('applicant_jobseeker_id');
-//            }
-//            if (Schema::hasColumn('applicants', 'applicant_jobposting_id')) {
-//                $table->dropForeign(['applicant_jobposting_id']);
-//                $table->dropColumn('applicant_jobposting_id');
-//            }
-//        });
+
     }
 };
