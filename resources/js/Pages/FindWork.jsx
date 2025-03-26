@@ -1,4 +1,5 @@
 import Checkbox from '@/Components/Checkbox';
+import JobCard from '@/Components/JobCard';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { Head, Link } from '@inertiajs/react';
@@ -64,9 +65,7 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
 
                 {/* Job listing section */}
                 <div className='col-span-3 rounded-lg shadow-xl'>
-                    <div className=''>
-
-                    </div>
+                    <JobCard />
                 </div>
             </div>
         </MainPageLayout>
