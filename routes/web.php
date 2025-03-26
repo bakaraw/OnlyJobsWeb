@@ -6,6 +6,7 @@ use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewsController;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,13 +29,21 @@ Route::get('/findwork', function () {
     return Inertia::render('FindWork');
 })->name('/findwork');
 
+Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
+    ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])
+    ->name('jobseeker.dashboard');
+
+Route::get('/company/dashboard', [DashboardController::class, 'company'])
+    ->middleware(['auth', RoleMiddleware::class . ':company'])
+    ->name('company.dashboard');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])->name('jobseeker.dashboard');
-    Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
-    Route::post('/company/createjob', [JobPostController::class, 'store']);
+//    Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])->name('jobseeker.dashboard');
+//    Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
+//    Route::post('/company/createjob', [JobPostController::class, 'store']);
 
 });
 Route::get('/dashboard', function () {
