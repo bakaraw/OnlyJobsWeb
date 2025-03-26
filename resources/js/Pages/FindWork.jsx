@@ -1,11 +1,20 @@
 import Checkbox from '@/Components/Checkbox';
 import JobCard from '@/Components/JobCard';
+import PrimaryButton from '@/Components/PrimaryButton';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { Head, Link } from '@inertiajs/react';
 
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
 
+    const jobs = [
+        { id: 1, title: "Welder" },
+        { id: 2, title: "Pipe Fitter" },
+        { id: 3, title: "Electrician" },
+        { id: 4, title: "Mechanic" },
+        { id: 5, title: "Plumber" },
+        { id: 6, title: "Carpenter" }
+    ];
     return (
         <MainPageLayout
             header={
@@ -15,10 +24,10 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 </ContentLayout>
             }
         >
-            <div className='grid grid-cols-4 gap-2'>
+            <div className='grid grid-cols-4 gap-3'>
                 {/* Filter section on the left side */}
-                <div className='col-span-1 rounded-lg bg-light'>
-                    <div className='px-6 py-4 font-medium text-md min-h-[500px]'>
+                <div className='col-span-1 rounded-lg'>
+                    <div className='px-6 py-4 font-medium bg-light text-md min-h-[500px]'>
                         <div className='flex flex-col space-y-1'>
                             <p>Experience Level</p>
                             <Checkbox label="Entry Level" className='ml-4' />
@@ -62,8 +71,15 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 </div>
 
                 {/* Job listing section */}
-                <div className='col-span-3 rounded-lg shadow-xl'>
-                    <JobCard />
+                <div className='col-span-3 rounded-lg'>
+                    {
+                        jobs.map((job, index) => (
+                            <JobCard jobId={job.id} />
+                        ))
+                    }
+                    <div className='flex items-center justify-center'>
+                        <PrimaryButton href={route('login')}>Load More Jobs hehe</PrimaryButton>
+                    </div>
                 </div>
             </div>
         </MainPageLayout>
