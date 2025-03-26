@@ -32,12 +32,12 @@ class User extends Authenticatable
 
     public function jobSeeker()
     {
-        return $this->hasOne(JobSeeker::class, 'user_id');
+        return $this->hasOne(JobSeeker::class);
     }
 
     public function company()
     {
-        return $this->hasOne(Company::class, 'user_id');
+        return $this->hasOne(Company::class);
     }
 
 }

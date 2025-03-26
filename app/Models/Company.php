@@ -26,9 +26,9 @@ class Company extends Model
     ];
     public $timestamps = false;
 
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'account_id')->where('account_type', 'company');
+        return $this->belongsTo(User::class);
     }
 
 

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class jobstatus extends Model
 {
 
+    protected $table = 'job_status';
+    protected  $primaryKey = 'status_id';
+
     use HasFactory;
 
     protected $fillable = [
