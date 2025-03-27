@@ -9,11 +9,20 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
+        first_name: '',
+        last_name: '',
+        middle_name: '',
+        suffix: '',
         email: '',
+        contact_no: '',
+        street: '',
+        street2: '',
+        city: '',
+        province: '',
+        postal_code: '',
+        country: '',
         password: '',
-        password_confirmation: '',
-        account_type: 'jobseeker', // Default value
+        password_confirmation: ''
     });
 
     const submit = (e) => {
@@ -36,50 +45,50 @@ export default function Register() {
                 <div className='grid grid-cols-6 gap-3'>
                     <div className='col-span-2'>
                         <TextInput
-                            id="name"
-                            name="name"
+                            id="first_name"
+                            name="first_name"
                             placeholder="First Name"
-                            value={data.name}
+                            value={data.first_name}
                             className="mt-1 block w-full"
                             autoComplete="name"
                             isFocused={true}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData('first_name', e.target.value)}
                             required
                         />
                     </div>
                     <div className='col-span-2'>
                         <TextInput
-                            id="name"
-                            name="name"
+                            id="last_name"
+                            name="last_name"
                             placeholder="Last Name"
-                            value={data.name}
+                            value={data.last_name}
                             className="mt-1 block w-full"
                             autoComplete="name"
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData('last_name', e.target.value)}
                             required
                         />
                     </div>
                     <div className='col-span-1'>
                         <TextInput
-                            id="name"
-                            name="name"
+                            id="middle_name"
+                            name="middle_name"
                             placeholder="Middle"
-                            value={data.name}
+                            value={data.middle_name}
                             className="mt-1 block w-full"
                             autoComplete="name"
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData('middle_name', e.target.value)}
                             required
                         />
                     </div>
                     <div className='col-span-1'>
                         <TextInput
-                            id="name"
+                            id="suffix"
                             name="name"
                             placeholder="Suffix"
-                            value={data.name}
+                            value={data.suffix}
                             className="mt-1 block w-full"
                             autoComplete="name"
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData('suffix', e.target.value)}
                             required
                         />
                     </div>
@@ -105,14 +114,13 @@ export default function Register() {
                         <div className='col-span-3'>
                             <InputLabel htmlFor="contact_number" value="Contact Number" />
                             <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
+                                id="contact_no"
+                                name="contact_no"
                                 placeholder="09123456789"
-                                value={data.email}
+                                value={data.contact_no}
                                 className="mt-1 block w-full"
-                                autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                autoComplete="contact_no"
+                                onChange={(e) => setData('contact_no', e.target.value)}
                                 required
                             />
                         </div>
@@ -138,28 +146,25 @@ export default function Register() {
                     <div className='grid grid-cols-2 gap-3'>
                         <div className='col-span-1'>
                             <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
+                                id="street"
+                                name="street"
                                 placeholder="Street Address"
-                                value={data.email}
+                                value={data.street}
                                 className="mt-1 block w-full"
-                                autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                autoComplete="street"
+                                onChange={(e) => setData('street', e.target.value)}
                                 required
                             />
                         </div>
                         <div className='col-span-1'>
                             <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
+                                id="street2"
+                                name="street2"
                                 placeholder="Street Address Line 2"
-                                value={data.email}
+                                value={data.street2}
                                 className="mt-1 block w-full"
-                                autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
+                                autoComplete="street2"
+                                onChange={(e) => setData('street2', e.target.value)}
                             />
                         </div>
                     </div>
@@ -169,41 +174,38 @@ export default function Register() {
                     <div className='col-span-3'>
                         <div className='col-span-1'>
                             <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
+                                id="city"
+                                name="city"
                                 placeholder="City"
-                                value={data.email}
+                                value={data.city}
                                 className="mt-1 block w-full"
-                                autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                autoComplete="city"
+                                onChange={(e) => setData('city', e.target.value)}
                                 required
                             />
                         </div>
                     </div>
                     <div className='col-span-3'>
                         <TextInput
-                            id="email"
-                            type="email"
-                            name="email"
+                            id="province"
+                            name="province"
                             placeholder="State/Province"
-                            value={data.email}
+                            value={data.province}
                             className="mt-1 block w-full"
-                            autoComplete="username"
-                            onChange={(e) => setData('email', e.target.value)}
+                            autoComplete="province"
+                            onChange={(e) => setData('province', e.target.value)}
                             required
                         />
                     </div>
                     <div className='col-span-3'>
                         <TextInput
-                            id="email"
-                            type="email"
-                            name="email"
+                            id="postal_code"
+                            name="postal_code"
                             placeholder="Postal Code"
-                            value={data.email}
+                            value={data.postal_code}
                             className="mt-1 block w-full"
-                            autoComplete="username"
-                            onChange={(e) => setData('email', e.target.value)}
+                            autoComplete="postal_code"
+                            onChange={(e) => setData('postal_code', e.target.value)}
                             required
                         />
                     </div>
@@ -211,14 +213,13 @@ export default function Register() {
 
                 <div className='w-full mt-3'>
                     <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
+                        id="country"
+                        name="country"
                         placeholder="Country"
-                        value={data.email}
+                        value={data.country}
                         className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
+                        autoComplete="country"
+                        onChange={(e) => setData('country', e.target.value)}
                         required
                     />
                 </div>
