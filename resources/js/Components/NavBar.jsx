@@ -27,7 +27,7 @@ export default function NavBar() {
                             key={item.name}
                             className={`px-4 py-2 rounded-md text-lg font-medium
                                 ${active === item.href.toLowerCase()
-                                    ? "bg-primary text-white shadow-md"
+                                    ? "underline underline-offset-8 text-white shadow-md"
                                     : "text-white hover:bg-light hover:text-dark"}`}
                             onClick={() => setActive(item.href.toLowerCase())}
                         >
