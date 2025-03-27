@@ -9,25 +9,25 @@ return new class extends Migration {
     {
         Schema::table('job_seeker', function (Blueprint $table) {
 
-            if (Schema::hasTable('certification')) {
+            if (!Schema::hasTable('certification')) {
                 $table->foreign('certification')
                     ->references('certificationId')
                     ->on('certification')
                     ->onDelete('cascade');
             }
-            if (Schema::hasTable('education')) {
+            if (!Schema::hasTable('education')) {
                 $table->foreign('education')
                     ->references("educationId")
                     ->on('education')
                     ->onDelete('cascade');
             }
-            if (Schema::hasTable('work_history')) {
+            if (!Schema::hasTable('work_history')) {
                 $table->foreign('workHistory')
                     ->references("work_history_id")
                     ->on("work_history")
                     ->onDelete('cascade');
             }
-            if (Schema::hasTable('skills')) {
+            if (!Schema::hasTable('skills')) {
                 $table->foreign('Skill')
                     ->references("skill_id")
                     ->on('skills')

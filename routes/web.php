@@ -21,13 +21,15 @@ Route::get('/', function () {
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
 
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/findwork', function () {
-    return Inertia::render('FindWork');
-})->name('/findwork');
+
+    Route::get('/findwork', function () {
+        return Inertia::render('FindWork');
+    })->name('/findwork');
 
 
 
