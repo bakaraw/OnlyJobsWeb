@@ -15,7 +15,7 @@ class SkillsSeeder extends Seeder
     {
     $faker = \Faker\Factory::create();
     foreach(range(1,10) as $index){
-        DB::table('skills')->insert([
+        DB::table('skill')->insert([
             'skill_name' => $faker->text(),
 
         ]);

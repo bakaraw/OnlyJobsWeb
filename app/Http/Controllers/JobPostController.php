@@ -7,6 +7,7 @@ use App\Models\Education;
 use App\Models\JobPost;
 use App\Models\skills;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobPostController extends Controller
 {
@@ -15,7 +16,6 @@ class JobPostController extends Controller
 
     //post request gamita ni for UI
     public function store(Request $request) {
-
         if (!auth()->check()) {
             return response()->json([
                 'success' => false,
@@ -25,8 +25,7 @@ class JobPostController extends Controller
         }
 
         $validatedData = $request->validate([
-
-
+            'job_id' => 'required',
             'job_title' => 'required|string|unique:job_post,job_title|regex:/^[a-zA-Z0-9\s\W]+$/',
             'job_description' => 'required|string|regex:/^[a-zA-Z0-9\s\W]+$/',
             'job_location' => 'required|string',
@@ -35,32 +34,27 @@ class JobPostController extends Controller
             'min_Salary'=> 'required|numeric',
             'max_salary'=> 'required|numeric',
             'year_of_experience' => 'required|integer',
-            'skill_id' => 'nullable|exists:skills,id',
+            'skill_id' => 'nullable|array',   // ✅ Fix: Accepts multiple skill IDs
             'job_post_certificate_id' => 'nullable|exists:certification,certificate_id',
             'education_id' => 'nullable|exists:education,education_id',
-            'job_status' => 'nullable|string,id'
-
+            'job_status' => 'nullable|string'
         ]);
+
         try {
-            //201 kay http status code na succes
-            //500 http error code
-          $jobPost = JobPost::create($validatedData);
-            return response()->json($jobPost, 201);
+            $jobPost = JobPost::create($validatedData);
 
-        }catch (\Exception $exception){
+            if ($request->has('skill_id')) {
+                $jobPost->skills()->attach($request->input('skill_id'));  // Insert into skill_required
+            }
+
+            return response()->json([
+                'success' => true,
+                'job_post' => $jobPost->load('skills')  // Ensure skills are returned
+            ], 201);
+
+        } catch (\Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 500);
-
         }
-
-
-
     }
-
-          //search method using gamit title
-        public function index(Request $request) {
-            $jobTitle = $request->input('job_title');
-            $jobs = JobPost::where('job_title',$jobTitle)->get();
-            return response()->json($jobs, 201);
-        }
-
 }
+dd(JobPost::with('skills')->find(4));

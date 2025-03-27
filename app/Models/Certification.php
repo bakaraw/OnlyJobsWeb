@@ -17,10 +17,11 @@ class Certification extends Model
         'certification_date'
     ];
 
-    public function certification()
+    public function JobPost()
     {
-        return $this->belongsTo(JobPost::class, 'job_post_certificate_id', 'certificate_id');
+        return $this->hasMany(JobPost::class, 'job_post_certificate_id', 'certificate_id');
     }
+
 
 
 

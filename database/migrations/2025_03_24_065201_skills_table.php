@@ -10,8 +10,9 @@ return new class extends Migration
 
         Schema::create("skill", function (Blueprint $table) {
 
+
             $table->id('skill_id');
-            $table->string('skill_name')->unique();
+            $table->string('skill_name');
         });
     }
     public function down(): void

@@ -21,8 +21,10 @@ class jobstatus extends Model
     ];
 
 
-    public function jobstatus()
+
+    public function JobPost()
     {
-        return $this->belongsTo(JobPost::class, 'job_status', 'status_id');
+        return $this->hasMany(JobPost::class, 'job_status', 'status_id');
     }
+
 }

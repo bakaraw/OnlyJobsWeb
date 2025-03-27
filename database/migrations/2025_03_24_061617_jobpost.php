@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->decimal('max_salary', 10, 2);
             $table->integer('year_of_experience');
 
+
             //foreign key
             $table->unsignedBigInteger('job_status')->nullable('open');
             $table->unsignedBigInteger('skill_id')->nullable();

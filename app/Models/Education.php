@@ -20,8 +20,10 @@ class Education extends Model
 
 
 
-    public function education()
+
+    public function JobPost()
     {
-        return $this->belongsTo(JobPost::class, 'education_id', 'education_id');
+        return $this->hasMany(JobPost::class, 'education_id', 'education_id');
     }
+
 }
