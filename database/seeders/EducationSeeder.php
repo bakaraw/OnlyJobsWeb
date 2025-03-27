@@ -20,8 +20,8 @@ class EducationSeeder extends Seeder
             DB::table('educations')->insert([
                 'school_name' => $faker->name(),
                 'Undergrad' => $faker->year .'Degree',
-                'master' => $faker->company . 'Master Educations',
-                'Phd' => $faker->company . 'Phd Educations',
+                'master' => $faker->company . 'Master Education',
+                'Phd' => $faker->company . 'Phd Education',
             ]);
         }
     }

@@ -5,16 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobStatus extends Model
+class EducationLevel extends Model
 {
+    protected $table = 'education_levels';
+
     protected $fillable = [
-        'status_name',
+        'education_name',
         'description',
+        'minimum_years',
         'is_active'
     ];
 
     public function jobPosts(): HasMany
     {
-        return $this->hasMany(JobPost::class, 'job_status_id');
+        return $this->hasMany(JobPost::class, 'education_id');
     }
 }

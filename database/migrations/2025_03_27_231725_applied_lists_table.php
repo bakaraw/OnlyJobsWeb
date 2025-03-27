@@ -4,28 +4,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('work_histories', function (Blueprint $table) {
-            $table->id('work_history_id');
+        Schema::create('applied_lists', function (Blueprint $table) {
+            $table->id('applied_id');
             $table->unsignedBigInteger('jobseeker_id');
-            $table->string('company_name');
-            $table->string('job_title');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
-            $table->text('job_description')->nullable();
+            $table->unsignedBigInteger('job_id');
+            $table->date('applied_date');
 
             $table->timestamps();
 
-            // Foreign key constraint
+            // Foreign key constraints
             $table->foreign('jobseeker_id')->references('jobseeker_id')->on('job_seekers')->onDelete('cascade');
+            $table->foreign('job_id')->references('job_id')->on('job_lists')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('work_histories');
+        Schema::dropIfExists('applied_lists');
     }
 };

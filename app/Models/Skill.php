@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobStatus extends Model
+class Skill extends Model
 {
     protected $fillable = [
-        'status_name',
+        'skill_name',
         'description',
+        'skill_category',
         'is_active'
     ];
 
-    public function jobPosts(): HasMany
+    public function jobPosts(): BelongsToMany
     {
-        return $this->hasMany(JobPost::class, 'job_status_id');
+        return $this->belongsToMany(JobPost::class, 'job_post_skills', 'skill_id', 'job_post_id');
     }
 }

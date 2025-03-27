@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("certificate", function (Blueprint $table) {
-
-            $table->id('certificate_id')->primary();
+        Schema::create('certificates', function (Blueprint $table) {
+            $table->id();
             $table->string('certificate_name')->unique();
-            $table->string('certificate_type');
-            $table->string('certificate_date');
+            $table->text('description')->nullable();
+            $table->string('issuing_organization')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
+
     public function down(): void
     {
- //       Schema::dropIfExists('certification');
-
+        Schema::dropIfExists('certificates');
     }
 };

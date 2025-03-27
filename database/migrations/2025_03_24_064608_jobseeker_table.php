@@ -6,61 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('job_seeker', function (Blueprint $table) {
-
-            $table->id('jobSeeker_id')->primary();
-            $table->string('jobSeeker_name')->unique();
-            $table->string('jobSeeker_email');
-            $table->integer('jobSeeker_phone')->nullable();
-            $table->string('jobSeeker_address')->nullable();
-
-            $table->unsignedBigInteger('applied_list')->unique()->nullable();
-
-            $table->unsignedBigInteger('workHistory')->unique()->nullable();
-            $table->unsignedBigInteger('education')->unique()->nullable();
-            $table->unsignedBigInteger('certification')->unique()->nullable();
-            $table->unsignedBigInteger('Skill')->unique()->nullable();
-            $table->integer('yearOfExperience')->unique()->nullable();
+        Schema::create('job_seekers', function (Blueprint $table) {
+            $table->id('jobseeker_id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('jobseeker_name');
+            $table->string('jobseeker_email')->unique();
+            $table->string('jobseeker_phone')->nullable();
+            $table->string('jobseeker_address')->nullable();
+            $table->integer('years_of_experience')->nullable();
 
             $table->timestamps();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
-
-//            $table->foreign('certification')
-//                ->references('certificationId')
-//                ->on('certification')
-//                ->onDelete('cascade');
-//
-//
-//            $table->foreign('education')
-//                ->references("educationId")
-//                ->on('education')
-//                ->onDelete('cascade');
-//
-//            $table->foreign('workHistory')
-//                ->references("work_history_id")
-//                ->on("work_history")
-//                ->onDelete('cascade');
-//
-//            $table->foreign('Skill')
-//                ->references("skill_id")
-//                ->on('skill')
-//                ->onDelete('cascade');
-
-            #
+            // Foreign key constraints
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
+
     public function down(): void
     {
-//        Schema::table('job_seeker', function (Blueprint $table) {
-//            $table->dropForeign(['user_id']);
-//        });
-
-        Schema::dropIfExists('job_seeker');
+        Schema::dropIfExists('job_seekers');
     }
 };

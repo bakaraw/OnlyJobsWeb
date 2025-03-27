@@ -7,42 +7,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobPost extends Model
 {
-    protected $table = 'job_post';
-    protected $primaryKey = 'job_id';
-
     protected $fillable = [
         'job_title',
         'job_description',
         'job_location',
-        'job_salary',
         'job_type',
-        'min_Salary',
+        'min_salary',
         'max_salary',
-        'year_of_experience',
-        'skill_name',
-        'certificate_name',
-        'school_name',
-        'job_status'
+        'min_experience_years',
+        'job_status_id',
+        'education_id',
+        'certificate_id'
     ];
 
-    // Relationships using names
-    public function skill()
+    public function jobStatus(): BelongsTo
     {
-        return $this->belongsTo(Skills::class, 'skill_name', 'skill_name');
+        return $this->belongsTo(JobStatus::class, 'job_status_id');
     }
 
-    public function certificate()
+    public function educationLevel(): BelongsTo
     {
-        return $this->belongsTo(Certificate::class, 'certificate_name', 'certificate_name');
+        return $this->belongsTo(EducationLevel::class, 'education_id');
     }
 
-    public function education()
+    public function certificate(): BelongsTo
     {
-        return $this->belongsTo(Educations::class, 'school_name', 'school_name');
+        return $this->belongsTo(Certificate::class, 'certificate_id');
     }
 
-    public function status()
+    public function skills(): BelongsToMany
     {
-        return $this->belongsTo(JobStatus::class, 'job_status', 'status_name');
+        return $this->belongsToMany(Skill::class, 'job_post_skills', 'job_post_id', 'skill_id');
     }
 }
