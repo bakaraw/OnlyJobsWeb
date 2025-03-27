@@ -40,29 +40,11 @@ class JobPostController extends Controller
             'education_id' => 'nullable|exists:education,education_id',
             'job_status' => 'nullable|string,id'
 
-
         ]);
-
-
-
         try {
             //201 kay http status code na succes
             //500 http error code
           $jobPost = JobPost::create($validatedData);
-
-
-           if($request->filled(['skill_id', 'education_id', 'job_post_certificate_id', 'status_id'])) {
-               //getting the name using ID of the table
-               $find_skill = Skills::find($request->input('skill_id'));
-               $skill_name = $find_skill ? $find_skill->skill_name : null;
-
-               $find_certification = Certification::find($request->input('certification_id'));
-               $certification_name = $find_certification ? $find_certification->certification_name : null;
-
-               $find_education = Education::find($request->input('education_id'));
-               $education_name = $find_education ? $find_education->education_name : null;
-
-           }
             return response()->json($jobPost, 201);
 
         }catch (\Exception $exception){

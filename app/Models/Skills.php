@@ -14,9 +14,9 @@ class skills extends Model
         'skill_name',
     ];
 
-    public function skills()
+    public function JobPost()
     {
-        return $this->belongsTo(JobPost::class, 'job_post_skill_id', 'skill_id');
+        return $this->hasMany(JobPost::class, 'skill_id', 'skill_id');
     }
 
 

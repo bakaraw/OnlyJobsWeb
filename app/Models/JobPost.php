@@ -27,6 +27,15 @@ class JobPost extends Model
         'job_status'
 
     ];
+    protected $appends = ['skill_name'];
+
+    public function skills()
+    {
+        return $this->belongsTo(Skill::class, 'skill_id', 'skill_id');
+    }
+    public function getSkillNameAttribute() {
+        return $this->skill ? $this->skill->name : null;
+    }
 
 
     public function certification()
@@ -44,9 +53,6 @@ class JobPost extends Model
         return $this->belongsTo(JobStatus::class, 'job_status', 'status_id');
     }
 
-    public function skills()
-    {
-        return $this->belongsTo(Skill::class, 'skill_id', 'skill_id');
-    }
+
 }
 
