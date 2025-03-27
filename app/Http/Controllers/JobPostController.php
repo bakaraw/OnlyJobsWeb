@@ -2,59 +2,143 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Certification;
-use App\Models\Education;
 use App\Models\JobPost;
-use App\Models\skills;
+use App\Models\Skill;
+use App\Models\Certificate;
+use App\Models\Educations;
+use App\Models\JobStatus;
+use App\Models\Skills;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class JobPostController extends Controller
 {
+    /**
+     * Show the form for creating a new job post
+     */
+    public function create()
+    {
+        // Fetch all options for dropdowns
+        $skills = Skills::pluck('skill_name');
+        $certificates = Certificate::pluck('certificate_name');
+        $educations = Educations::pluck('school_name');
+        $statuses = JobStatus::pluck('status_name');
 
+            //add og return para sa view diri
+        //return view('job-post.create', compact('skills', 'certificates', 'educations', 'statuses'));
 
+    }
 
-    //post request gamita ni for UI
-    public function store(Request $request) {
-        if (!auth()->check()) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Unauthorized',
-                'message' => 'You must be logged in to post a job.'
-            ], 401);
-        }
+    /**
+     * Store a newly created job post in storage
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'job_title' => 'required|string|max:255',
+            'job_description' => 'required|string',
+            'job_location' => 'required|string|max:255',
+            'job_type' => 'required|string|max:100',
+            'min_Salary' => 'required|numeric|min:0',
+            'max_salary' => 'required|numeric|min:0|gte:min_Salary',
+            'year_of_experience' => 'required|integer|min:0',
 
-        $validatedData = $request->validate([
-            'job_id' => 'required',
-            'job_title' => 'required|string|unique:job_post,job_title|regex:/^[a-zA-Z0-9\s\W]+$/',
-            'job_description' => 'required|string|regex:/^[a-zA-Z0-9\s\W]+$/',
-            'job_location' => 'required|string',
-            'job_salary' => 'required|numeric',
-            'job_type' => 'required|string',
-            'min_Salary'=> 'required|numeric',
-            'max_salary'=> 'required|numeric',
-            'year_of_experience' => 'required|integer',
-            'skill_id' => 'nullable|array',   // ✅ Fix: Accepts multiple skill IDs
-            'job_post_certificate_id' => 'nullable|exists:certification,certificate_id',
-            'education_id' => 'nullable|exists:education,education_id',
-            'job_status' => 'nullable|string'
+            // Custom validation sa model ni ha, dili sa database, same ra name sa function
+            'skill_name' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && !Skills::where('skill_name', $value)->exists()) {
+                        $fail("The selected skill does not exist.");
+                    }
+                }
+            ],
+            'certificate_name' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && !Certificate::where('certificate_name', $value)->exists()) {
+                        $fail("The selected certificate does not exist.");
+                    }
+                }
+            ],
+            'school_name' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && !Educations::where('school_name', $value)->exists()) {
+                        $fail("The selected education does not exist.");
+                    }
+                }
+            ],
+            'job_status' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && !JobStatus::where('status_name', $value)->exists()) {
+                        $fail("The selected job status does not exist.");
+                    }
+                }
+            ]
         ]);
 
+        // If validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Start a database transaction
+        DB::beginTransaction();
+
         try {
-            $jobPost = JobPost::create($validatedData);
+            // Create the job post
+            $jobPost = JobPost::create([
+                'job_title' => $request->job_title,
+                'job_description' => $request->job_description,
+                'job_location' => $request->job_location,
+                'job_type' => $request->job_type,
+                'job_salary' => $request->min_Salary . ' - ' . $request->max_salary,
+                'min_Salary' => $request->min_Salary,
+                'max_salary' => $request->max_salary,
+                'year_of_experience' => $request->year_of_experience,
 
-            if ($request->has('skill_id')) {
-                $jobPost->skills()->attach($request->input('skill_id'));  // Insert into skill_required
-            }
+                // Only add if they exist in their respective tables
+                'skill_name' => $request->skill_name ?
+                    (Skills::where('skill_name', $request->skill_name)->exists() ? $request->skill_name : null) : null,
 
-            return response()->json([
-                'success' => true,
-                'job_post' => $jobPost->load('skills')  // Ensure skills are returned
-            ], 201);
+                'certificate_name' => $request->certificate_name ?
+                    (Certificate::where('certificate_name', $request->certificate_name)->exists() ? $request->certificate_name : null) : null,
 
-        } catch (\Exception $exception) {
-            return response()->json(['message' => $exception->getMessage()], 500);
+                'school_name' => $request->school_name ?
+                    (Educations::where('school_name', $request->school_name)->exists() ? $request->school_name : null) : null,
+
+                'job_status' => $request->job_status ?
+                    (JobStatus::where('status_name', $request->job_status)->exists() ? $request->job_status : null) : null
+            ]);
+
+            // Commit the transaction
+            DB::commit();
+
+            //wala pani route,
+            return redirect()->route('route ni diri dapat')
+                ->with('success', 'Job post created successfully.');
+
+        } catch (\Exception $e) {
+            // Rollback the transaction
+            DB::rollBack();
+
+            // Redirect back with error message
+            return redirect()->back()
+                ->with('error', 'Failed to create job post: ' . $e->getMessage())
+                ->withInput();
         }
     }
+
+    /**
+     * Optional: Method to list all job posts
+     */
+    public function index()
+    {
+        $jobPosts = JobPost::with(['skill', 'certificate', 'education', 'status'])->get();
+        return view('job-post.index', compact('jobPosts'));
+    }
 }
-dd(JobPost::with('skills')->find(4));

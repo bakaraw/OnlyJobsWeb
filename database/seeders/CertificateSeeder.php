@@ -17,10 +17,10 @@ class CertificateSeeder extends Seeder
         $faker = Factory::create();
 
     foreach(range(1,10) as $index){
-        DB::table('certification')->insert([
-            'certification_name' => $faker->name(),
-            'certification_type' => $faker->text(),
-            'certification_date' => $faker->date(),
+        DB::table('certificate')->insert([
+            'certificate_name' => $faker->name(),
+            'certificate_type' => $faker->text(),
+            'certificate_date' => $faker->date(),
         ]);
     }
     }

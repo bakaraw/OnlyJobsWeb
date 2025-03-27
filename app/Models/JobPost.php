@@ -7,51 +7,42 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobPost extends Model
 {
-    use HasFactory;
-
     protected $table = 'job_post';
     protected $primaryKey = 'job_id';
 
     protected $fillable = [
-        'job_title', 'job_description', 'job_location', 'job_salary',
-        'job_type', 'min_Salary', 'max_salary', 'year_of_experience',
-        'job_post_certificate_id', 'education_id', 'job_status'
+        'job_title',
+        'job_description',
+        'job_location',
+        'job_salary',
+        'job_type',
+        'min_Salary',
+        'max_salary',
+        'year_of_experience',
+        'skill_name',
+        'certificate_name',
+        'school_name',
+        'job_status'
     ];
-    protected $appends = ['skill_name'];
 
-
-    public function skills()
+    // Relationships using names
+    public function skill()
     {
-        return $this->belongsToMany(Skill::class, 'skill', 'job_id', 'skill_id');
+        return $this->belongsTo(Skills::class, 'skill_name', 'skill_name');
+    }
 
-    }
-    public function certification()
+    public function certificate()
     {
-        return $this->belongsTo(Certification::class, 'job_post_certificate_id', 'certificate_id');
+        return $this->belongsTo(Certificate::class, 'certificate_name', 'certificate_name');
     }
+
     public function education()
     {
-        return $this->belongsTo(Education::class, 'education_id', 'education_id');
+        return $this->belongsTo(Educations::class, 'school_name', 'school_name');
     }
-    public function jobStatus()
+
+    public function status()
     {
-        return $this->belongsTo(JobStatus::class, 'job_status', 'status_id');
+        return $this->belongsTo(JobStatus::class, 'job_status', 'status_name');
     }
-
-//get the name not the id
-//    public function getCertificationNameAttribute() {
-//        return $this->certification ? $this->certification->certification_name : null;
-//    }
-//    public function getSkillNameAttribute() {
-//        return $this->skill ? $this->skill->name : null;
-//    }
-//
-//    public function getEducationNameAttribute() {
-//        return $this->education ? $this->education->education_name : null;
-//    }
-
-
-
-
 }
-

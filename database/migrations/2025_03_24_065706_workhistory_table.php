@@ -23,7 +23,7 @@ return new class extends Migration
 
 //            $table->foreignId('workSkill')
 //                ->references("skill_id")
-//                ->on('skills')
+//                ->on('skill')
 //                ->onDelete('cascade');
         });
     }

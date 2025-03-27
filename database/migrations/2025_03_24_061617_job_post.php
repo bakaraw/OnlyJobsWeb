@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('job_post', function (Blueprint $table) {
             $table->id('job_id');
-            $table->string('job_title')->unique();
+            $table->string('job_title');
             $table->text('job_description');
             $table->string('job_location');
             $table->string('job_salary');
@@ -21,12 +21,15 @@ return new class extends Migration {
             $table->decimal('max_salary', 10, 2);
             $table->integer('year_of_experience');
 
+            $table->string('skill_name')->nullable();
+            $table->string('certificate_name')->nullable();
+            $table->string('school_name')->nullable();
 
             //foreign key
             $table->unsignedBigInteger('job_status')->nullable('open');
-            $table->unsignedBigInteger('skill_id')->nullable();
-            $table->unsignedBigInteger('job_post_certificate_id')->nullable();
-            $table->unsignedBigInteger('education_id')->nullable();
+//            $table->unsignedBigInteger('skill_id')->nullable();
+//            $table->unsignedBigInteger('job_post_certificate_id')->nullable();
+//            $table->unsignedBigInteger('education_id')->nullable();
             $table->timestamps();
 
         });

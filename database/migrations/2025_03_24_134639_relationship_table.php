@@ -11,14 +11,14 @@ return new class extends Migration {
 
             if (!Schema::hasTable('certification')) {
                 $table->foreign('certification')
-                    ->references('certificationId')
-                    ->on('certification')
+                    ->references('certificate_id')
+                    ->on('certificate')
                     ->onDelete('cascade');
             }
             if (!Schema::hasTable('education')) {
                 $table->foreign('education')
-                    ->references("educationId")
-                    ->on('education')
+                    ->references("education_id")
+                    ->on('educations')
                     ->onDelete('cascade');
             }
             if (!Schema::hasTable('work_history')) {
@@ -27,10 +27,10 @@ return new class extends Migration {
                     ->on("work_history")
                     ->onDelete('cascade');
             }
-            if (!Schema::hasTable('skill')) {
-                $table->foreign('Skill')
+            if (!Schema::hasTable('skills')) {
+                $table->foreign('Skills')
                     ->references("skill_id")
-                    ->on('skill')
+                    ->on('skills')
                     ->onDelete('cascade');
             }
 
@@ -47,9 +47,9 @@ return new class extends Migration {
         });
 
 
-        Schema::table('company', function (Blueprint $table) {
+        Schema::table('companies', function (Blueprint $table) {
 
-            if (Schema::hasTable('job_list') && !Schema::hasColumn('company', 'company_job_list')) {
+            if (Schema::hasTable('job_list') && !Schema::hasColumn('companies', 'company_job_list')) {
                 $table->foreignId('company_job_list')
                     ->nullable() // Make it nullable
                     ->references('job_list_id')
@@ -57,7 +57,7 @@ return new class extends Migration {
                     ->onDelete('cascade');
             }
 
-            if (Schema::hasTable('applicants') && !Schema::hasColumn('company', 'company_applicant_list')) {
+            if (Schema::hasTable('applicants') && !Schema::hasColumn('companies', 'company_applicant_list')) {
                 $table->foreignId('company_applicant_list')
                     ->nullable()  // Make it nullable if needed
                     ->constrained('applicants', 'applicant_id')  // Assuming applicants table uses 'id' as the primary key

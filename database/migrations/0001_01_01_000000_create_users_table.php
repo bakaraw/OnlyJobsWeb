@@ -42,7 +42,7 @@ return new class extends Migration
     }
     public function down(): void
     {
-        Schema::dropIfExists('company'); // Drop company first
+        Schema::dropIfExists('companies'); // Drop company first
         Schema::dropIfExists('job_seeker'); // Drop job_seeker second
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');

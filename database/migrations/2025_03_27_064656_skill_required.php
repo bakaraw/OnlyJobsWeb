@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('skill_required', function (Blueprint $table) {
+        Schema::create('skills_required', function (Blueprint $table) {
             $table->id(); // Primary key (optional)
             $table->unsignedBigInteger('job_id');
             $table->unsignedBigInteger('skill_id');
 
             $table->foreign('job_id')->references('job_id')->on('job_post')->onDelete('cascade');
-            $table->foreign('skill_id')->references('skill_id')->on('skill')->onDelete('cascade');
+            $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');
 
             $table->timestamps();
         });

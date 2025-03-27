@@ -17,11 +17,11 @@ class EducationSeeder extends Seeder
         $faker = Factory::create();
 
         foreach(range(1,10) as $index){
-            DB::table('education')->insert([
-                'school_name' => $faker->company . 'Education',
+            DB::table('educations')->insert([
+                'school_name' => $faker->name(),
                 'Undergrad' => $faker->year .'Degree',
-                'master' => $faker->company . 'Master Education',
-                'Phd' => $faker->company . 'Phd Education',
+                'master' => $faker->company . 'Master Educations',
+                'Phd' => $faker->company . 'Phd Educations',
             ]);
         }
     }

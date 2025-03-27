@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("certification", function (Blueprint $table) {
+        Schema::create("certificate", function (Blueprint $table) {
 
             $table->id('certificate_id')->primary();
-            $table->string('certification_name')->unique();
-            $table->string('certification_type');
-            $table->string('certification_date');
+            $table->string('certificate_name')->unique();
+            $table->string('certificate_type');
+            $table->string('certificate_date');
         });
     }
     public function down(): void

@@ -49,7 +49,7 @@ return new class extends Migration
 //
 //            $table->foreign('Skill')
 //                ->references("skill_id")
-//                ->on('skills')
+//                ->on('skill')
 //                ->onDelete('cascade');
 
             #
