@@ -50,15 +50,15 @@ return new class extends Migration
         });
 
 
-        Schema::table('applicants', function (Blueprint $table) {
+        Schema::table('applicant', function (Blueprint $table) {
 
-            if (Schema::hasTable('job_seeker') && !Schema::hasColumn('applicants', 'applicant_jobseeker_id')) {
+            if (Schema::hasTable('job_seeker') && !Schema::hasColumn('applicant', 'applicant_jobseeker_id')) {
                 $table->foreignId('applicant_jobseeker_id')
                     ->constrained('job_seeker', 'jobSeeker_id')
                     ->onDelete('cascade');
             }
 
-            if (Schema::hasTable('job_post') && !Schema::hasColumn('applicants', 'applicant_jobposting_id')) {
+            if (Schema::hasTable('job_post') && !Schema::hasColumn('applicant', 'applicant_jobposting_id')) {
                 $table->foreignId('applicant_jobposting_id')
                     ->constrained('job_post', 'job_id')
                     ->onDelete('cascade');

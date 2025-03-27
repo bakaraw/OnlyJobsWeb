@@ -27,10 +27,10 @@ return new class extends Migration {
                     ->on("work_history")
                     ->onDelete('cascade');
             }
-            if (!Schema::hasTable('skills')) {
+            if (!Schema::hasTable('skill')) {
                 $table->foreign('Skill')
                     ->references("skill_id")
-                    ->on('skills')
+                    ->on('skill')
                     ->onDelete('cascade');
             }
 
