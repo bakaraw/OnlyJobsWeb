@@ -22,7 +22,7 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <GuestLayout>
+        <GuestLayout width="sm:max-w-lg">
             <Head title="Log in" />
 
             {status && (
@@ -30,6 +30,11 @@ export default function Login({ status, canResetPassword }) {
                     {status}
                 </div>
             )}
+
+            <div className='mt-4 text-primary text-4xl font-bold mb-6'>
+                Login
+            </div>
+
 
             <form onSubmit={submit}>
                 <div>
@@ -65,7 +70,7 @@ export default function Login({ status, canResetPassword }) {
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="mt-4 block">
+                <div className="mt-4 block flex justify-between">
                     <label className="flex items-center">
                         <Checkbox
                             name="remember"
@@ -78,6 +83,9 @@ export default function Login({ status, canResetPassword }) {
                             Remember me
                         </span>
                     </label>
+                    <a href={route('register')} className='text-sm text-gray-500 underline'>
+                        Create account
+                    </a>
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
