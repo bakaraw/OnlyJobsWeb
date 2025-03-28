@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('education_levels', function (Blueprint $table) {
             $table->id();
             $table->string('education_name')->unique();
-            $table->text('description')->nullable();
-            $table->integer('minimum_years')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->text('education_type')->nullable();
             $table->timestamps();
         });
     }

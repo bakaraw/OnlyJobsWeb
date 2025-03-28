@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobStatus extends Model
 {
-    protected $fillable = [
-        'status_name',
-        'description',
-        'is_active'
-    ];
+    use HasFactory;
 
-    public function jobPosts(): HasMany
+    protected $fillable = ['status_name', 'is_active'];
+
+    public function jobPosts()
     {
         return $this->hasMany(JobPost::class, 'job_status_id');
     }

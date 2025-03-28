@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('certificate_name')->unique();
             $table->text('description')->nullable();
-            $table->string('issuing_organization')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

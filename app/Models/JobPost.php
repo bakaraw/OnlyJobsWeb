@@ -7,36 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobPost extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'job_title',
-        'job_description',
-        'job_location',
-        'job_type',
-        'min_salary',
-        'max_salary',
-        'min_experience_years',
-        'job_status_id',
-        'education_id',
-        'certificate_id'
+        'job_title', 'job_description', 'job_location', 'job_type',
+        'min_salary', 'max_salary', 'min_experience_years',
+        'job_status_id', 'education_id', 'certificate_id'
     ];
 
-    public function jobStatus(): BelongsTo
+    public function skills()
     {
-        return $this->belongsTo(JobStatus::class, 'job_status_id');
+        return $this->belongsToMany(Skill::class, 'job_post_skills');
     }
 
-    public function educationLevel(): BelongsTo
+    public function jobStatus()
     {
-        return $this->belongsTo(EducationLevel::class, 'education_id');
+        return $this->belongsTo(JobStatus::class);
     }
 
-    public function certificate(): BelongsTo
+    public function education()
     {
-        return $this->belongsTo(Certificate::class, 'certificate_id');
+        return $this->belongsTo(EducationLevel::class);
     }
 
-    public function skills(): BelongsToMany
+    public function certificate()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skills', 'job_post_id', 'skill_id');
+        return $this->belongsTo(Certificate::class);
     }
 }
