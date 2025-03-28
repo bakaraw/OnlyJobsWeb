@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('job_description');
             $table->string('job_location');
             $table->string('job_type');
+            $table->string('university_name')->nullable();
 
             // Salary Details
             $table->decimal('min_salary', 10, 2);
@@ -28,22 +29,30 @@ return new class extends Migration
             $table->integer('min_experience_years');
 
             // Foreign Keys with Constraints
-            $table->unsignedBigInteger('job_status_id')->nullable();
-            $table->unsignedBigInteger('education_id')->nullable();
+            $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('certificate_id')->nullable();
+            $table->unsignedBigInteger('skill_id')->nullable();
 
-            $table->foreign('job_status_id')
-                ->references('id')
+
+            $table->foreign('status_id')
+                ->references('status_id')
                 ->on('job_statuses')
                 ->onDelete('set null');
 
-            $table->foreign('education_id')
-                ->references('id')
-                ->on('education_levels')
+
+            $table->foreign('skill_id')
+                ->references('skill_id')
+                ->on('skills')
                 ->onDelete('set null');
 
+
+//            $table->foreign('universities_id')
+//                ->references('universities_id')
+//                ->on('universities')
+//                ->onDelete('set null');
+
             $table->foreign('certificate_id')
-                ->references('id')
+                ->references('certificate_id')
                 ->on('certificates')
                 ->onDelete('set null');
 
@@ -56,8 +65,9 @@ return new class extends Migration
         // Drop foreign key constraints first
         Schema::table('job_posts', function (Blueprint $table) {
             $table->dropForeign(['job_status_id']);
-            $table->dropForeign(['education_id']);
             $table->dropForeign(['certificate_id']);
+            $table->dropForeign(['skill_id']);
+
         });
 
         Schema::dropIfExists('job_posts');

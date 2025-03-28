@@ -11,12 +11,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('job_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->string('status_name')->unique();
+            $table->id('status_id');
+            $table->string('status_name')->unique()->default('Active');
             $table->timestamps();
         });
 
-        // Insert default job statuses
         DB::table('job_statuses')->insert([
             ['status_name' => 'Active'],
             ['status_name' => 'Closed'],

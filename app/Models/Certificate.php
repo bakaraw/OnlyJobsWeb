@@ -7,12 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Certificate extends Model
 {
+    protected $table = 'certificates';
+    protected  $primaryKey = 'certificate_id';
+
     use HasFactory;
 
-    protected $fillable = ['certificate_name', 'description', ];
+
+    protected $fillable = [
+        'certificate_name',
+        'name',
+        'post_nominal',
+        'agency'
+
+        ];
 
     public function jobPosts()
     {
-        return $this->hasMany(JobPost::class, 'certificate_id');
+        return $this->hasMany(JobPost::class, 'certificates', 'certificate_id' );
     }
 }

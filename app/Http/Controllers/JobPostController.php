@@ -2,17 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JobPost;
 use App\Models\Certificate;
-use App\Models\Education;
-use App\Models\JobStatus;
-use App\Models\Skills;
+use App\Models\JobPost;
+use App\Models\Skill;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
 
 class JobPostController extends Controller
 {
+    public function create()
+    {
+        $response = Http::get('http://universities.hipolabs.com/search', [
+            'limit' => 100
+        ]);
+
+        $universities = $response->successful()
+            ? collect($response->json())->pluck('name')
+            : [];
+
+        $certificates = Certificate::all();
+        $skills = Skill::all();
+
+        return Inertia::render('JobPostForm', [
+            'universities' => $universities,
+            'certificates' => $certificates,
+            'skills' => $skills,
+        ]);
+    }
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -23,8 +40,7 @@ class JobPostController extends Controller
             'min_salary' => 'required|numeric',
             'max_salary' => 'required|numeric',
             'min_experience_years' => 'required|integer',
-            'job_status_id' => 'nullable|exists:job_statuses,id',
-            'education_id' => 'nullable|exists:education_levels,id',
+            'university_name' => 'nullable|string',
             'certificate_id' => 'nullable|exists:certificates,id',
             'skills' => 'nullable|array',
             'skills.*' => 'exists:skills,id',
@@ -36,9 +52,8 @@ class JobPostController extends Controller
             $jobPost->skills()->attach($request->skills);
         }
 
-        return response()->json([
-            'message' => 'Job post created successfully!',
-            'job_post' => $jobPost->load('skills', 'jobStatus', 'education', 'certificate'),
-        ], 201);
+
+
+        return redirect()->route('job.create')->with('success', 'Job post created successfully!');
     }
 }

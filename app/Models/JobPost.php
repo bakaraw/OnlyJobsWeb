@@ -12,12 +12,12 @@ class JobPost extends Model
     protected $fillable = [
         'job_title', 'job_description', 'job_location', 'job_type',
         'min_salary', 'max_salary', 'min_experience_years',
-        'job_status_id', 'education_id', 'certificate_id'
+        'status_id', 'university_name', 'certificate_id', 'skill_id'
     ];
 
     public function skills()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skills');
+        return $this->belongsToMany(Skill::class);
     }
 
     public function jobStatus()
@@ -25,10 +25,10 @@ class JobPost extends Model
         return $this->belongsTo(JobStatus::class);
     }
 
-    public function education()
-    {
-        return $this->belongsTo(EducationLevel::class);
-    }
+//    public function education()
+//    {
+//        return $this->belongsTo(University::class);
+//    }
 
     public function certificate()
     {
