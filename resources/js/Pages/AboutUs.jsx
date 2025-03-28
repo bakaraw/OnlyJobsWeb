@@ -6,7 +6,7 @@ export default function AboutUs() {
         <MainPageLayout
             header={
                 <ContentLayout>
-                    <p className="text-4xl font-medium flex item-center justify-center mt-3">About Us</p>
+                    <p className="text-4xl font-medium flex items-center justify-center mt-3">About Us</p>
                     <p className='mt-10 flex item-center justify-center text-justify'>
                         Confederal Project Manpower Services Inc. is a premier Philippine-based recruitment agency established in 2003. With nearly two decades of expertise, we specialize in connecting skilled Filipino workers to land-based employment opportunities abroad. Our commitment to excellence is reflected in our strong reputation for bridging career aspirations with global opportunities.
                         To better serve our community, we expanded our operations in 2019 by opening a branch in Davao. This expansion ensures we can connect more Filipinos, especially those from southern regions, with meaningful international job opportunities.
