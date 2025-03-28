@@ -1,0 +1,40 @@
+[33m024bcf8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mjobpost[m[33m)[m Merge branch 'refs/heads/main' into jobpost
+[33m828dfb5[m[33m ([m[1;31morigin/jobpost[m[33m)[m  now it can search univerities in the wolrd using pubic api still error sa certificate, skills form, create temp form for sub sa dataase
+[33m7ca18df[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m fixed button issue where it cannot be pressed
+[33mcd0916d[m Jobpost (#16)
+[33m6026397[m  add routes
+[33m7ef7b40[m  fix the tables and naming conventions, not it can create job post, seed first the certificate, education, skills since it is constaints use ID
+[33mf9323e2[m Merge branch 'main' into jobpost
+[33me052899[m fixed about us css typo and suffix typo in Register.jsx
+[33mf080364[m added contents in about us
+[33m998323c[m only one gender can be selected
+[33mb6d5b4e[m front end for register is done
+[33m7eacbcf[m  fix the tables, relationships, models and controllers, fix naming convensions not it can add job post with constaint in skills, education, certificate, status
+[33m7d55dde[m fix all tables and relationships
+[33md01b524[m fix the job posting, but lack in validations but the code is good, also fix the names of the tables, in filename
+[33m5e541c8[m  add skill required table
+[33m818d3c1[m  fixing job posting constaints
+[33mf5b2c7e[m  fix name sa table skills, adjust job posting
+[33m178113a[m add seeder for certificate, skills, education
+[33m2b8ce19[m add bback the env sample
+[33m4d11690[m Findwork frontend (#12)
+[33m39e5e72[m fix naming things
+[33mca33105[m fix name things
+[33mec0ac93[m create middle ware role base company or jobseeker
+[33mbe21459[m  fix the rollback error in the database, now it can create job post wiht json style using tinker or postman por pustmethod
+[33md506c60[m  fix teh tabels constaint now it can rollback
+[33mf2646a6[m fix naming things
+[33m28aa7ed[m fix name things
+[33m3cc88ae[m create middle ware role base company or jobseeker
+[33mbf731cf[m  fix the rollback error in the database, now it can create job post wiht json style using tinker or postman por pustmethod
+[33m0aad474[m  fix teh tabels constaint now it can rollback
+[33m6db8c7e[m added /find_work route
+[33mf441903[m need minor fix sa dashboard basta wala nag logout dili siya mo sulod sa specific na accoutnt type dasboard (#7)
+[33m8353504[m[33m ([m[1;31morigin/main-backup[m[33m)[m improved navbar
+[33mbfa66c0[m added header to the MainPageLayout
+[33m640ce14[m added MainPageLayout and NavBar Component
+[33mbec9bd0[m[33m ([m[1;31morigin/james[m[33m)[m Update README.md
+[33m8dc3b03[m updated .env.example
+[33me46bc42[m updated README
+[33m54e8484[m updated README
+[33m06009dd[m first commit

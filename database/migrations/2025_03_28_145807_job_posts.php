@@ -32,6 +32,8 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('certificate_id')->nullable();
             $table->unsignedBigInteger('skill_id')->nullable();
+            $table->unsignedBigInteger('degree_id')->nullable();
+
 
 
             $table->foreign('status_id')
@@ -46,10 +48,10 @@ return new class extends Migration
                 ->onDelete('set null');
 
 
-//            $table->foreign('universities_id')
-//                ->references('universities_id')
-//                ->on('universities')
-//                ->onDelete('set null');
+            $table->foreign('degree_id')
+                ->references('degree_id')
+                ->on('degrees')
+                ->onDelete('set null');
 
             $table->foreign('certificate_id')
                 ->references('certificate_id')
@@ -64,10 +66,10 @@ return new class extends Migration
     {
         // Drop foreign key constraints first
         Schema::table('job_posts', function (Blueprint $table) {
-            $table->dropForeign(['job_status_id']);
+            $table->dropForeign(['status_id']);
             $table->dropForeign(['certificate_id']);
             $table->dropForeign(['skill_id']);
-
+            $table->dropForeign(['degree_id']);
         });
 
         Schema::dropIfExists('job_posts');
