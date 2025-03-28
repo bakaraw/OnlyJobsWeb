@@ -10,6 +10,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -20,13 +21,24 @@ Route::get('/', function () {
     ]);
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    });
+});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/find_work', function () {
-    return Inertia::render('FindWork');
+    return Inertia::render(
+        'FindWork',
+        [
+            'auth' => ['user' => Auth::user()], // Ensure auth.user is passed
+        ]
+
+    );
 })->name('find_work');
 
 Route::get('/about_us', function () {
@@ -52,9 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-//    Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])->name('jobseeker.dashboard');
-//    Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
-//    Route::post('/company/createjob', [JobPostController::class, 'store']);
+    //    Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])->name('jobseeker.dashboard');
+    //    Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
+    //    Route::post('/company/createjob', [JobPostController::class, 'store']);
 
 });
 Route::get('/dashboard', function () {

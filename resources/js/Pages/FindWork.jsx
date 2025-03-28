@@ -3,10 +3,10 @@ import JobCard from '@/Components/JobCard';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
-import { Head, Link } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
-
+    console.log(usePage().props.auth);
     const jobs = [
         { id: 1, title: "Welder" },
         { id: 2, title: "Pipe Fitter" },

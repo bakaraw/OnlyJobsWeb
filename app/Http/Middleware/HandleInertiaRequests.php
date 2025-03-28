@@ -27,13 +27,14 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
+
+    // this allows all pages to access auth
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
+        return array_merge(parent::share($request), [
             'auth' => [
-                'User' => $request->user(),
+                'user' => $request->user(), // Ensure 'user' key is lowercase
             ],
-        ];
+        ]);
     }
 }

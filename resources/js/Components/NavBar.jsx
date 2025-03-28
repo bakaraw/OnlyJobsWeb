@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, usePage } from "@inertiajs/react"; // Import Link for navigation
+import NavBarAuthBtns from "@/Components/NavBarAuthBtns";
 
 export default function NavBar() {
     const { url } = usePage();
@@ -22,7 +23,7 @@ export default function NavBar() {
                 </div>
                 <div className="flex space-x-4">
                     {navItems.map((item) => (
-                        <a
+                        <Link
                             href={item.href}
                             key={item.name}
                             className={`px-4 py-2 rounded-md text-lg font-medium
@@ -32,7 +33,7 @@ export default function NavBar() {
                             onClick={() => setActive(item.href.toLowerCase())}
                         >
                             {item.name}
-                        </a>
+                        </Link>
                     ))}
                 </div>
 
@@ -48,12 +49,7 @@ export default function NavBar() {
                     />
 
                     {/* Login & Sign Up */}
-                    <Link href={route('login')} className="text-white px-4 hover:text-primary transition">
-                        Login
-                    </Link>
-                    <Link href={route('register')} className="bg-primary text-white px-4 py-2 rounded-md hover:bg-light hover:text-dark transition">
-                        Sign Up
-                    </Link>
+                    <NavBarAuthBtns />
                 </div>
             </div>
         </nav>
