@@ -33,7 +33,7 @@ export default function MainPageLayout({ header, children }) {
                 <NavBar />
 
                 {header && (
-                    <header>
+                    <header className="pt-16">
                         <ContentLayout>
                             {header}
                         </ContentLayout>
