@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Models\Degree;
 use App\Models\JobPost;
+use App\Models\jobstatus;
 use App\Models\Skill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;

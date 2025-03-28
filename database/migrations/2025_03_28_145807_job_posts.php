@@ -28,50 +28,38 @@ return new class extends Migration
             // Experience
             $table->integer('min_experience_years');
 
-            // Foreign Keys with Constraints
+            // Foreign Keys
             $table->unsignedBigInteger('status_id')->nullable();
+            $table->unsignedBigInteger('degree_id')->nullable();
             $table->unsignedBigInteger('certificate_id')->nullable();
             $table->unsignedBigInteger('skill_id')->nullable();
-            $table->unsignedBigInteger('degree_id')->nullable();
 
-
-
-            $table->foreign('status_id')
-                ->references('status_id')
-                ->on('job_statuses')
-                ->onDelete('set null');
-
-
-            $table->foreign('skill_id')
-                ->references('skill_id')
-                ->on('skills')
-                ->onDelete('set null');
-
-
-            $table->foreign('degree_id')
-                ->references('degree_id')
-                ->on('degrees')
-                ->onDelete('set null');
-
-            $table->foreign('certificate_id')
-                ->references('certificate_id')
-                ->on('certificates')
-                ->onDelete('set null');
+            $table->foreign('status_id')->references('status_id')->on('job_statuses')->onDelete('set null');
+            $table->foreign('degree_id')->references('degree_id')->on('degrees')->onDelete('set null');
+            $table->foreign('certificate_id')->references('certificate_id')->on('certificates')->onDelete('set null');
+            $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('set null');
 
             $table->timestamps();
         });
-    }
 
+        if (Schema::hasTable('job_posts')) {
+            Schema::create('job_post_skill', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('job_post_id');
+                $table->unsignedBigInteger('skill_id');
+
+                $table->foreign('job_post_id')->references('id')->on('job_posts')->onDelete('cascade');
+                $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');
+            });
+        }
+
+    }
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        // Drop foreign key constraints first
-        Schema::table('job_posts', function (Blueprint $table) {
-            $table->dropForeign(['status_id']);
-            $table->dropForeign(['certificate_id']);
-            $table->dropForeign(['skill_id']);
-            $table->dropForeign(['degree_id']);
-        });
-
+       Schema::dropIfExists('job_post_skill'); // Drop pivot table first
         Schema::dropIfExists('job_posts');
     }
 };

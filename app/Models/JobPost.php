@@ -9,33 +9,42 @@ class JobPost extends Model
 {
     use HasFactory;
 
+    protected $table = 'job_posts';
+
     protected $fillable = [
-        'job_title', 'job_description', 'job_location', 'job_type',
-        'min_salary', 'max_salary', 'min_experience_years',
-        'status_id', 'degree_id', 'certificate_id', 'skill_id'
+        'job_title',
+        'job_description',
+        'job_location',
+        'job_type',
+        'university_name',
+        'min_salary',
+        'max_salary',
+        'min_experience_years',
+        'status_id',
+        'degree_id',
+        'certificate_id',
+        'skill_id'
     ];
 
+    // Relationships
 
-        public function skills()
+    public function status()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id');
-
+        return $this->belongsTo(JobStatus::class, 'status_id');
     }
 
-    public function jobStatus()
+    public function degree()
     {
-        return $this->belongsTo(JobStatus::class, 'job_status', 'status_id' );
-
-    }
-
-    public function degrees()
-    {
-        return $this->belongsTo(Degree::class, 'degrees', 'degree_id' );
+        return $this->belongsTo(Degree::class, 'degree_id');
     }
 
     public function certificate()
     {
-        return $this->belongsTo(Certificate::class, 'certificates', 'certificate_id' );
+        return $this->belongsTo(Certificate::class, 'certificate_id');
+    }
 
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id');
     }
 }
