@@ -30,10 +30,8 @@ class JobPostController extends Controller
             'skills.*' => 'exists:skills,id',
         ]);
 
-        // Create Job Post
         $jobPost = JobPost::create($validatedData);
 
-        // Attach skills if provided
         if (!empty($request->skills)) {
             $jobPost->skills()->attach($request->skills);
         }

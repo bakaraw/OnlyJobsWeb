@@ -19,7 +19,6 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Foreign key constraint
             $table->foreign('jobseeker_id')->references('jobseeker_id')->on('job_seekers')->onDelete('cascade');
         });
     }

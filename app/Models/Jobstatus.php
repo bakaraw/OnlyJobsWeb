@@ -15,9 +15,10 @@ class jobstatus extends Model
 
     protected $fillable = [
         'status_id',
-        'open',
-        'closed',
-        'temporary'
+        'active',
+        'Closed',
+        'Updated',
+        'Temporary Closed',
     ];
 
 

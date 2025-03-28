@@ -19,7 +19,6 @@ class CertificateSeeder extends Seeder
     foreach(range(1,10) as $index){
         DB::table('certificates')->insert([
             'certificate_name' => $faker->name(),
-            'description' => $faker->text(),
 
         ]);
     }
