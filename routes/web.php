@@ -36,9 +36,9 @@ Route::get('/about_us', function () {
 Route::get('/contact_us', function () {
     return Inertia::render('ContactUs');
 })->name('contact_us');
-Route::get('/job-posts/create', [JobPostController::class, 'create'])->name('job_posts.create');
-Route::post('/job-posts', [JobPostController::class, 'store'])->name('job_posts.store');
-Route::get('/job-posts', [JobPostController::class, 'index'])->name('job_posts.index');
+
+
+
 Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
     ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])
     ->name('jobseeker.dashboard');
@@ -46,6 +46,7 @@ Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
 Route::get('/company/dashboard', [DashboardController::class, 'company'])
     ->middleware(['auth', RoleMiddleware::class . ':company'])
     ->name('company.dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
