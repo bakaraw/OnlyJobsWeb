@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('degrees', function (Blueprint $table) {
-            $table->id('degree_id');
-            $table->string('degree_name');
+            $table->id('id');
+            $table->string('name');
             $table->timestamps();
         });
     }
+
+
+
 
     /**
      * Reverse the migrations.

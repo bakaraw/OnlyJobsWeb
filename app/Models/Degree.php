@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Degree extends Model
 {
     use HasFactory;
 
-    protected $table = 'degrees';
-
-    protected $fillable = [
-        'degree_name'
-    ];
+    protected $fillable = ['degree_name'];
 
     public function jobPosts()
     {

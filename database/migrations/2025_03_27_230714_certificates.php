@@ -12,13 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('certificates', function (Blueprint $table) {
-            $table->id('certificate_id');
+            $table->id();
             $table->string('name');
             $table->string('post_nominal')->nullable(); // Post-nominal letters
             $table->text('agency')->nullable(); // Issuing agency
             $table->timestamps();
         });
     }
+
+
+
+
+
 
     public function down(): void
     {

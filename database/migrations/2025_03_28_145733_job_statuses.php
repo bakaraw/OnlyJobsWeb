@@ -9,25 +9,26 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('job_statuses', function (Blueprint $table) {
-            $table->id('status_id');
-            $table->string('status_name');
+            $table->id();
+            $table->string('name');
             $table->timestamps();
         });
-
-        // Insert default statuses
         DB::table('job_statuses')->insert([
-            ['status_name' => 'Active'],
-            ['status_name' => 'Closed'],
-            ['status_name' => 'Temporary Closed'],
-            ['status_name' => 'Updated'],
+            ['name' => 'Active'],
+            ['name' => 'Closed'],
+            ['name' => 'Temporary Closed'],
+            ['name' => 'Updated'],
         ]);
     }
-    public function down(): void
+
+
+    public function down()
     {
         Schema::dropIfExists('job_statuses');
-
     }
 };
+        // Insert default statuses
+

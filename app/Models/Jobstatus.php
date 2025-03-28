@@ -9,11 +9,7 @@ class JobStatus extends Model
 {
     use HasFactory;
 
-    protected $table = 'job_statuses';
-
-    protected $fillable = [
-        'status_name'
-    ];
+    protected $fillable = ['status_name'];
 
     public function jobPosts()
     {

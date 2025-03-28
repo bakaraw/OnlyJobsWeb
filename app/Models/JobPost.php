@@ -9,14 +9,11 @@ class JobPost extends Model
 {
     use HasFactory;
 
-    protected $table = 'job_posts';
-
     protected $fillable = [
         'job_title',
         'job_description',
         'job_location',
         'job_type',
-        'university_name',
         'min_salary',
         'max_salary',
         'min_experience_years',
@@ -25,8 +22,6 @@ class JobPost extends Model
         'certificate_id',
         'skill_id'
     ];
-
-    // Relationships
 
     public function status()
     {
@@ -43,8 +38,8 @@ class JobPost extends Model
         return $this->belongsTo(Certificate::class, 'certificate_id');
     }
 
-    public function skills()
+    public function skill()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id');
+        return $this->belongsTo(Skill::class, 'skill_id');
     }
 }
