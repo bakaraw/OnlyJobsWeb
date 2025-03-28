@@ -6,42 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void {
-
-        Schema::create('job_list', function (Blueprint $table) {
-            $table->id('job_list_id')->primary();
+    public function up(): void
+    {
+        Schema::create('job_lists', function (Blueprint $table) {
+            $table->id('job_id');
+            $table->unsignedBigInteger('company_id');
             $table->string('job_title');
-            $table->timestamp('job_createdAt');
-            $table->string('job_status');
+            $table->text('job_description');
+            $table->string('location');
+            $table->enum('job_type', ['full-time', 'part-time', 'contract', 'temporary']);
+            $table->decimal('salary', 10, 2)->nullable();
+            $table->date('posting_date');
+            $table->date('application_deadline');
 
-//
-//            $table->foreignId('job_status')
-//                ->references('status_id')
-//                ->on('job_status')
-//                ->onDelete('cascade');
-//
-//            $table->foreign('job_title')
-//                ->references("job_title")
-//                ->on("job_post")
-//                ->onDelete('cascade');
-//
-//            $table->foreign('job_createdAt')
-//                ->references("job_createdAt")
-//                ->on("job_post")
-//                ->onDelete('cascade');
+            $table->timestamps();
 
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('job_list');
-        //Schema::dropIfExists('JobPost');
+        Schema::dropIfExists('job_lists');
     }
 };

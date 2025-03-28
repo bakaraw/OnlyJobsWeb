@@ -23,7 +23,7 @@ class JobSeeker extends Model
         'workHistory',
         'education',
         'certification',
-        'skills',
+        'skill',
         'yearOfExperience',
         'user_id'
     ];

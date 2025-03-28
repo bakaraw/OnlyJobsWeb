@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('company', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id('company_id');
             $table->string('company_name')->unique();
             $table->string('company_address')->nullable();
@@ -24,17 +24,14 @@ return new class extends Migration
             $table->string('company_applicant_list')->unique()->nullable();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamps(); // Add this line
-
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::table('company', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-        });
 
-        Schema::dropIfExists('company');
+
+        Schema::dropIfExists('companies');
     }
 };

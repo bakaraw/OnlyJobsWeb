@@ -8,28 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Company extends Model
 {
+    use HasFactory;
 
-        use HasFactory;
-
-        protected $table = 'company';
-        protected $primaryKey = 'companyId';
+    protected $table = 'educations'; // or the actual table name
+    protected $primaryKey = 'education_id';
 
     protected $fillable = [
-        'company_name',
-        'company_address',
-        'company_phone',
-        'company_email',
-        'job_posting',
-        'company_job_list',
-        'company_application_list',
-        'user_id'
+        'education_name',
+        // add other fields
     ];
-    public $timestamps = false;
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-
 }
+
+
