@@ -24,5 +24,6 @@ class Certificate extends Model
     public function jobPosts()
     {
         return $this->hasMany(JobPost::class, 'certificates', 'certificate_id' );
+
     }
 }

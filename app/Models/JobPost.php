@@ -24,16 +24,18 @@ class JobPost extends Model
 
     public function jobStatus()
     {
-        return $this->belongsTo(JobStatus::class);
+        return $this->belongsTo(JobStatus::class, 'job_status', 'status_id' );
+
     }
 
     public function degrees()
     {
-        return $this->belongsTo(Degree::class);
+        return $this->belongsTo(Degree::class, 'degrees', 'degree_id' );
     }
 
     public function certificate()
     {
-        return $this->belongsTo(Certificate::class);
+        return $this->belongsTo(Certificate::class, 'certificates', 'certificate_id' );
+
     }
 }
