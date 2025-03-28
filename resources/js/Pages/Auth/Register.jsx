@@ -83,7 +83,7 @@ export default function Register() {
                     <div className='col-span-1'>
                         <TextInput
                             id="suffix"
-                            name="name"
+                            name="suffix"
                             placeholder="Suffix"
                             value={data.suffix}
                             className="mt-1 block w-full"
