@@ -1,5 +1,6 @@
 import NavBar from "@/Components/NavBar"
 import { usePage, Head } from "@inertiajs/react"; // Import Link for navigation
+import ContentLayout from "./ContentLayout";
 
 export default function MainPageLayout({ header, children }) {
     const { url } = usePage();
@@ -10,13 +11,13 @@ export default function MainPageLayout({ header, children }) {
         case '':
             pageName = 'Home'
             break;
-        case 'findwork':
+        case 'find_work':
             pageName = 'Find Work';
             break;
-        case 'aboutus':
+        case 'about_us':
             pageName = 'About Us';
             break;
-        case 'contactus':
+        case 'contact_us':
             pageName = 'Contact Us';
             break;
         default:
@@ -32,14 +33,15 @@ export default function MainPageLayout({ header, children }) {
                 <NavBar />
 
                 {header && (
-                    <header>
-                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <header className="pt-16">
+                        <ContentLayout>
                             {header}
-                        </div>
+                        </ContentLayout>
                     </header>
                 )}
-
-                <div className="">{children}</div>
+                <ContentLayout>
+                    {children}
+                </ContentLayout>
             </div>
         </>
     );

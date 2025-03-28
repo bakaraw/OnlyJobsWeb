@@ -9,13 +9,13 @@ export default function NavBar() {
 
     const navItems = [
         { name: "Home", href: "/" },
-        { name: "Find Work", href: "/findwork" },
-        { name: "About Us", href: "/aboutus" },
-        { name: "Contact Us", href: "/contactus" },
+        { name: "Find Work", href: "/find_work" },
+        { name: "About Us", href: "/about_us" },
+        { name: "Contact Us", href: "/contact_us" },
     ];
 
     return (
-        <nav className="bg-dark shadow-md">
+        <nav className="fixed top-0 left-0 w-full bg-dark shadow-md z-50">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div className="text-white">
                     logo
@@ -27,7 +27,7 @@ export default function NavBar() {
                             key={item.name}
                             className={`px-4 py-2 rounded-md text-lg font-medium
                                 ${active === item.href.toLowerCase()
-                                    ? "bg-primary text-white shadow-md"
+                                    ? "underline underline-offset-8 text-white shadow-md"
                                     : "text-white hover:bg-light hover:text-dark"}`}
                             onClick={() => setActive(item.href.toLowerCase())}
                         >
