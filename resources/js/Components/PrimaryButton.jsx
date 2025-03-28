@@ -6,7 +6,7 @@ export default function PrimaryButton({
     ...props
 }) {
     return (
-        <a
+        <button
             href={href}
             {...props}
             className={
@@ -16,6 +16,6 @@ export default function PrimaryButton({
             disabled={disabled}
         >
             {children}
-        </a>
+        </button>
     );
 }
