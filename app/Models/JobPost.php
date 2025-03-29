@@ -20,26 +20,25 @@ class JobPost extends Model
         'status_id',
         'degree_id',
         'certificate_id',
-        'skill_id'
     ];
 
     public function status()
     {
-        return $this->belongsTo(JobStatus::class, 'status_id');
+        return $this->belongsTo(JobStatus::class);
     }
 
     public function degree()
     {
-        return $this->belongsTo(Degree::class, 'degree_id');
+        return $this->belongsTo(Degree::class);
     }
 
     public function certificate()
     {
-        return $this->belongsTo(Certificate::class, 'certificate_id');
+        return $this->belongsTo(Certificate::class);
     }
 
-    public function skill()
+    public function skills()
     {
-        return $this->belongsTo(Skill::class, 'skill_id');
+        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id');
     }
 }

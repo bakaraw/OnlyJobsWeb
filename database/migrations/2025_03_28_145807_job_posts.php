@@ -21,16 +21,20 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('degree_id')->nullable();
             $table->unsignedBigInteger('certificate_id')->nullable();
-            $table->unsignedBigInteger('skill_id')->nullable();
+            // Removed skill_id as it's handled by the pivot table
 
             $table->timestamps();
 
             $table->foreign('status_id')->references('id')->on('job_statuses')->onDelete('set null');
             $table->foreign('degree_id')->references('id')->on('degrees')->onDelete('set null');
             $table->foreign('certificate_id')->references('id')->on('certificates')->onDelete('set null');
-            $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('set null');
+            // Removed skill_id foreign key constraint
         });
     }
+
+    /**
+     * Reverse the migrations.
+     */
     public function down()
     {
         Schema::dropIfExists('job_posts');
