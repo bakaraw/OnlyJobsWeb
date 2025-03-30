@@ -21,7 +21,7 @@ export default function NavBarAuthBtns() {
             {isAuthenticated ? (
                 <div className="flex items-center justify-between">
                     <button>
-                        <i class="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary transition"></i>
+                        <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary transition"></i>
                     </button>
                     <Dropdown>
                         <Dropdown.Trigger>
@@ -30,7 +30,7 @@ export default function NavBarAuthBtns() {
                                     type="button"
                                     className="inline-flex text-white items-center rounded-md border border-transparent bg-dark px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out hover:text-primary focus:outline-none"
                                 >
-                                    {auth.user.name}
+                                    {auth.user.first_name}
                                     <svg
                                         className="-me-0.5 ms-2 h-4 w-4"
                                         xmlns="http://www.w3.org/2000/svg"
