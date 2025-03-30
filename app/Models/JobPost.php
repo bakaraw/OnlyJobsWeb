@@ -10,28 +10,37 @@ class JobPost extends Model
     use HasFactory;
 
     protected $fillable = [
-        'job_title', 'job_description', 'job_location', 'job_type',
-        'min_salary', 'max_salary', 'min_experience_years',
-        'job_status_id', 'education_id', 'certificate_id'
+        'job_title',
+        'job_description',
+        'job_location',
+        'job_type',
+        'min_salary',
+        'max_salary',
+        'min_experience_years',
+        'status_id',
+        'degree_id',
+        'certificate_id',
+        'skills',
     ];
 
-    public function skills()
-    {
-        return $this->belongsToMany(Skill::class, 'job_post_skills');
-    }
-
-    public function jobStatus()
+    public function status()
     {
         return $this->belongsTo(JobStatus::class);
     }
 
-    public function education()
+    public function degree()
     {
-        return $this->belongsTo(EducationLevel::class);
+        return $this->belongsTo(Degree::class);
     }
 
     public function certificate()
     {
         return $this->belongsTo(Certificate::class);
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')
+            ->withTimestamps();
     }
 }

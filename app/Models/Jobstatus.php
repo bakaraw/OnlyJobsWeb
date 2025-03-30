@@ -5,25 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class jobstatus extends Model
+class JobStatus extends Model
 {
-
-    protected $table = 'job_status';
-    protected  $primaryKey = 'status_id';
-
     use HasFactory;
 
-    protected $fillable = [
-        'status_id',
-        'active',
-        'Closed',
-        'Updated',
-        'Temporary Closed',
-    ];
+    protected $fillable = ['status_name'];
 
-
-    public function jobstatus()
+    public function jobPosts()
     {
-        return $this->belongsTo(JobPost::class, 'job_status', 'status_id');
+        return $this->hasMany(JobPost::class, 'status_id');
     }
 }

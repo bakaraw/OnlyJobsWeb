@@ -9,7 +9,7 @@ class Certificate extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['certificate_name', 'description', ];
+    protected $fillable = ['certificate_name'];
 
     public function jobPosts()
     {

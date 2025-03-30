@@ -13,10 +13,17 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->string('certificate_name')->unique();
+            $table->string('name');
+            $table->string('post_nominal')->nullable(); // Post-nominal letters
+            $table->text('agency')->nullable(); // Issuing agency
             $table->timestamps();
         });
     }
+
+
+
+
+
 
     public function down(): void
     {
