@@ -1,6 +1,5 @@
 <?php
 
-// Job Post Controller (app/Http/Controllers/JobPostController.php)
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
@@ -13,12 +12,16 @@ use Illuminate\Http\Request;
 class JobPostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the listing of the resource.
      */
     public function index()
     {
-        $jobPosts = JobPost::with(['status', 'degree', 'certificate', 'skills'])->get();
-        return view('job_posts.index', compact('jobPosts'));
+        $statuses = JobStatus::all();
+        $degrees = Degree::all();
+        $certificates = Certificate::all();
+        $skills = Skill::all();
+
+        return view('job_posts.create', compact('statuses', 'degrees', 'certificates', 'skills'));
     }
 
     /**
@@ -26,10 +29,10 @@ class JobPostController extends Controller
      */
     public function create()
     {
-        $statuses = JobStatus::all();
-        $degrees = Degree::all();
+        $statuses     = JobStatus::all();
+        $degrees      = Degree::all();
         $certificates = Certificate::all();
-        $skills = Skill::all();
+        $skills       = Skill::all();
 
         return view('job_posts.create', compact('statuses', 'degrees', 'certificates', 'skills'));
     }
@@ -51,48 +54,22 @@ class JobPostController extends Controller
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
             'certificate_id'       => 'nullable|exists:certificates,id',
+            // Use the correct primary key for skills table (skill_id in this case)
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id'
         ]);
 
-        // Remove skills from the data to be used for JobPost creation
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
 
-        // Create the job post record.
         $jobPost = JobPost::create($validatedData);
 
-        // Attach skills to the job post
         if (!empty($skillIds)) {
             $jobPost->skills()->attach($skillIds);
         }
 
-        // Redirect back (or to an index) with a success message.
-        return redirect()->route('job_posts.index')
+        return redirect()->route('job_posts.create')
             ->with('success', 'Job post created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $jobPost = JobPost::with(['status', 'degree', 'certificate', 'skills'])->findOrFail($id);
-        return view('job_posts.show', compact('jobPost'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $jobPost = JobPost::with('skills')->findOrFail($id);
-        $statuses = JobStatus::all();
-        $degrees = Degree::all();
-        $certificates = Certificate::all();
-        $skills = Skill::all();
-
-        return view('job_posts.edit', compact('jobPost', 'statuses', 'degrees', 'certificates', 'skills'));
     }
 
     /**
@@ -111,24 +88,18 @@ class JobPostController extends Controller
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
             'certificate_id'       => 'nullable|exists:certificates,id',
+            // Update rule for skills accordingly
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id'
         ]);
 
         $jobPost = JobPost::findOrFail($id);
 
-        // Remove skills from the data to be used for JobPost update
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
 
-        // Update the job post
         $jobPost->update($validatedData);
-
-        // Sync skills to the job post
         $jobPost->skills()->sync($skillIds);
-
-        return redirect()->route('job_posts.index')
-            ->with('success', 'Job post updated successfully.');
     }
 
     /**
@@ -138,8 +109,5 @@ class JobPostController extends Controller
     {
         $jobPost = JobPost::findOrFail($id);
         $jobPost->delete();
-
-        return redirect()->route('job_posts.index')
-            ->with('success', 'Job post deleted successfully.');
     }
 }

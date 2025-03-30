@@ -37,7 +37,11 @@ Route::get('/contact_us', function () {
     return Inertia::render('ContactUs');
 })->name('contact_us');
 
+Route::get('job_posts/create', [JobPostController::class, 'create'])
+    ->name('job_posts.create');
 
+Route::post('job_posts', [JobPostController::class, 'store'])
+    ->name('job_posts.store');
 
 Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
     ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])

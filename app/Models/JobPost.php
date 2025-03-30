@@ -20,6 +20,7 @@ class JobPost extends Model
         'status_id',
         'degree_id',
         'certificate_id',
+        'skills',
     ];
 
     public function status()
@@ -39,6 +40,7 @@ class JobPost extends Model
 
     public function skills()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id');
+        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')
+            ->withTimestamps();
     }
 }

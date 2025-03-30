@@ -12,6 +12,7 @@ class Skill extends Model
     // Custom primary key
     protected $primaryKey = 'skill_id';
 
+
     protected $fillable = ['skill_name'];
 
     public function jobPosts()
