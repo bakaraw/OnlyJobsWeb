@@ -5,10 +5,10 @@ import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 
-export default function FindWork({ auth, laravelVersion, phpVersion }) {
-    const { jobs } = usePage().props; // ✅ Get jobs from Laravel
+export default function FindWork({  laravelVersion, phpVersion }) {
+    const { jobs } = usePage().props;
 
-    console.log(jobs); // ✅ Check if jobs are coming in correctly
+    console.log(jobs);
 
     return (
         <MainPageLayout

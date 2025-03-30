@@ -12,10 +12,9 @@ export default function JobSeekerDashboard({ auth }) {
 
 
             <AuthenticatedLayout>
-                <Head title="Job Seeker Dashboard" />
+                <Head title="admin Dashboard" />
                 <div>
                     <h1>Welcome, {auth.user.name}</h1>
-                    <p>Your account type: Job Seeker</p>
                     <p>Here you can find job listings and manage your applications.</p>
                 </div>
             </AuthenticatedLayout>
