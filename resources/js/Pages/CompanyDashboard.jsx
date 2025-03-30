@@ -13,7 +13,7 @@ export default function CompanyDashboard({ auth }) {
             <AuthenticatedLayout>
                 <Head title="Company Dashboard" />
                 <div>
-                    <h1>Welcome, {auth.user.name}</h1>
+                    <h1>Welcome, {auth.user.first_name}</h1>
                     <p>Your account type: Company</p>
                     <p>Here you can post jobs and manage applicants.</p>
                 </div>

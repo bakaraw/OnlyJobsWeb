@@ -11,8 +11,20 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'suffix',
         'email',
+        'contact_number',
+        'birthdate',
+        'gender',
+        'street',
+        'street2',
+        'city',
+        'province',
+        'postal_code',
+        'country',
         'password',
         'account_type',
     ];
@@ -39,5 +51,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Company::class);
     }
-
 }

@@ -32,13 +32,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/find_work', function () {
-    return Inertia::render(
-        'FindWork',
-        [
-            'auth' => ['user' => Auth::user()], // Ensure auth.user is passed
-        ]
-
-    );
+    return Inertia::render('FindWork');
 })->name('find_work');
 
 Route::get('/about_us', function () {
