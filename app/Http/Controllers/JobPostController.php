@@ -116,10 +116,6 @@ class JobPostController extends Controller
                 $query->select('skills.skill_id', 'skills.skill_name');
             }])
             ->get()
-            ->map(function ($job) {
-                $job->created_at = Carbon::parse($job->created_at)->format('F d, Y');
-                return $job;
-            })
             ->toArray();
 
         return Inertia::render('FindWork', [

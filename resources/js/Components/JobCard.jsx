@@ -11,8 +11,13 @@ export default function JobCard({ job }) {
             <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-5">
                     <div className="flex flex-col px-4 py-2">
-                        <p className="text-gray-500 font-light text-md">Posted {created_at}</p>
-                        <h1 className="font-bold text-2xl mt-2">{job_title || "Job Title Not Available"}</h1>
+                        <p className="text-gray-500 font-light text-md">
+                            Posted {new Date(created_at).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "2-digit",
+                            year: "numeric",
+                        })}
+                        </p>                        <h1 className="font-bold text-2xl mt-2">{job_title || "Job Title Not Available"}</h1>
                         <h2 className="font-light text-gray-500 text-md">{job_type || "Job Type Not Specified"} - {job_location || "Location Unknown"}</h2>
                         <p className="line-clamp-2">{job_description || "No job description available."}</p>
                         <div className="flex gap-2 mt-4">
