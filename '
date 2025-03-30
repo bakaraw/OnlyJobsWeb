@@ -6,7 +6,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,7 +14,7 @@ export default function Register() {
         middle_name: '',
         suffix: '',
         email: '',
-        contact_number: '',
+        contact_no: '',
         street: '',
         street2: '',
         city: '',
@@ -26,13 +25,8 @@ export default function Register() {
         password_confirmation: ''
     });
 
-    useEffect(() => {
-        console.log('Middle Name:', data.middle_name);
-    }, [data.middle_name]);
-
     const submit = (e) => {
         e.preventDefault();
-        console.log("Submitting data:", data);
 
         post(route('register'), {
             onFinish: () => {
@@ -123,13 +117,13 @@ export default function Register() {
                         <div className='col-span-3'>
                             <InputLabel htmlFor="contact_number" value="Contact Number" />
                             <TextInput
-                                id="contact_number"
-                                name="contact_number"
+                                id="contact_no"
+                                name="contact_no"
                                 placeholder="09123456789"
-                                value={data.contact_number}
+                                value={data.contact_no}
                                 className="mt-1 block w-full"
                                 autoComplete="tel"
-                                onChange={(e) => setData('contact_number', e.target.value)}
+                                onChange={(e) => setData('contact_no', e.target.value)}
                                 required
                             />
                         </div>

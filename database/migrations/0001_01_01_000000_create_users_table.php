@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 255);
             $table->string('last_name', 255);
-            $table->string('middle', 255);
+            $table->string('middle_name', 255);
             $table->string('suffix', 255)->nullable();
             $table->string('email')->unique();
             $table->string('contact_number', 20);
             $table->date('birthdate')->nullable();
-            $table->enum('gender', ['male', 'female', 'others']);
+            $table->enum('gender', ['male', 'female', 'others'])->nullable();
             // address
             $table->string('street')->nullable();
             $table->string('street2')->nullable();

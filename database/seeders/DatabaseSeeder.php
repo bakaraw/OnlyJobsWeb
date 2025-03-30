@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'first_name' => 'Admin',
             'last_name' => 'Admin',
-            'middle' => ' ',
+            'middle_name' => ' ',
             'email' => 'admin@example.com',
             'contact_number' => '0912312412',
             'gender' => 'male',
