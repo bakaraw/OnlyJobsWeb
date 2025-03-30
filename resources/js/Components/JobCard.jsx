@@ -1,19 +1,24 @@
 import Chip from "./Chip";
 import SecondaryButton from "./SecondaryButton";
 
-export default function JobCard({ jobId, jobTitle, jobType }) {
+export default function JobCard({ job }) {
+    if (!job) return <p>Error: Job data is missing.</p>;
+
+    const { id, job_title = "N/A", job_type = "N/A", job_description = "N/A", job_location = "N/A", created_at = "N/A", skills = [] } = job;
+
     return (
         <a>
             <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-5">
                     <div className="flex flex-col px-4 py-2">
-                        <p className="text-gray-500 font-light text-md">Posted 17 hours ago</p>
-                        <h1 className="font-bold text-2xl mt-2">Welder Job Hiring in Albania for Recruit Plus {jobId}</h1>
-                        <h2 className="font-light text-gray-500 text-md">1 Year Experience - Full Time - Albania</h2>
-                        <p className="line-clamp-2">Are you ready to embark on an exciting career adventure? We are thrilled to announce multiple job openings in the beautiful country of Albania, offering incredible opportunities for growth and development</p>
+                        <p className="text-gray-500 font-light text-md">Posted {created_at}</p>
+                        <h1 className="font-bold text-2xl mt-2">{job_title || "Job Title Not Available"}</h1>
+                        <h2 className="font-light text-gray-500 text-md">{job_type || "Job Type Not Specified"} - {job_location || "Location Unknown"}</h2>
+                        <p className="line-clamp-2">{job_description || "No job description available."}</p>
                         <div className="flex gap-2 mt-4">
-                            <Chip>Welder</Chip>
-                            <Chip>Pipe Welder</Chip>
+                            {skills.length > 0
+                                ? skills.map((skill, index) => <Chip key={index}>{skill.skill_name}</Chip>)
+                                : <Chip>No Skills Listed</Chip>}
                         </div>
                     </div>
                 </div>

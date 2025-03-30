@@ -40,4 +40,9 @@ class User extends Authenticatable
         return $this->hasOne(Company::class);
     }
 
+    public function jobPosts()
+    {
+        return $this->hasMany(JobPost::class);
+    }
+
 }

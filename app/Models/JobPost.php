@@ -41,6 +41,6 @@ class JobPost extends Model
     public function skills()
     {
         return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')
-            ->withTimestamps();
+            ->select('skills.skill_id', 'skills.skill_name');
     }
 }

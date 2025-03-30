@@ -10,13 +10,17 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $table = 'educations'; // or the actual table name
-    protected $primaryKey = 'education_id';
+    protected $table = 'companies';
+    protected $primaryKey = 'companie_id';
 
     protected $fillable = [
         'education_name',
-        // add other fields
     ];
+
+    public function company()
+    {
+        return $this->hasOne(Company::class);
+    }
 }
 
 

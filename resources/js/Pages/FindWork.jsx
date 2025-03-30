@@ -6,15 +6,10 @@ import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
-    console.log(usePage().props.auth);
-    const jobs = [
-        { id: 1, title: "Welder" },
-        { id: 2, title: "Pipe Fitter" },
-        { id: 3, title: "Electrician" },
-        { id: 4, title: "Mechanic" },
-        { id: 5, title: "Plumber" },
-        { id: 6, title: "Carpenter" }
-    ];
+    const { jobs } = usePage().props; // ✅ Get jobs from Laravel
+
+    console.log(jobs); // ✅ Check if jobs are coming in correctly
+
     return (
         <MainPageLayout
             header={
@@ -72,11 +67,9 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
 
                 {/* Job listing section */}
                 <div className='col-span-3 rounded-lg'>
-                    {
-                        jobs.map((job, index) => (
-                            <JobCard jobId={job.id} />
-                        ))
-                    }
+                    {jobs.map((job) => (
+                        <JobCard key={job.id} job={job} />
+                    ))}
                     <div className='flex items-center justify-center'>
                         <PrimaryButton href={route('login')}>Load More Jobs hehe</PrimaryButton>
                     </div>
