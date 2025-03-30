@@ -24,8 +24,15 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'Admin',
             'middle_name' => ' ',
             'email' => 'admin@example.com',
+            'birthdate' => '2025-1-1',
             'contact_number' => '0912312412',
             'gender' => 'male',
+            'street' => ' ',
+            'street2' => ' ',
+            'city' => ' ',
+            'province' => '',
+            'postal_code' => 8105,
+            'country' => 'Philippines',
             'password' => Hash::make('password123'), // Securely hash the password
         ]);
 

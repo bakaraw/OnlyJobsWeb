@@ -14,6 +14,8 @@ export default function Register() {
         last_name: '',
         middle_name: '',
         suffix: '',
+        birthdate: '',
+        gender: '',
         email: '',
         contact_number: '',
         street: '',
@@ -25,10 +27,6 @@ export default function Register() {
         password: '',
         password_confirmation: ''
     });
-
-    useEffect(() => {
-        console.log('Middle Name:', data.middle_name);
-    }, [data.middle_name]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -53,30 +51,30 @@ export default function Register() {
             <form onSubmit={submit}>
                 <InputLabel htmlFor="name" value="Name" />
                 <div className='grid grid-cols-6 gap-3'>
-                    <div className='col-span-2'>
+                    <div className='col-span-2 flex flex-col'>
                         <TextInput
                             id="first_name"
                             name="first_name"
                             placeholder="First Name"
                             value={data.first_name}
                             className="mt-1 block w-full"
-                            autoComplete="name"
+                            autoComplete="first_name"
                             isFocused={true}
                             onChange={(e) => setData('first_name', e.target.value)}
-                            required
                         />
+                        <InputError message={errors.first_name} className="mt-2" />
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-2 flex flex-col'>
                         <TextInput
                             id="last_name"
                             name="last_name"
                             placeholder="Last Name"
                             value={data.last_name}
                             className="mt-1 block w-full"
-                            autoComplete="name"
+                            autoComplete="last_name"
                             onChange={(e) => setData('last_name', e.target.value)}
-                            required
                         />
+                        <InputError message={errors.last_name} className="mt-2" />
                     </div>
                     <div className='col-span-1'>
                         <TextInput
@@ -85,9 +83,8 @@ export default function Register() {
                             placeholder="Middle"
                             value={data.middle_name}
                             className="mt-1 block w-full"
-                            autoComplete="name"
+                            autoComplete="middle_name"
                             onChange={(e) => setData('middle_name', e.target.value)}
-                            required
                         />
                     </div>
                     <div className='col-span-1'>
@@ -97,11 +94,10 @@ export default function Register() {
                             placeholder="Suffix"
                             value={data.suffix}
                             className="mt-1 block w-full"
-                            autoComplete="name"
+                            autoComplete="suffix"
                             onChange={(e) => setData('suffix', e.target.value)}
                         />
                     </div>
-                    <InputError message={errors.name} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -117,8 +113,8 @@ export default function Register() {
                                 className="mt-1 block w-full"
                                 autoComplete="username"
                                 onChange={(e) => setData('email', e.target.value)}
-                                required
                             />
+                            <InputError message={errors.email} className="mt-2" />
                         </div>
                         <div className='col-span-3'>
                             <InputLabel htmlFor="contact_number" value="Contact Number" />
@@ -130,22 +126,23 @@ export default function Register() {
                                 className="mt-1 block w-full"
                                 autoComplete="tel"
                                 onChange={(e) => setData('contact_number', e.target.value)}
-                                required
                             />
+                            <InputError message={errors.contact_number} className="mt-2" />
                         </div>
                     </div>
 
-                    <InputError message={errors.email} className="mt-2" />
                 </div>
                 <div className='mt-4'>
                     <div className='grid grid-cols-6 gap-3'>
                         <div className='col-span-3 justify-center items-center'>
                             <InputLabel htmlFor="birth_date" value="Birth Day" />
-                            <BirthdayInput />
+                            <BirthdayInput value={data.birthdate} onChange={(newDate) => setData('birthdate', newDate)} />
+                            <InputError message={errors.birthdate} className="mt-2" />
                         </div>
                         <div className='col-span-3 h-full'>
                             <InputLabel htmlFor="gender" value="Gender" />
-                            <GenderSelection />
+                            <GenderSelection value={data.gender} onChange={(newGender) => setData('gender', newGender)} />
+                            <InputError message={errors.gender} className="mt-2" />
                         </div>
                     </div>
                 </div>
@@ -163,6 +160,7 @@ export default function Register() {
                                 autoComplete="street"
                                 onChange={(e) => setData('street', e.target.value)}
                             />
+                            <InputError message={errors.street} className="mt-2" />
                         </div>
                         <div className='col-span-1'>
                             <TextInput
@@ -174,6 +172,7 @@ export default function Register() {
                                 autoComplete="street2"
                                 onChange={(e) => setData('street2', e.target.value)}
                             />
+                            <InputError message={errors.street2} className="mt-2" />
                         </div>
                     </div>
                 </div>
@@ -190,6 +189,7 @@ export default function Register() {
                                 autoComplete="city"
                                 onChange={(e) => setData('city', e.target.value)}
                             />
+                            <InputError message={errors.city} className="mt-2" />
                         </div>
                     </div>
                     <div className='col-span-3'>
@@ -202,6 +202,7 @@ export default function Register() {
                             autoComplete="province"
                             onChange={(e) => setData('province', e.target.value)}
                         />
+                        <InputError message={errors.province} className="mt-2" />
                     </div>
                     <div className='col-span-3'>
                         <TextInput
@@ -213,6 +214,7 @@ export default function Register() {
                             autoComplete="postal_code"
                             onChange={(e) => setData('postal_code', e.target.value)}
                         />
+                        <InputError message={errors.postal_code} className="mt-2" />
                     </div>
                 </div>
 
@@ -226,6 +228,7 @@ export default function Register() {
                         autoComplete="country"
                         onChange={(e) => setData('country', e.target.value)}
                     />
+                    <InputError message={errors.country} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -238,7 +241,6 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         onChange={(e) => setData('password', e.target.value)}
-                        required
                     />
 
                     <InputError message={errors.password} className="mt-2" />
@@ -260,7 +262,6 @@ export default function Register() {
                         onChange={(e) =>
                             setData('password_confirmation', e.target.value)
                         }
-                        required
                     />
 
                     <InputError

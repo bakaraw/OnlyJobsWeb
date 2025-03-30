@@ -21,7 +21,7 @@ export default function NavBarAuthBtns() {
             {isAuthenticated ? (
                 <div className="flex items-center justify-between">
                     <button>
-                        <i class="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary transition"></i>
+                        <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary transition"></i>
                     </button>
                     <Dropdown>
                         <Dropdown.Trigger>

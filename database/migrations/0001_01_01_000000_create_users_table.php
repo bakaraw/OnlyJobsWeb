@@ -15,19 +15,19 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 255);
             $table->string('last_name', 255);
-            $table->string('middle_name', 255);
+            $table->string('middle_name', 255)->nullable();
             $table->string('suffix', 255)->nullable();
             $table->string('email')->unique();
             $table->string('contact_number', 20);
-            $table->date('birthdate')->nullable();
-            $table->enum('gender', ['male', 'female', 'others'])->nullable();
+            $table->date('birthdate');
+            $table->enum('gender', ['male', 'female', 'others']);
             // address
-            $table->string('street')->nullable();
-            $table->string('street2')->nullable();
-            $table->string('city')->nullable();
-            $table->string('province')->nullable();
-            $table->string('postal_code', 20)->nullable();
-            $table->string('country')->nullable();
+            $table->string('street');
+            $table->string('street2');
+            $table->string('city');
+            $table->string('province');
+            $table->integer('postal_code');
+            $table->string('country');
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

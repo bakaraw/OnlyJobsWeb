@@ -1,15 +1,11 @@
-import { useState } from "react";
 import Checkbox from "./Checkbox";
-import InputLabel from '@/Components/InputLabel';
 
-export default function GenderSelection({ className }) {
-    const [gender, setGender] = useState('')
-
+export default function GenderSelection({ value, onChange, className }) {
     return (
         <div className={`grid grid-cols-3 mt-2 ${className}`} >
-            <Checkbox checked={gender === 'Male'} onChange={() => setGender('Male')} className="col-span-1" label="Male" />
-            <Checkbox checked={gender === 'Female'} onChange={() => setGender('Female')} className="col-span-1" label="Female" />
-            <Checkbox checked={gender === 'Others'} onChange={() => setGender('Others')} className="col-span-1" label="Others" />
+            <Checkbox checked={value === 'male'} onChange={() => onChange('male')} className="col-span-1" label="Male" />
+            <Checkbox checked={value === 'female'} onChange={() => onChange('female')} className="col-span-1" label="Female" />
+            <Checkbox checked={value === 'others'} onChange={() => onChange('others')} className="col-span-1" label="Others" />
         </div >
     );
 }
