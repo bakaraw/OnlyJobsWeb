@@ -37,6 +37,11 @@ Route::get('/about_us', function () {
     return Inertia::render('AboutUs');
 })->name('about_us');
 
+Route::get('/create', function () {
+    return Inertia::render('createJob');
+})->name('sample');
+
+
 Route::get('/contact_us', function () {
     return Inertia::render('ContactUs');
 })->name('contact_us');

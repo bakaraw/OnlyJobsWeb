@@ -21,6 +21,7 @@ class JobPost extends Model
         'degree_id',
         'certificate_id',
         'skills',
+        'company',
         'user_id'
     ];
 

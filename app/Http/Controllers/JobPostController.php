@@ -45,6 +45,7 @@ class JobPostController extends Controller
             'min_salary'           => 'required|numeric',
             'max_salary'           => 'required|numeric',
             'min_experience_years' => 'required|integer',
+            'company'            => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
             'certificate_id'       => 'nullable|exists:certificates,id',
@@ -85,6 +86,7 @@ class JobPostController extends Controller
             'min_salary'           => 'required|numeric',
             'max_salary'           => 'required|numeric',
             'min_experience_years' => 'required|integer',
+            'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
             'certificate_id'       => 'nullable|exists:certificates,id',
@@ -126,15 +128,11 @@ class JobPostController extends Controller
             'created_at',
             'min_experience_years',
             'degree_id',
-            'user_id' // Include user_id to join with users table
+            'company'
         )
             ->with(['skills' => function ($query) {
                 $query->select('skills.skill_id', 'skills.skill_name');
-            },
-                'user' => function ($query) {
-                    $query->select('id', 'first_name'); // Select the user's id and first name
-                }
-            ])
+            }])
             ->get()
             ->toArray();
 

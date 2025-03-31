@@ -30,6 +30,10 @@
         <input type="text" name="job_title" id="job_title" value="{{ old('job_title') }}" required>
     </div>
     <br>
+    <div>
+        <label for="company">Company:</label>
+        <input type="text" name="company" id="company" value="{{ old('company') }}" required>
+    </div>
 
     <!-- Job Description -->
     <div>
@@ -69,6 +73,8 @@
         <label for="min_experience_years">Minimum Experience (Years):</label>
         <input type="number" name="min_experience_years" id="min_experience_years" value="{{ old('min_experience_years') }}" required>
     </div>
+
+
     <br>
 
     <!-- Job Status (Using job_statuses table) -->
