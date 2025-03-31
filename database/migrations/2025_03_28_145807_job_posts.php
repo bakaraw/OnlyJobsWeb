@@ -21,16 +21,12 @@ return new class extends Migration
 
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('degree_id')->nullable();
-            $table->unsignedBigInteger('certificate_id')->nullable();
-            // Removed skill_id as it's handled by the pivot table
 
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
             $table->foreign('status_id')->references('id')->on('job_statuses')->onDelete('set null');
             $table->foreign('degree_id')->references('id')->on('degrees')->onDelete('set null');
-            $table->foreign('certificate_id')->references('id')->on('certificates')->onDelete('set null');
-            // Removed skill_id foreign key constraint
         });
     }
 

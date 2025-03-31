@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JobPost;
 use App\Models\JobStatus;
 use App\Models\Degree;
-use App\Models\Certificate;
+use App\Models\Requirement;
 use App\Models\Skill;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,20 +18,20 @@ class JobPostController extends Controller
     {
         $statuses = JobStatus::all();
         $degrees = Degree::all();
-        $certificates = Certificate::all();
+        $requirements = Requirement::all();
         $skills = Skill::all();
 
-        return view('job_posts.create', compact('statuses', 'degrees', 'certificates', 'skills'));
+        return view('job_posts.create', compact('statuses', 'degrees', 'requirements', 'skills'));
     }
 
     public function create()
     {
         $statuses     = JobStatus::all();
         $degrees      = Degree::all();
-        $certificates = Certificate::all();
+        $requirements = Requirement::all();
         $skills       = Skill::all();
 
-        return view('job_posts.create', compact('statuses', 'degrees', 'certificates', 'skills'));
+        return view('job_posts.create', compact('statuses', 'degrees', 'requirements', 'skills'));
     }
 
 
@@ -48,20 +48,32 @@ class JobPostController extends Controller
             'company'            => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
-            'certificate_id'       => 'nullable|exists:certificates,id',
+
+            'requirements'          => 'nullable|array',
+            'requirements.*'        => 'exists:requirements,requirement_id',
+
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id'
         ]);
 
+        $requirementIds = $validatedData['requirements'] ?? [];
+        unset($validatedData['requirements']);
+
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
+
         $validatedData['user_id'] = auth()->id();
 
         $jobPost = JobPost::create($validatedData);
 
-        if (!empty($skillIds)) {
+        if (!empty($skillIds )) {
             $jobPost->skills()->attach($skillIds);
+
         }
+        if (!empty($requirementIds )) {
+            $jobPost->requirements()->attach($requirementIds);
+
+        };
 
         return redirect()->route('job_posts.create')
             ->with('success', 'Job post created successfully.');
@@ -87,18 +99,23 @@ class JobPostController extends Controller
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
-            'certificate_id'       => 'nullable|exists:certificates,id',
+
+            'requirements'          => 'nullable|array',
+            'requirements.*'        => 'exists:requirements,requirement_id',
 
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id'
         ]);
 
+        $requirementIds = $validatedData['requirements'] ?? [];
+        unset($validatedData['requirements']);
 
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
 
         $jobPost->update($validatedData);
         $jobPost->skills()->sync($skillIds);
+        $jobPost->requirement()->sync($requirementIds);
     }
 
 
@@ -126,11 +143,16 @@ class JobPostController extends Controller
             'created_at',
             'min_experience_years',
             'degree_id',
-            'company'
+            'company',
         )
-            ->with(['skills' => function ($query) {
-                $query->select('skills.skill_id', 'skills.skill_name');
-            }])
+            ->with([
+                'skills' => function ($query) {
+                    $query->select('skills.skill_id', 'skills.skill_name');
+                },
+                'requirements' => function ($query) {
+                    $query->select('requirements.requirement_id', 'requirements.requirement_name');
+                }
+            ])
             ->get()
             ->toArray();
 

@@ -23,9 +23,7 @@ return new class extends Migration
     {
         Schema::create('job_post_skill', function (Blueprint $table) {
             $table->id();
-            // Using foreignId for job_post_id since it references an 'id' column
             $table->foreignId('job_post_id')->constrained()->onDelete('cascade');
-            // Manual approach for skill_id since it references a non-standard primary key
             $table->unsignedBigInteger('skill_id');
             $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');
 

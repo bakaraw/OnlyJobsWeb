@@ -19,7 +19,7 @@ class JobPost extends Model
         'min_experience_years',
         'status_id',
         'degree_id',
-        'certificate_id',
+        'requirement',
         'skills',
         'company',
         'user_id'
@@ -35,16 +35,17 @@ class JobPost extends Model
         return $this->belongsTo(Degree::class);
     }
 
-    public function certificate()
+    public function requirements()
     {
-        return $this->belongsTo(Certificate::class);
+        return $this->belongsToMany(Requirement::class, 'job_post_requirement', 'job_post_id', 'requirement_id')
+            ->select('requirements.requirement_id', 'requirements.requirement_name');
     }
-
     public function skills()
     {
         return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')
             ->select('skills.skill_id', 'skills.skill_name');
     }
+
 
     public function placements()
     {

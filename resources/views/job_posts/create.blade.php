@@ -71,7 +71,8 @@
     <!-- Experience -->
     <div>
         <label for="min_experience_years">Minimum Experience (Years):</label>
-        <input type="number" name="min_experience_years" id="min_experience_years" value="{{ old('min_experience_years') }}" required>
+        <input type="number" name="min_experience_years" id="min_experience_years"
+               value="{{ old('min_experience_years') }}" required>
     </div>
 
 
@@ -106,13 +107,28 @@
     <br>
 
     <!-- Certificate (Using certificates table) -->
+    {{--    <div>--}}
+    {{--        <label for="requirement_id">Requirements:</label>--}}
+    {{--        <select name="requirement_id" id="requirement_id">--}}
+    {{--            <option value="">Select Requirements</option>--}}
+    {{--            @foreach($requirement as $requirements)--}}
+    {{--                <option--}}
+    {{--                    value="{{ $requirements->id }}" {{ old('requirement_id') == $requirements->id ? 'selected' : '' }}>--}}
+    {{--                    {{ $requirements->requirement_name }}--}}
+    {{--                </option>--}}
+    {{--            @endforeach--}}
+    {{--        </select>--}}
+    {{--    </div>--}}
+    {{--    <br>--}}
+
+    <!-- Skills (Multi-select) -->
     <div>
-        <label for="certificate_id">Certificate:</label>
-        <select name="certificate_id" id="certificate_id">
-            <option value="">Select Certificate</option>
-            @foreach($certificates as $certificate)
-                <option value="{{ $certificate->id }}" {{ old('certificate_id') == $certificate->id ? 'selected' : '' }}>
-                    {{ $certificate->name }}
+        <label for="skills">Skills (hold CTRL/Command for multiple):</label>
+        <select name="skills[]" id="skills" multiple>
+            @foreach($skills as $skill)
+                <option
+                    value="{{ $skill->skill_id }}" {{ collect(old('skills'))->contains($skill->skill_id) ? 'selected' : '' }}>
+                    {{ $skill->skill_name }}
                 </option>
             @endforeach
         </select>
@@ -121,11 +137,12 @@
 
     <!-- Skills (Multi-select) -->
     <div>
-        <label for="skills">Skills (hold CTRL/Command for multiple):</label>
-        <select name="skills[]" id="skills" multiple>
-            @foreach($skills as $skill)
-                <option value="{{ $skill->skill_id }}" {{ collect(old('skills'))->contains($skill->skill_id) ? 'selected' : '' }}>
-                    {{ $skill->skill_name }}
+        <label for="requirements">Requirement (hold CTRL/Command for multiple):</label>
+        <select name="requirements[]" id="requirement_id" multiple>
+            @foreach($requirements as $requirement)
+                <option
+                    value="{{ $requirement->requirement_id }}" {{ old('requirement_id') == $requirement->requirement_id ? 'selected' : '' }}>
+                    {{ $requirement->requirement_name }}
                 </option>
             @endforeach
         </select>

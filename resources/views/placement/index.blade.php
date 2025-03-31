@@ -9,7 +9,7 @@
     <tr><th>Job Seeker</th><th>Job</th></tr>
     @foreach ($placements as $placement)
         <tr>
-            <td>{{ $placement->user->name }}</td>
+            <td>{{ $placement->user->first_name }}</td>
             <td>{{ $placement->jobPost->job_title }}</td>
         </tr>
     @endforeach
