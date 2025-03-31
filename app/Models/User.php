@@ -26,7 +26,7 @@ class User extends Authenticatable
         'postal_code',
         'country',
         'password',
-        'account_type',
+        //'account_type',
     ];
 
     protected $hidden = [
@@ -41,18 +41,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-//
-//    public function jobSeeker()
-//    {
-//        return $this->hasOne(JobSeeker::class);
-//    }
-//
-//    public function companies()
-//    {
-//        return $this->hasMany(Company::class, 'user_id', 'id');
-//    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(JobSeekerDocument::class);
+    }
+
+    // A user can have multiple placement (jobs applied/placed)
+    public function placements()
+    {
+        return $this->hasMany(Placement::class);
     }
 }

@@ -54,9 +54,7 @@ class JobPostController extends Controller
         ]);
 
         $skillIds = $validatedData['skills'] ?? [];
-        unset($validatedData['skills']); // Remove skills from job post data
-
-        // ✅ Assign the authenticated user's ID
+        unset($validatedData['skills']);
         $validatedData['user_id'] = auth()->id();
 
         $jobPost = JobPost::create($validatedData);
