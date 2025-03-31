@@ -5,10 +5,16 @@ import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 
-export default function FindWork({  laravelVersion, phpVersion }) {
+export default function FindWork({  auth, laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
 
     console.log(jobs);
+
+    //for debug only
+    jobs.forEach(job => {
+        console.log(job.user ? job.user.first_name : "No user found");
+    });
+
 
     return (
         <MainPageLayout

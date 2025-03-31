@@ -124,10 +124,17 @@ class JobPostController extends Controller
             'job_location',
             'job_type',
             'created_at',
+            'min_experience_years',
+            'degree_id',
+            'user_id' // Include user_id to join with users table
         )
-        ->with(['skills' => function ($query) {
+            ->with(['skills' => function ($query) {
                 $query->select('skills.skill_id', 'skills.skill_name');
-            }])
+            },
+                'user' => function ($query) {
+                    $query->select('id', 'first_name'); // Select the user's id and first name
+                }
+            ])
             ->get()
             ->toArray();
 
