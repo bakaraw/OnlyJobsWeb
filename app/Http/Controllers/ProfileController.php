@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
+use App\Models\Address;
 
 class ProfileController extends Controller
 {
@@ -31,7 +32,6 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        // Validate request (already handled in ProfileUpdateRequest)
         $validated = $request->validated();
 
         // Update user profile fields
@@ -45,8 +45,17 @@ class ProfileController extends Controller
         // Save user data
         $request->user()->save();
 
+        // Update address if changed
+        if ($request->has('street') || $request->has('city') || $request->has('province') || $request->has('postal_code') || $request->has('country')) {
+            $address = $request->user()->address ?? new Address();
+            $address->fill($request->only('street', 'street2', 'city', 'province', 'postal_code', 'country'));
+            $address->id = $request->user()->address_id;  // assuming 'user_id' is the foreign key
+            $address->save();
+        }
+
         return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
     }
+
 
     /**
      * Delete the User's account.
@@ -67,5 +76,12 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function show(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user()->load('address'), // Load user with address
+        ]);
     }
 }

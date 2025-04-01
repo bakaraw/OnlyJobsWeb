@@ -48,13 +48,16 @@ return new class extends Migration
     }
     public function down(): void
     {
-        Schema::dropIfExists('companies'); // Drop company first
-        Schema::dropIfExists('job_seeker'); // Drop job_seeker second
-        Schema::dropIfExists('users', function (Blueprint $table) {
-            $table->dropForeign(['address_id']);
-            $table->dropColumn('address_id');
-        });
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['address_id']); // Drop foreign key constraint first
+            $table->dropColumn('address_id');    // Then drop the column
+        });
+
+        Schema::dropIfExists('job_seeker'); // Drop job_seeker first
+        Schema::dropIfExists('companies');  // Drop company second
+        Schema::dropIfExists('users');      // Drop users table last
     }
 };
