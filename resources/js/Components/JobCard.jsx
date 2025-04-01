@@ -6,7 +6,7 @@ export default function JobCard({ job }) {
 
     const { id, job_title = "N/A", job_type = "N/A",
         job_description = "N/A", job_location = "N/A",
-        company = "",created_at = "N/A", skills = [],  requirements = [],} = job;
+        company = "", created_at = "N/A", skills = [], requirements = [], } = job;
 
     return (
         <a>
@@ -14,11 +14,11 @@ export default function JobCard({ job }) {
                 <div className="col-span-5">
                     <div className="flex flex-col px-4 py-2">
                         <p className="text-gray-500 font-light text-md">
-                              Posted {new Date(created_at).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "2-digit",
-                            year: "numeric",
-                        })}
+                            Posted {new Date(created_at).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "2-digit",
+                                year: "numeric",
+                            })}
                         </p>
                         <h1 className="font-bold text-2xl mt-2">{job_title || "Job Title Not Available"}</h1>
                         <h1 className="font-bold text-sm mt-2">{company || "Job Title Not Available"}</h1>
@@ -31,13 +31,16 @@ export default function JobCard({ job }) {
                                 ? skills.map((skill, index) => <Chip key={index}>{skill.skill_name}</Chip>)
                                 : <Chip>No Skills Listed</Chip>}
                         </div>
-                        Requirements:
 
-                        <div className="flex gap-2 mt-4">
-                            {requirements.length > 0
-                                ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
-                                : <Chip>No Requirement posted</Chip>}
-                        </div>
+                        {
+                            //    Requirements:
+                            //
+                            //<div className="flex gap-2 mt-4">
+                            //    {requirements.length > 0
+                            //        ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
+                            //        : <Chip>No Requirement posted</Chip>}
+                            //</div>
+                        }
                     </div>
                 </div>
                 <div className="col-span-1 px-4 py-2 flex items-center justify-center h-full">
