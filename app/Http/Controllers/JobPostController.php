@@ -162,6 +162,23 @@ class JobPostController extends Controller
 
     }
 
+    public function showDashboard()
+    {
+        $jobs = JobPost::select(
+            'id',
+            'job_title',
+            'job_description',
+            'job_location',
+            'job_type',
+            'created_at',
+            'company',
+        )->get(); // Make sure to fetch the jobs using `->get()`
+
+        return Inertia::render('JobSeekerDashboard', [
+            'jobs' => $jobs, // Pass the jobs to the frontend
+        ]);
+    }
+
 }
 
 

@@ -47,7 +47,7 @@ class JobPost extends Model
     }
 
 
-    public function placements()
+    public function placement()
     {
         return $this->hasMany(Placement::class);
     }

@@ -105,18 +105,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-       // $desktopPath = getenv('HOMEDRIVE') . getenv('HOMEPATH') . '\Desktop';
 
-//
-//        $documents = [
-//            ['user_id' => 1, 'document_type' => 'Passport', 'document_path' => $desktopPath . '\passport.pdf'],
-//            ['user_id' => 1, 'document_type' => 'NBI Clearance', 'document_path' => $desktopPath . '\nbi_clearance.pdf'],
-//            ['user_id' => 1, 'document_type' => 'Medical Certificate', 'document_path' => $desktopPath . '\medical_certificate.pdf'],
-//            ['user_id' => 1, 'document_type' => 'Diploma', 'document_path' => $desktopPath . '\diploma.pdf'],
-//        ];
-
-
-       // DB::table('user_documents')->insert($documents);
 
     }
 }

@@ -71,7 +71,7 @@ Route::get('/contact_us', function () {
 
 
 
-Route::get('/jobseeker/dashboard', [DashboardController::class, 'jobseeker'])
+Route::get('/jobseeker/dashboard', [JobPostController::class, 'showDashboard'])
     ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])
     ->name('jobseeker.dashboard');
 
@@ -103,6 +103,7 @@ Route::get('/dashboard', function () {
         ],
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';

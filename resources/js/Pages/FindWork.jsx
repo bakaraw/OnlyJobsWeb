@@ -8,13 +8,6 @@ import { usePage } from '@inertiajs/react';
 export default function FindWork({  auth, laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
 
-    console.log(jobs);
-
-    //for debug only
-    jobs.forEach(job => {
-        console.log(job.user ? job.user.first_name : "No user found");
-    });
-
 
     return (
         <MainPageLayout
@@ -72,13 +65,17 @@ export default function FindWork({  auth, laravelVersion, phpVersion }) {
                 </div>
 
                 {/* Job listing section */}
-                <div className='col-span-3 rounded-lg'>
-                    {jobs.map((job) => (
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {auth.jobs && auth.jobs.map((job) => (
                         <JobCard key={job.id} job={job} />
                     ))}
-                    <div className='flex items-center justify-center'>
-                        <PrimaryButton href={route('login')}>Load More Jobs hehe</PrimaryButton>
-                    </div>
+                </div>
+
+                <div className="flex items-center justify-center mt-6">
+                    <PrimaryButton href={route('login')}>
+                        Load More Jobs hehe
+                    </PrimaryButton>
                 </div>
             </div>
         </MainPageLayout>

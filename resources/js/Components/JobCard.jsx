@@ -6,7 +6,7 @@ export default function JobCard({ job }) {
 
     const { id, job_title = "N/A", job_type = "N/A",
         job_description = "N/A", job_location = "N/A",
-        company = "",created_at = "N/A", skills = [], } = job;
+        company = "",created_at = "N/A", skills = [],  requirements = [],} = job;
 
     return (
         <a>
@@ -25,10 +25,18 @@ export default function JobCard({ job }) {
 
                         <h2 className="font-light text-gray-500 text-md">{job_type || "Job Type Not Specified"} - {job_location || "Location Unknown"}</h2>
                         <p className="line-clamp-2">{job_description || "No job description available."}</p>
+                        Skills Required:
                         <div className="flex gap-2 mt-4">
                             {skills.length > 0
                                 ? skills.map((skill, index) => <Chip key={index}>{skill.skill_name}</Chip>)
                                 : <Chip>No Skills Listed</Chip>}
+                        </div>
+                        Requirements:
+
+                        <div className="flex gap-2 mt-4">
+                            {requirements.length > 0
+                                ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
+                                : <Chip>No Requirement posted</Chip>}
                         </div>
                     </div>
                 </div>

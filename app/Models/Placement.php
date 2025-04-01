@@ -11,8 +11,9 @@ class Placement extends Model
 {
     use HasFactory;
 
+    protected $table = 'placement';
     protected $fillable = [
-        'user_id', 'job_post_id', 'placement_status', 'date_placed', 'remarks'
+        'user_id', 'job_post_id', 'placement_status',
     ];
 
 
