@@ -18,14 +18,14 @@ export default function UpdateProfileInformation({
             last_name: user.last_name,
             middle_name: user.middle_name,
             suffix: user.suffix,
-            street: user.street,
-            street2: user.street2,
-            city: user.city,
-            province: user.province,
-            postal_code: user.postal_code,
-            country: user.country,
             email: user.email,
-            contact_number: user.contact_number
+            contact_number: user.contact_number,
+            street: user.address?.street || '',  // Fetch from address
+            street2: user.address?.street2 || '',
+            city: user.address?.city || '',
+            province: user.address?.province || '',
+            postal_code: user.address?.postal_code || '',
+            country: user.address?.country || ''
         });
 
     const submit = (e) => {

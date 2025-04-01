@@ -31,9 +31,16 @@ class HandleInertiaRequests extends Middleware
     // this allows all pages to access auth
     public function share(Request $request): array
     {
+        /*return array_merge(parent::share($request), [*/
+        /*    'auth' => [*/
+        /*        'user' => $request->user(), // Ensure 'user' key is lowercase*/
+        /*    ],*/
+        /*]);*/
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user(), // Ensure 'user' key is lowercase
+                'user' => fn() => $request->user()
+                    ? $request->user()->load('address') // ✅ Include address
+                    : null,
             ],
         ]);
     }
