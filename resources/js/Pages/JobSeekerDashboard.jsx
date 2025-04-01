@@ -13,10 +13,8 @@ export default function JobSeekerDashboard({ jobs, auth }) {
     return (
 
         <div className="flex">
-            {/* Sidebar with view switch functionality */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
 
-            {/* Main Content */}
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
                     <DashboardContent />
