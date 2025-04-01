@@ -22,13 +22,7 @@ return new class extends Migration
             $table->date('birthdate');
             $table->enum('gender', ['male', 'female', 'others']);
             // address
-            $table->string('street');
-            $table->string('street2');
-            $table->string('city');
-            $table->string('province');
-            $table->integer('postal_code');
-            $table->string('country');
-
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->nullOnDelete();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('account_type', ['jobseeker', 'company']);
@@ -56,7 +50,10 @@ return new class extends Migration
     {
         Schema::dropIfExists('companies'); // Drop company first
         Schema::dropIfExists('job_seeker'); // Drop job_seeker second
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users', function (Blueprint $table) {
+            $table->dropForeign(['address_id']);
+            $table->dropColumn('address_id');
+        });
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

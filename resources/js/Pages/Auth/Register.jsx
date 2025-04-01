@@ -1,3 +1,4 @@
+import AddressForm from '@/Components/AddressForm';
 import BirthdayInput from '@/Components/BirthdayInput';
 import GenderSelection from '@/Components/GenderSelection';
 import InputError from '@/Components/InputError';
