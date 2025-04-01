@@ -20,9 +20,18 @@ export default function NavBarAuthBtns() {
         <>
             {isAuthenticated ? (
                 <div className="flex items-center justify-between">
-                    <button>
-                        <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary transition"></i>
-                    </button>
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary active:text-primary transition"></i>
+                        </Dropdown.Trigger>
+                        <Dropdown.Content>
+                            <div className="min-h-16 min-w-48 flex items-center justify-center">
+                                <p className="font-light text-sm">
+                                    No notification
+                                </p>
+                            </div>
+                        </Dropdown.Content>
+                    </Dropdown>
                     <Dropdown>
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">
