@@ -15,7 +15,17 @@ export default function UpdateProfileInformation({
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             first_name: user.first_name,
+            last_name: user.last_name,
+            middle_name: user.middle_name,
+            suffix: user.suffix,
+            street: user.street,
+            street2: user.street2,
+            city: user.city,
+            province: user.province,
+            postal_code: user.postal_code,
+            country: user.country,
             email: user.email,
+            contact_number: user.contact_number
         });
 
     const submit = (e) => {
@@ -37,36 +47,169 @@ export default function UpdateProfileInformation({
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+                <div className='grid grid-cols-10 gap-3'>
+                    <div className='col-span-3'>
+                        <InputLabel htmlFor="first_name" value="First Name" />
 
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.first_name}
-                        onChange={(e) => setData('first_name', e.target.value)}
-                        required
-                        isFocused
-                        autoComplete="name"
-                    />
+                        <TextInput
+                            id="first_name"
+                            className="mt-1 block w-full"
+                            value={data.first_name}
+                            onChange={(e) => setData('first_name', e.target.value)}
+                            required
+                            isFocused
+                            autoComplete="first_name"
+                        />
 
-                    <InputError className="mt-2" message={errors.name} />
+                        <InputError className="mt-2" message={errors.first_name} />
+                    </div>
+                    <div className='col-span-3'>
+                        <InputLabel htmlFor="last_name" value="Last Name" />
+                        <TextInput
+                            id="last_name"
+                            className="mt-1 block w-full"
+                            value={data.last_name}
+                            onChange={(e) => setData('last_name', e.target.value)}
+                            required
+                            autoComplete="last_name"
+                        />
+
+                    </div>
+                    <div className='col-span-2'>
+                        <InputLabel htmlFor="middle_name" value="Middle Name" />
+                        <TextInput
+                            id="middle_name"
+                            className="mt-1 block w-full"
+                            value={data.middle_name}
+                            onChange={(e) => setData('middle_name', e.target.value)}
+                            autoComplete="middle_name"
+                        />
+                    </div>
+                    <div className='col-span-2'>
+                        <InputLabel htmlFor="suffix" value="Suffix" />
+                        <TextInput
+                            id="suffix"
+                            className="mt-1 block w-full"
+                            value={data.suffix}
+                            onChange={(e) => setData('suffix', e.target.value)}
+                            autoComplete="suffix"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                <div className='grid grid-cols-2 gap-3'>
+                    <div className='col-span-1'>
+                        <InputLabel htmlFor="email" value="Email" />
 
+                        <TextInput
+                            id="email"
+                            type="email"
+                            className="mt-1 block w-full"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                            autoComplete="username"
+                        />
+
+                        <InputError className="mt-2" message={errors.email} />
+
+                    </div>
+                    <div className='col-span-1'>
+                        <InputLabel htmlFor="tel" value="Contact Number" />
+                        <TextInput
+                            id="contact_number"
+                            className="mt-1 block w-full"
+                            value={data.contact_number}
+                            onChange={(e) => setData('contact_number', e.target.value)}
+                            required
+                            autoComplete="tel"
+                        />
+                        <InputError className="mt-2" message={errors.contact_number} />
+                    </div>
+                </div>
+
+                <div className='mt-4'>
+                    <InputLabel htmlFor="address" value="Address" />
+                    <div className='grid grid-cols-2 gap-3'>
+                        <div className='col-span-1'>
+                            <TextInput
+                                id="street"
+                                name="street"
+                                placeholder="Street Address"
+                                value={data.street}
+                                className="mt-1 block w-full"
+                                autoComplete="street"
+                                onChange={(e) => setData('street', e.target.value)}
+                            />
+                            <InputError message={errors.street} className="mt-2" />
+                        </div>
+                        <div className='col-span-1'>
+                            <TextInput
+                                id="street2"
+                                name="street2"
+                                placeholder="Street Address Line 2"
+                                value={data.street2}
+                                className="mt-1 block w-full"
+                                autoComplete="street2"
+                                onChange={(e) => setData('street2', e.target.value)}
+                            />
+                            <InputError message={errors.street2} className="mt-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className='mt-3 grid grid-cols-9 gap-3'>
+                    <div className='col-span-3'>
+                        <div className='col-span-1'>
+                            <TextInput
+                                id="city"
+                                name="city"
+                                placeholder="City"
+                                value={data.city}
+                                className="mt-1 block w-full"
+                                autoComplete="city"
+                                onChange={(e) => setData('city', e.target.value)}
+                            />
+                            <InputError message={errors.city} className="mt-2" />
+                        </div>
+                    </div>
+                    <div className='col-span-3'>
+                        <TextInput
+                            id="province"
+                            name="province"
+                            placeholder="State/Province"
+                            value={data.province}
+                            className="mt-1 block w-full"
+                            autoComplete="province"
+                            onChange={(e) => setData('province', e.target.value)}
+                        />
+                        <InputError message={errors.province} className="mt-2" />
+                    </div>
+                    <div className='col-span-3'>
+                        <TextInput
+                            id="postal_code"
+                            name="postal_code"
+                            placeholder="Postal Code"
+                            value={data.postal_code}
+                            className="mt-1 block w-full"
+                            autoComplete="postal_code"
+                            onChange={(e) => setData('postal_code', e.target.value)}
+                        />
+                        <InputError message={errors.postal_code} className="mt-2" />
+                    </div>
+                </div>
+
+                <div className='w-full mt-3'>
                     <TextInput
-                        id="email"
-                        type="email"
+                        id="country"
+                        name="country"
+                        placeholder="Country"
+                        value={data.country}
                         className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                        autoComplete="username"
+                        autoComplete="country"
+                        onChange={(e) => setData('country', e.target.value)}
                     />
-
-                    <InputError className="mt-2" message={errors.email} />
+                    <InputError message={errors.country} className="mt-2" />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

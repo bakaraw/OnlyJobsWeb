@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -20,7 +22,7 @@ class AuthenticatedSessionController extends Controller
     {
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
+            'status' => Session::get('status'),
         ]);
     }
 
@@ -33,9 +35,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = Auth::user();
 
-        return redirect()->route($user->account_type === 'jobseeker' ? 'jobseeker.dashboard' : 'company.dashboard');
+        return Redirect::route('find_work');
     }
     /**
      * Destroy an authenticated session.
