@@ -9,10 +9,10 @@ class JobStatus extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['status_name'];
+    protected $fillable = ['status_name', 'is_active'];
 
     public function jobPosts()
     {
-        return $this->hasMany(JobPost::class, 'status_id');
+        return $this->hasMany(JobPost::class, 'job_status_id');
     }
 }

@@ -36,17 +36,39 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'), // Securely hash the password
         ]);
 
-        // creates default data in certificates
-        $response = Http::get('https://gist.githubusercontent.com/killa-kyle/44b955f5a45632eefe02af63bc72e8b7/raw/8fac85b48278de43073e6f1478239e6d911a0778/professionalCertifications.json');
-        $certificates = $response->json();
+        // creates sample user
+        User::create([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'middle_name' => 'A',
+            'suffix' => 'Jr',
+            'email' => 'john.doe@example.com',
+            'contact_number' => '1234567890',
+            'birthdate' => '1990-01-01',
+            'gender' => 'Male',
+            'street' => '123 Main St',
+            'street2' => 'Apt 4B',
+            'city' => 'Anytown',
+            'province' => 'Anystate',
+            'postal_code' => '12345',
+            'country' => 'USA',
+            'password' => bcrypt('password123'),
+        ]);
 
-        foreach ($certificates as $certificate) {
-            Certificate::create([
-                'name' => $certificate['name'],
-                'post_nominal' => $certificate['post_nominal'] ?? null,
-                'agency' => $certificate['agency'] ?? null,
-            ]);
-        }
+
+
+
+//        // creates default data in certificates
+//        $response = Http::get('https://gist.githubusercontent.com/killa-kyle/44b955f5a45632eefe02af63bc72e8b7/raw/8fac85b48278de43073e6f1478239e6d911a0778/professionalCertifications.json');
+//        $certificates = $response->json();
+//
+//        foreach ($certificates as $certificate) {
+//            Certificate::create([
+//                'name' => $certificate['name'],
+//                'post_nominal' => $certificate['post_nominal'] ?? null,
+//                'agency' => $certificate['agency'] ?? null,
+//            ]);
+//        }
 
         // creates degrees default data
         DB::table('degrees')->insert([
@@ -62,6 +84,17 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Honorary Degree'],
         ]);
 
+
+        DB::table('requirements')->insert([
+            ['requirement_name' => 'Passport'],
+            ['requirement_name' => 'NBI Clearance'],
+            ['requirement_name' => 'Medical Certificate'],
+            ['requirement_name' => 'POEA Contract'],
+            ['requirement_name' => 'OEC'],
+            ['requirement_name' => 'PDOS Certificate'],
+            ['requirement_name' => 'TESDA Certificate'],
+        ]);
+
         // creates skills default data
         $response = Http::get('https://gist.githubusercontent.com/fadziljusri/d72619739d1fa8b760ca8a8d89bb0c99/raw/21983ab748fed408a64e0437c0c84d52229c30e8/skills.json');
         $skillset = $response->json();
@@ -71,5 +104,8 @@ class DatabaseSeeder extends Seeder
                 Skill::create(['skill_name' => $skill]);
             }
         }
+
+
+
     }
 }

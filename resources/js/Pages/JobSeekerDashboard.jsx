@@ -1,24 +1,33 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { usePage } from '@inertiajs/react';
+import React, { useState } from "react";
+import Sidebar from "../Components/Dashboard/Sidebar";
+import JobList from "@/Components/Dashboard/JobList.jsx";
 import { Head } from '@inertiajs/react';
+import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 
-export default function JobSeekerDashboard({ auth }) {
-    if (!auth || !auth.user) {
-        return <p>Loading or Unauthorized...</p>;
-    }
+
+
+export default function JobSeekerDashboard({ jobs, auth }) {
+
+    const [activeView, setActiveView] = useState("dashboard");
 
     return (
-        <div>
 
+        <div className="flex">
+            <Sidebar auth={auth} setActiveView={setActiveView} />
 
-            <AuthenticatedLayout>
-                <Head title="Job Seeker Dashboard" />
-                <div>
-                    <h1>Welcome, {auth.user.name}</h1>
-                    <p>Your account type: Job Seeker</p>
-                    <p>Here you can find job listings and manage your applications.</p>
-                </div>
-            </AuthenticatedLayout>
+            <div className="flex-1 p-6">
+                {activeView === "dashboard" ? (
+                    <DashboardContent />
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {jobs && jobs.length > 0 ? (
+                            jobs.map((job) => <JobList key={job.id} job={job} />)
+                        ) : (
+                            <p>No job postings available.</p>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

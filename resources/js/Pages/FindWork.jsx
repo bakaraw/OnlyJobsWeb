@@ -5,16 +5,10 @@ import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 
-export default function FindWork({ auth, laravelVersion, phpVersion }) {
-    console.log(usePage().props.auth);
-    const jobs = [
-        { id: 1, title: "Welder" },
-        { id: 2, title: "Pipe Fitter" },
-        { id: 3, title: "Electrician" },
-        { id: 4, title: "Mechanic" },
-        { id: 5, title: "Plumber" },
-        { id: 6, title: "Carpenter" }
-    ];
+export default function FindWork({  auth, laravelVersion, phpVersion }) {
+    const { jobs } = usePage().props;
+
+
     return (
         <MainPageLayout
             header={
@@ -71,15 +65,17 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 </div>
 
                 {/* Job listing section */}
-                <div className='col-span-3 rounded-lg'>
-                    {
-                        jobs.map((job, index) => (
-                            <JobCard jobId={job.id} />
-                        ))
-                    }
-                    <div className='flex items-center justify-center'>
-                        <PrimaryButton href={route('login')}>Load More Jobs hehe</PrimaryButton>
-                    </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {auth.jobs && auth.jobs.map((job) => (
+                        <JobCard key={job.id} job={job} />
+                    ))}
+                </div>
+
+                <div className="flex items-center justify-center mt-6">
+                    <PrimaryButton href={route('login')}>
+                        Load More Jobs hehe
+                    </PrimaryButton>
                 </div>
             </div>
         </MainPageLayout>

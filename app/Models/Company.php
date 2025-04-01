@@ -10,13 +10,22 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $table = 'educations'; // or the actual table name
-    protected $primaryKey = 'education_id';
+    protected $table = 'companies';
+    protected $primaryKey = 'company_id';
 
     protected $fillable = [
-        'education_name',
-        // add other fields
+        'company_name',
     ];
+
+    public function company()
+    {
+        return $this->hasOne(Company::class);
+    }
+    public function jobPosts()
+    {
+        return $this->hasOne(Company::class, 'user_id', 'id');
+    }
+
 }
 
 
