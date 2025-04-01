@@ -54,7 +54,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/find_work', [JobPostController::class, 'show'])->name('jobs.show');
+Route::get('/find_work', [JobPostController::class, 'show'])->name('find_work');
 
 Route::get('/about_us', function () {
     return Inertia::render('AboutUs');
@@ -93,8 +93,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
-
-
 });
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
