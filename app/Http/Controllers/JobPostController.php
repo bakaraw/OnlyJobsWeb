@@ -180,5 +180,3 @@ class JobPostController extends Controller
     }
 
 }
-
-

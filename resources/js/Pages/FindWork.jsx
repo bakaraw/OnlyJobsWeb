@@ -5,7 +5,7 @@ import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 
-export default function FindWork({  auth, laravelVersion, phpVersion }) {
+export default function FindWork({   laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
 
 
@@ -66,16 +66,17 @@ export default function FindWork({  auth, laravelVersion, phpVersion }) {
 
                 {/* Job listing section */}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {auth.jobs && auth.jobs.map((job) => (
+                <div className='col-span-3'>
+
+                    {jobs && jobs.map((job) => (
                         <JobCard key={job.id} job={job} />
                     ))}
-                </div>
 
-                <div className="flex items-center justify-center mt-6">
-                    <PrimaryButton href={route('login')}>
-                        Load More Jobs hehe
-                    </PrimaryButton>
+                    <div className="flex items-center justify-center mt-6">
+                        <PrimaryButton href={route('login')}>
+                            Load More Jobs hehe
+                        </PrimaryButton>
+                    </div>
                 </div>
             </div>
         </MainPageLayout>
