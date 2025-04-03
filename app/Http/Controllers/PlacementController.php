@@ -39,21 +39,9 @@ class PlacementController extends Controller
     }
 
 
-    public function show()
-    {
-        // Eager load the user and jobPost relationships
-        $placements = Placement::with(['user', 'jobPost'])->get();
 
-        // Log the result to check what is being returned
-        \Log::info('Placements:', $placements->toArray());
 
-        // Use dd() to check structure of the data
-        dd($placements);
 
-        return Inertia::render('JobSeekerDashboard', [
-            'placements' => $placements
-        ]);
-    }
 
     public function edit($id) {
         $placement = Placement::with('jobPost', 'user')->findOrFail($id);

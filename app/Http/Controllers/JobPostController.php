@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JobPost;
 use App\Models\JobStatus;
 use App\Models\Degree;
+use App\Models\Placement;
 use App\Models\Requirement;
 use App\Models\Skill;
 use Carbon\Carbon;
@@ -164,6 +165,21 @@ class JobPostController extends Controller
 
     public function showDashboard()
     {
+        $placements = Placement::select(
+            'id',
+            'user_id',
+            'job_post_id',
+            'placement_status',
+            'date_placed',
+            'additional_remarks'
+        )
+            ->with([
+                'user:id,first_name', // Eager load user with only 'id' and 'first_name'
+                'jobPost:id,job_title' // Eager load job post with only 'id' and 'job_title'
+            ])
+            ->get();
+
+        // Fetch job posts for the dashboard
         $jobs = JobPost::select(
             'id',
             'job_title',
@@ -171,14 +187,15 @@ class JobPostController extends Controller
             'job_location',
             'job_type',
             'created_at',
-            'company',
-        )->get(); // Make sure to fetch the jobs using `->get()`
+            'company'
+        )->get();
 
+        // Returning both jobs and placements to the frontend
         return Inertia::render('JobSeekerDashboard', [
-            'jobs' => $jobs, // Pass the jobs to the frontend
+            'jobs' => $jobs,       // Pass jobs to the frontend
+            'placements' => $placements,  // Pass placements to the frontend
         ]);
     }
-
 }
 
 

@@ -35,11 +35,11 @@ export default function JobCard({ job }) {
                         {
                             //    Requirements:
                             //
-                            //<div className="flex gap-2 mt-4">
-                            //    {requirements.length > 0
-                            //        ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
-                            //        : <Chip>No Requirement posted</Chip>}
-                            //</div>
+                            <div className="flex gap-2 mt-4">
+                               {requirements.length > 0
+                                   ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
+                                   : <Chip>No Requirement posted</Chip>}
+                            </div>
                         }
                     </div>
                 </div>
