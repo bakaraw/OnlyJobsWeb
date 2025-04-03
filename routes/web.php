@@ -30,11 +30,8 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 // Placements
-Route::get('/placement', [PlacementController::class, 'index'])->name('placement.index');
-Route::get('/placement/create', [PlacementController::class, 'create'])->name('placement.create');
-Route::post('/placement', [PlacementController::class, 'store'])->name('placement.store');
-Route::get('/placement/{placement}', [PlacementController::class, 'show'])->name('placement.show');
-Route::delete('/placement/{placement}', [PlacementController::class, 'destroy'])->name('placement.destroy');
+Route::get('/placements', [PlacementController::class, 'show'])->name('placements.show');
+
 
 // Job Seeker Documents
 Route::get('/documents', [JobSeekerDocumentController::class, 'index'])->name('documents.index');
@@ -71,13 +68,9 @@ Route::get('/contact_us', function () {
 
 
 
-Route::get('/jobseeker/dashboard', [JobPostController::class, 'showDashboard'])
-    ->middleware(['auth', RoleMiddleware::class . ':jobseeker'])
-    ->name('jobseeker.dashboard');
+Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])->name('jobseeker.dashboard');
 
-Route::get('/company/dashboard', [DashboardController::class, 'company'])
-    ->middleware(['auth', RoleMiddleware::class . ':company'])
-    ->name('company.dashboard');
+Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
 
 
 Route::middleware('auth')->group(function () {

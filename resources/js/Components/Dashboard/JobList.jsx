@@ -1,7 +1,5 @@
 import React, {useState} from "react";
 
-
-
 export default function JobList({ job }) {
     const [showDetails, setShowDetails] = useState(false);
     const {
@@ -46,6 +44,9 @@ export default function JobList({ job }) {
                         <div className="mb-6">
                             <p className="font-semibold">Description:</p>
                             <p className="text-gray-600">{job_description}</p>
+                        </div>
+                        <div>
+
                         </div>
                         <div className="flex justify-end">
                             <button
