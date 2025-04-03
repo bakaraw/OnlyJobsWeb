@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_education', function (Blueprint $table) {
+        Schema::create('educations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Foreign Key
             $table->enum('education_level', ['elementary', 'junior_high', 'senior_high', 'college']);
             $table->string('school');
             $table->string('degree', 255)->nullable();
-            $table->integer('year_graduated');
+            $table->integer('start_year');
+            $table->integer('end_year');
+            $table->string('attached_file', 2083)->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_education');
+        Schema::dropIfExists('educations');
     }
 };

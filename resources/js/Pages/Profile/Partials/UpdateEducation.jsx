@@ -1,33 +1,51 @@
-import AddressForm from '@/Components/AddressForm';
+import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import FileInput from '@/Components/FileInput';
 import TextInput from '@/Components/TextInput';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { usePage } from '@inertiajs/react';
+import { usePage, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 export default function UpdateEducation({ className }) {
 
     const user = usePage().props.auth.user;
 
-    const [educationLevel, setEducationLevel] = useState("college");
+    const { data, setData, post, processing, errors, reset } = useForm({
+        education_level: 'college',
+        school: '',
+        degree: '',
+        start_year: '2025',
+        end_year: '2025',
+        attached_file: ''
+    });
+
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
+
+    useEffect(() => {
+        console.log("Processing:", processing);
+    }, [processing]);
+
     const [selectedFile, setSelectedFile] = useState(null);
 
-    const [query, setQuery] = useState("");
     const [universities, setUniversities] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+
     // when query is changes, this block of code runs and fetches the universities based on the query
     useEffect(() => {
-        if (query.length > 2) {
-            fetch(`http://universities.hipolabs.com/search?name=${query}`)
+        if (data.school.length > 2) {
+            fetch(`http://universities.hipolabs.com/search?name=${data.school}`)
                 .then((response) => response.json())
-                .then((data) => setUniversities(data))
+                .then((result) => setUniversities(result))
                 .catch((error) => console.error("Error fetching universities:", error));
         } else {
             setUniversities([]); // Clear suggestions if input is too short
         }
-    }, [query]);
+    }, [data.school]);
 
     const handleFileUpload = (file) => {
         setSelectedFile(file);
@@ -36,14 +54,17 @@ export default function UpdateEducation({ className }) {
 
     const handleSelect = (university) => {
         //form.setData("university", university);
-        setQuery(university);
+        setData('school', university);
         setShowSuggestions(false); // Hide dropdown
     };
 
     const submit = (e) => {
         e.preventDefault();
 
-        patch(route('profile.update'));
+        post(route('education.store'), {
+            preserveScroll: true, // Keeps the page from jumping to the top
+            onSuccess: () => console.log("Education added!"),
+        });
     };
 
     return (
@@ -59,26 +80,27 @@ export default function UpdateEducation({ className }) {
             </header>
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div className='grid grid-cols-6 gap-3'>
-                    <div className='col-span-2'>
+                    <div className='col-span-1'>
                         <InputLabel htmlFor="wow" value="Education Level" />
                         <select
-                            className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500'
-                            value={educationLevel}
-                            onChange={(e) => setEducationLevel(e.target.value)}
+                            className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
+                            value={data.education_level}
+                            onChange={(e) => setData('education_level', e.target.value)}
                         >
-                            <option value="college"> College </option>
-                            <option value="senior_high"> Senior High School Education </option>
-                            <option value="junior_high"> Junior High School Education </option>
-                            <option value="elementary"> Elementary Education </option>
+                            <option value="college">College</option>
+                            <option value="senior_high">Senior High</option>
+                            <option value="junior_high">Junior High</option>
+                            <option value="elementary">Elementary</option>
                         </select>
+                        <InputError message={errors.education_level} className="mt-2" />
                     </div>
                     <div className='col-span-3'>
                         <InputLabel htmlFor="wow" value="School/University" />
                         <input
                             type="text"
-                            value={query}
+                            value={data.school}
                             onChange={(e) => {
-                                setQuery(e.target.value);
+                                setData('school', e.target.value);
                                 setShowSuggestions(true);
                             }}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500"
@@ -97,21 +119,51 @@ export default function UpdateEducation({ className }) {
                                 ))}
                             </ul>
                         )}
-
+                        <InputError message={errors.school} className="mt-2" />
                     </div>
                     <div className='col-span-1'>
-                        <InputLabel htmlFor="wow" value="Graduation Year" />
-                        <TextInput className="mt-1 block w-full"></TextInput>
+                        <InputLabel htmlFor="wow" value="Start year" />
+                        <select
+                            className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
+                            value={data.start_year}
+                            onChange={(e) => setData('start_year', e.target.value)}
+                        >
+                            {years.map(y => (
+                                <option key={y} value={String(y)}>
+                                    {y}
+                                </option>
+                            ))}
+                        </select>
+                        <InputError message={errors.start_year} className="mt-2" />
+                    </div>
+                    <div className='col-span-1'>
+                        <InputLabel htmlFor="wow" value="End Year" />
+                        <select
+                            className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
+                            value={data.end_year}
+                            onChange={(e) => setData('end_year', e.target.value)}
+                        >
+                            {years.map(y => (
+                                <option key={y} value={String(y)}>
+                                    {y}
+                                </option>
+                            ))}
+                        </select>
+                        <InputError message={errors.end_year} className="mt-2" />
                     </div>
 
                     {
-                        educationLevel === 'college' ?
+                        data.education_level === 'college' ?
                             <div className='col-span-6'>
                                 <InputLabel htmlFor="wow" value="Course/Program" />
-                                <TextInput className="mt-1 block w-full"></TextInput>
+                                <TextInput
+                                    className="mt-1 block w-full"
+                                    value={data.degree}
+                                    onChange={(e) => setData('degree', e.target.value)}
+                                ></TextInput>
+                                <InputError message={errors.degree} className="mt-2" />
                             </div>
-
-                            : <div></div>
+                            : <></>
                     }
 
                 </div>
@@ -128,11 +180,10 @@ export default function UpdateEducation({ className }) {
                     //<AddressForm data={data} setData={setData} errors={errors} />
                 }
                 <div className='flex items-center justify-center'>
-                    <SecondaryButton className='mt-4'>
+                    <SecondaryButton className='mt-4' type='submit' disabled={processing}>
                         Add Education
                     </SecondaryButton>
                 </div>
-
             </form>
         </section>
     );
