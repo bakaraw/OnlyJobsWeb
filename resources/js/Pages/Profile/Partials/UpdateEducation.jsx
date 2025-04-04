@@ -5,10 +5,14 @@ import TextInput from '@/Components/TextInput';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { usePage, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import EducationCard from './EducationCard';
 
 export default function UpdateEducation({ className }) {
 
-    const user = usePage().props.auth.user;
+    const { props } = usePage();
+    const user = props.auth.user;
+    const educations = props.educations || [];
+
 
     const { data, setData, post, processing, errors, reset } = useForm({
         education_level: 'college',
@@ -18,14 +22,6 @@ export default function UpdateEducation({ className }) {
         end_year: '2025',
         attached_file: ''
     });
-
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
-
-    useEffect(() => {
-        console.log("Processing:", processing);
-    }, [processing]);
 
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -41,7 +37,7 @@ export default function UpdateEducation({ className }) {
             fetch(`http://universities.hipolabs.com/search?name=${data.school}`)
                 .then((response) => response.json())
                 .then((result) => setUniversities(result))
-                .catch((error) => console.error("Error fetching universities:", error));
+                .catch((error) => console.error("Error fetching universities: ", error));
         } else {
             setUniversities([]); // Clear suggestions if input is too short
         }
@@ -63,7 +59,7 @@ export default function UpdateEducation({ className }) {
 
         post(route('education.store'), {
             preserveScroll: true, // Keeps the page from jumping to the top
-            onSuccess: () => console.log("Education added!"),
+            onSuccess: () => reset('school', 'degree', 'end_year', 'start_year', 'attached_file', 'education_level'),
         });
     };
 
@@ -77,8 +73,22 @@ export default function UpdateEducation({ className }) {
                 <p className="mt-1 text-sm text-gray-600">
                     Update your education
                 </p>
+                <hr className="mt-5 block w-full items-center justify-center" />
             </header>
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            {
+                educations.length != 0 ?
+                    educations.map((edu, index) => (
+                        <EducationCard
+                            className="my-3"
+                            educationLevel={edu.education_level}
+                            school={edu.school}
+                            degree={edu.degree}
+                            startYear={edu.start_year}
+                            endYear={edu.end_year}
+                        />
+                    )) : <div className='flex items-center justify-center'> no education specified </div>
+            }
+            <form onSubmit={submit} className="mt-12 space-y-6">
                 <div className='grid grid-cols-6 gap-3'>
                     <div className='col-span-1'>
                         <InputLabel htmlFor="wow" value="Education Level" />
