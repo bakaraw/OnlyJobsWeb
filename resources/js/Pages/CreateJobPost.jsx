@@ -250,16 +250,22 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                         <InputError message={errors.max_salary} className="mt-2" />
                     </div>
 
+
                     <div className="col-span-3">
-                        <InputLabel htmlFor="min_experience_years" value="Experience Required" />
-                        <TextInput
-                            id="min_experience_years"
-                            name="min_experience_years"
-                            placeholder="1-3 years"
+                        <InputLabel htmlFor="min_experience_years" value="Experience Level" />
+                        <select
+                            id="Minimum Experience"
+                            name="Minimum Experience"
                             value={data.min_experience_years}
-                            className="mt-1 block w-full"
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                             onChange={(e) => setData("min_experience_years", e.target.value)}
-                        />
+                        >
+                            <option value="">Select Job Type</option>
+                            <option value="1">Entry Level</option>
+                            <option value="3" >Intermediate  Level</option>
+                            <option value="5">Expert Level</option>
+
+                        </select>
                         <InputError message={errors.min_experience_years} className="mt-2" />
                     </div>
                 </div>
@@ -277,7 +283,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="Search for skills"
                         />
                         {searchSkill && (
-                            <div className="mt-2 absolute bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
+                            <div className="mt-2  bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
                                 {filteredSkills.slice(0, 5).map((skill) => (
                                     <div
                                         key={skill.skill_id}
@@ -297,9 +303,9 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                         key={skill.skill_id}
                                         className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
                                         onClick={() => handleRemoveSkill(skill.skill_id)}
-                                    >
-        {skill.skill_name} &times;
-      </span>
+                                                            >
+                                {skill.skill_name} &times;
+                              </span>
                                 ) : null;
                             })}
                         </div>
@@ -317,7 +323,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="Search for requirements"
                         />
                         {searchRequirement && (
-                            <div className="mt-2 absolute bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
+                            <div className="mt-2  bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
                                 {filteredRequirements.slice(0, 5).map((requirement) => (
                                     <div
                                         key={requirement.requirement_id}

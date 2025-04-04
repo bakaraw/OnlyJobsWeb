@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-export default function JobList({ job }) {
+export default function JobList({ job, placements }) {
     const [showDetails, setShowDetails] = useState(false);
     const {
         id,
@@ -11,6 +11,8 @@ export default function JobList({ job }) {
         company = ""
     } = job;
 
+    // Filter placements related to this job
+    const jobPlacements = placements;
 
     return (
         <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
@@ -45,9 +47,32 @@ export default function JobList({ job }) {
                             <p className="font-semibold">Description:</p>
                             <p className="text-gray-600">{job_description}</p>
                         </div>
-                        <div>
 
+                        {/* Placements Table */}
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold mb-4">Placements</h3>
+                            {jobPlacements.length > 0 ? (
+                                <table className="w-full">
+                                    <thead>
+                                    <tr>
+                                        <th className="py-2">User</th>
+                                        <th className="py-2">Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {jobPlacements.map((placement) => (
+                                        <tr key={placement.id} className="border-t">
+                                            <td className="py-2">{placement.user.first_name}</td>
+                                            <td className="py-2">{placement.placement_status}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p className="text-gray-500">No placements available.</p>
+                            )}
                         </div>
+
                         <div className="flex justify-end">
                             <button
                                 onClick={() => setShowDetails(false)}
