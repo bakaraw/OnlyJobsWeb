@@ -4,10 +4,10 @@ import GuestLayout from "@/Layouts/GuestLayout.jsx";
 import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
-import { router } from '@inertiajs/react'
+import { router } from "@inertiajs/react";
 
 export default function CreateJobPost({ statuses, degrees, skills, requirements }) {
-    const { data, setData, post, errors } = useForm({
+    const { data, setData, errors } = useForm({
         job_title: "",
         company: "",
         job_description: "",
@@ -22,72 +22,85 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
         requirements: []
     });
 
-    const [searchSkill, setSearchSkill] = useState('');
-    const [searchRequirement, setSearchRequirement] = useState('');
+    const [searchSkill, setSearchSkill] = useState("");
+    const [searchRequirement, setSearchRequirement] = useState("");
 
-    const filteredSkills = skills.filter((skill) =>
+    // Filter based on name, but we'll use the id from the record.
+    const filteredSkills = (skills || []).filter((skill) =>
         skill.skill_name.toLowerCase().includes(searchSkill.toLowerCase())
     );
-
-    const filteredRequirements = requirements.filter((requirement) =>
+    const filteredRequirements = (requirements || []).filter((requirement) =>
         requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
     );
 
     const handleSearchSkillChange = (e) => setSearchSkill(e.target.value);
     const handleSearchRequirementChange = (e) => setSearchRequirement(e.target.value);
 
+    // Save the database ID (skill.skill_id) when a skill is selected.
     const handleSelectSkill = (skill) => {
-        if (!data.skills.includes(skill.id)) {
-            setData("skills", [...data.skills, skill.id]);
+        if (!data.skills.includes(skill.skill_id)) {
+            setData("skills", [...data.skills, skill.skill_id]);
         }
-        setSearchSkill('');
+        setSearchSkill("");
     };
 
+    // Save the database ID (requirement.requirement_id) when a requirement is selected.
     const handleSelectRequirement = (requirement) => {
-        if (!data.requirements.includes(requirement.id)) {
-            setData("requirements", [...data.requirements, requirement.id]);
+        if (!data.requirements.includes(requirement.requirement_id)) {
+            setData("requirements", [...data.requirements, requirement.requirement_id]);
         }
-        setSearchRequirement('');
+        setSearchRequirement("");
     };
 
-    const handleRemoveSkill = (skillId) => setData("skills", data.skills.filter((id) => id !== skillId));
-    const handleRemoveRequirement = (requirementId) => setData("requirements", data.requirements.filter((id) => id !== requirementId));
+    const handleRemoveSkill = (skillId) =>
+        setData("skills", data.skills.filter((id) => id !== skillId));
+    const handleRemoveRequirement = (requirementId) =>
+        setData("requirements", data.requirements.filter((id) => id !== requirementId));
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Ensure the skills and requirements are arrays of valid integers
-        const validSkills = data.skills.map(id => parseInt(id));
-        const validRequirements = data.requirements.map(id => parseInt(id));
+        // Convert the selected IDs to numbers (if necessary)
+        const skillsArray = data.skills.map(Number);
+        const requirementsArray = data.requirements.map(Number);
 
-        console.log('Submitting data:', {
+        // Validate that we have valid arrays of IDs
+        const areSkillsValid = Array.isArray(skillsArray) && skillsArray.every(id => !isNaN(id));
+        const areRequirementsValid = Array.isArray(requirementsArray) && requirementsArray.every(id => !isNaN(id));
+
+        if (!areSkillsValid || !areRequirementsValid) {
+            console.error("Invalid data: Skills and/or Requirements are not valid arrays of IDs.");
+            return;
+        }
+
+        console.log("Submitting valid data:", {
             ...data,
-            skills: validSkills,
-            requirements: validRequirements
+            skills: skillsArray,
+            requirements: requirementsArray,
         });
 
-        // Send data to the server
-        router.post(route('job_posts.store'), {
-            ...data,
-            skills: validSkills,  // Pass the valid skills array
-            requirements: validRequirements,  // Pass the valid requirements array
-        }, {
-            onSuccess: () => {
-                // Optional: Handle success
+        router.post(
+            route("job_posts.store"),
+            {
+                ...data,
+                skills: skillsArray,
+                requirements: requirementsArray,
             },
-            onError: (errors) => {
-                console.error('Submission errors:', errors);
+            {
+                onSuccess: () => {
+                    console.log("Job post created successfully");
+                },
+                onError: (errors) => {
+                    console.error("Submission errors:", errors);
+                },
             }
-        });
+        );
     };
-
 
     return (
         <GuestLayout width="sm:max-w-2xl">
             <Head title="Create Job Post" />
-            <div className="mt-6 text-primary text-4xl font-bold mb-6">
-                Create Job
-            </div>
+            <div className="mt-6 text-primary text-4xl font-bold mb-6">Create Job</div>
             <form onSubmit={handleSubmit}>
                 {/* Job Title Field */}
                 <InputLabel htmlFor="job_title" value="Job Title" />
@@ -101,7 +114,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             className="mt-1 block w-full"
                             autoComplete="job_title"
                             isFocused={true}
-                            onChange={(e) => setData('job_title', e.target.value)}
+                            onChange={(e) => setData("job_title", e.target.value)}
                         />
                         <InputError message={errors.job_title} className="mt-2" />
                     </div>
@@ -114,8 +127,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             value={data.company}
                             className="mt-1 block w-full"
                             autoComplete="company"
-                            isFocused={true}
-                            onChange={(e) => setData('company', e.target.value)}
+                            onChange={(e) => setData("company", e.target.value)}
                         />
                         <InputError message={errors.company} className="mt-2" />
                     </div>
@@ -128,7 +140,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             value={data.job_location}
                             className="mt-1 block w-full"
                             autoComplete="job_location"
-                            onChange={(e) => setData('job_location', e.target.value)}
+                            onChange={(e) => setData("job_location", e.target.value)}
                         />
                         <InputError message={errors.job_location} className="mt-2" />
                     </div>
@@ -142,7 +154,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="Job Description"
                             value={data.job_description}
                             className="mt-1 block w-full h-40 p-2 border border-gray-300 rounded-md"
-                            onChange={(e) => setData('job_description', e.target.value)}
+                            onChange={(e) => setData("job_description", e.target.value)}
                         />
                         <InputError message={errors.job_description} className="mt-2" />
                     </div>
@@ -158,7 +170,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             name="job_type"
                             value={data.job_type}
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            onChange={(e) => setData('job_type', e.target.value)}
+                            onChange={(e) => setData("job_type", e.target.value)}
                         >
                             <option value="">Select Job Type</option>
                             <option value="Full Time">Full Time</option>
@@ -180,7 +192,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             name="status_id"
                             value={data.status_id}
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            onChange={(e) => setData('status_id', e.target.value)}
+                            onChange={(e) => setData("status_id", e.target.value)}
                         >
                             {statuses.map((status) => (
                                 <option key={status.id} value={status.id}>
@@ -199,7 +211,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             name="degree_id"
                             value={data.degree_id}
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            onChange={(e) => setData('degree_id', e.target.value)}
+                            onChange={(e) => setData("degree_id", e.target.value)}
                         >
                             <option value="">No Degree Required</option>
                             {degrees.map((degree) => (
@@ -220,7 +232,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="₱ 20,000"
                             value={data.min_salary}
                             className="mt-1 block w-full"
-                            onChange={(e) => setData('min_salary', e.target.value)}
+                            onChange={(e) => setData("min_salary", e.target.value)}
                         />
                         <InputError message={errors.min_salary} className="mt-2" />
                     </div>
@@ -233,7 +245,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="₱ 50,000"
                             value={data.max_salary}
                             className="mt-1 block w-full"
-                            onChange={(e) => setData('max_salary', e.target.value)}
+                            onChange={(e) => setData("max_salary", e.target.value)}
                         />
                         <InputError message={errors.max_salary} className="mt-2" />
                     </div>
@@ -246,7 +258,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             placeholder="1-3 years"
                             value={data.min_experience_years}
                             className="mt-1 block w-full"
-                            onChange={(e) => setData('min_experience_years', e.target.value)}
+                            onChange={(e) => setData("min_experience_years", e.target.value)}
                         />
                         <InputError message={errors.min_experience_years} className="mt-2" />
                     </div>
@@ -254,8 +266,8 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
 
                 {/* Skills and Requirements Search and Selection */}
                 <div className="col-span-9 grid grid-cols-9 gap-3">
-                    {/* Search Skills */}
-                    <div className="col-span-3">
+                    {/* Skills Search */}
+                    <div className="col-span-3 relative">
                         <InputLabel htmlFor="skills" value="Search Skills" />
                         <input
                             type="text"
@@ -268,7 +280,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             <div className="mt-2 absolute bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
                                 {filteredSkills.slice(0, 5).map((skill) => (
                                     <div
-                                        key={skill.id}
+                                        key={skill.skill_id}
                                         className="p-2 hover:bg-gray-100 cursor-pointer"
                                         onClick={() => handleSelectSkill(skill)}
                                     >
@@ -277,10 +289,25 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                 ))}
                             </div>
                         )}
+                        <div className="mt-2">
+                            {(data?.skills ?? []).map((skillId) => {
+                                const skill = (skills ?? []).find((s) => s.skill_id === skillId);
+                                return skill ? (
+                                    <span
+                                        key={skill.skill_id}
+                                        className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
+                                        onClick={() => handleRemoveSkill(skill.skill_id)}
+                                    >
+        {skill.skill_name} &times;
+      </span>
+                                ) : null;
+                            })}
+                        </div>
+
                     </div>
 
-                    {/* Search Requirements */}
-                    <div className="col-span-3">
+                    {/* Requirements Search */}
+                    <div className="col-span-3 relative">
                         <InputLabel htmlFor="requirements" value="Search Requirements" />
                         <input
                             type="text"
@@ -293,7 +320,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             <div className="mt-2 absolute bg-white border border-gray-300 rounded-md shadow-lg w-64 max-h-60 overflow-y-auto z-10">
                                 {filteredRequirements.slice(0, 5).map((requirement) => (
                                     <div
-                                        key={requirement.id}
+                                        key={requirement.requirement_id}
                                         className="p-2 hover:bg-gray-100 cursor-pointer"
                                         onClick={() => handleSelectRequirement(requirement)}
                                     >
@@ -302,6 +329,21 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                 ))}
                             </div>
                         )}
+                        {/* Display selected requirements */}
+                        <div className="mt-2">
+                            {(data?.requirements ?? []).map((reqId) => {
+                                const req = (requirements ?? []).find((r) => r.requirement_id === reqId);
+                                return req ? (
+                                    <span
+                                        key={req.requirement_id}
+                                        className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
+                                        onClick={() => handleRemoveRequirement(req.requirement_id)}
+                                    >
+        {req.requirement_name} &times;
+      </span>
+                                ) : null;
+                            })}
+                        </div>
                     </div>
                 </div>
 
