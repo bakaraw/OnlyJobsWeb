@@ -63,7 +63,19 @@ class DatabaseSeeder extends Seeder
             'contact_number' => '1234567890',
             'birthdate' => '1990-01-01',
             'gender' => 'Male',
-            'address_id' => $userAddress->id,
+            'address_id' => $adminAddress->id,
+            'password' => bcrypt('password123'),
+        ]);
+
+        User::create([
+            'first_name' => 'lean',
+            'last_name' => 'yawa',
+            'middle_name' => 'A',
+            'suffix' => 'Jr',
+            'email' => 'john.doe@example.com',
+            'contact_number' => '1234567890',
+            'birthdate' => '1990-01-01',
+            'gender' => 'Male',
             'password' => bcrypt('password123'),
         ]);
 

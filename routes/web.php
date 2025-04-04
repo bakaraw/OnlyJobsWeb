@@ -24,6 +24,7 @@ Route::get('/', function () {
     ]);
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
@@ -49,7 +50,7 @@ Route::delete('/requirements/{requirement}', [RequirementController::class, 'des
 //    return Inertia::render('Dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/placements', [PlacementController::class, 'show'])->name('placements.show');
+//Route::get('/placements', [PlacementController::class, 'show'])->name('placements.show');
 
 Route::get('/find_work', [JobPostController::class, 'show'])->name('find_work');
 
@@ -69,7 +70,7 @@ Route::get('/contact_us', function () {
 
 
 
-Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
+//Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
 
 
 Route::middleware('auth')->group(function () {
@@ -86,16 +87,16 @@ Route::middleware('auth')->group(function () {
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
 
-    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])->name('jobseeker.dashboard');
+    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])->name('dashboard');
 
 });
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard', [
-        'auth' => [
-            'user' => auth()->user(),
-        ],
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard', [
+//        'auth' => [
+//            'user' => auth()->user(),
+//        ],
+//    ]);
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 

@@ -4,7 +4,7 @@ import JobList from "@/Components/Dashboard/JobList.jsx"; // Job card component
 import Placements from "@/Components/Dashboard/Placements.jsx"; // Placement card component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 
-export default function JobSeekerDashboard({ jobs, placements, auth }) {
+export default function dashboard({ jobs, placements, auth }) {
     const [activeView, setActiveView] = useState("dashboard");
 
     console.log("placements", placements);
@@ -31,7 +31,9 @@ export default function JobSeekerDashboard({ jobs, placements, auth }) {
                                 ) : (
                                     <p className="text-gray-500">No job postings available.</p>
                                 )}
+
                             </div>
+
                         ) : (
                             <div className="w-full text-center p-6 bg-red-100 border border-red-400 text-red-600 rounded-md">
                                 <p>You need to be logged in to view job listings.</p>

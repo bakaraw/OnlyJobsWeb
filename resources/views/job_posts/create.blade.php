@@ -106,20 +106,6 @@
     </div>
     <br>
 
-    <!-- Certificate (Using certificates table) -->
-    {{--    <div>--}}
-    {{--        <label for="requirement_id">Requirements:</label>--}}
-    {{--        <select name="requirement_id" id="requirement_id">--}}
-    {{--            <option value="">Select Requirements</option>--}}
-    {{--            @foreach($requirement as $requirements)--}}
-    {{--                <option--}}
-    {{--                    value="{{ $requirements->id }}" {{ old('requirement_id') == $requirements->id ? 'selected' : '' }}>--}}
-    {{--                    {{ $requirements->requirement_name }}--}}
-    {{--                </option>--}}
-    {{--            @endforeach--}}
-    {{--        </select>--}}
-    {{--    </div>--}}
-    {{--    <br>--}}
 
     <!-- Skills (Multi-select) -->
     <div>

@@ -14,10 +14,10 @@ export default function JobList({ job }) {
 
     return (
         <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
-            <h2 className="text-lg font-semibold">{job_title}</h2>
-            <p className="text-sm text-gray-600">{company} - {job_location}</p>
-            <p className="text-sm text-gray-500 mb-2">{job_type}</p>
-            <p className="mb-3">{job_description}</p>
+            <h2 className="text-lg font-semibold">Job Title: {job_title}</h2>
+            <p className="text-sm text-gray-600"> Company Name: {company} - Location: {job_location}</p>
+            <p className="text-sm text-gray-500 mb-2">Job Type: {job_type}</p>
+            <p className="mb-3">Job Description: {job_description}</p>
 
             <button
                 onClick={() => setShowDetails(true)}
