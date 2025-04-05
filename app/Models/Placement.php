@@ -13,7 +13,7 @@ class Placement extends Model
 
     protected $table = 'placement';
     protected $fillable = [
-        'user_id', 'job_post_id', 'placement_status',
+        'user_id', 'job_post_id', 'placement_status' , 'date_placement', 'additional_remarks'
     ];
 
 
