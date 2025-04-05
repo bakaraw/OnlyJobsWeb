@@ -6,15 +6,11 @@ use App\Models\JobPost;
 use App\Models\Placement;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PlacementController extends Controller
 {
-    public function index()
-    {
-        $placements = Placement::with('jobPost', 'user')->latest()->get();
 
-        return view('placement.index', compact('placements'));
-    }
 
     public function create()
     {
@@ -42,11 +38,10 @@ class PlacementController extends Controller
 
     }
 
-    public function show($id) {
-        $placement = Placement::with('jobPost', 'user')->findOrFail($id);
 
-        return view('placement.show', compact('placement'));
-    }
+
+
+
 
     public function edit($id) {
         $placement = Placement::with('jobPost', 'user')->findOrFail($id);
@@ -68,7 +63,7 @@ class PlacementController extends Controller
         ]);
         $placement->update($validated);
 
-        return redirect()->route('placement.index')->with('success', 'Placement updated successfully.');
+        return redirect()->route('placement.index')->with('success', 'Placements.jsx updated successfully.');
     }
 
     public function destroy($id) {

@@ -5,38 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\JobPost;
 use App\Models\JobStatus;
 use App\Models\Degree;
+use App\Models\Placement;
 use App\Models\Requirement;
 use App\Models\Skill;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 class JobPostController extends Controller
 {
 
     public function index()
     {
-        $statuses = JobStatus::all();
-        $degrees = Degree::all();
-        $requirements = Requirement::all();
-        $skills = Skill::all();
-
-        return view('job_posts.create', compact('statuses', 'degrees', 'requirements', 'skills'));
+        return Inertia::render('CreateJobPost', [
+            'statuses' => JobStatus::all(),
+            'degrees' => Degree::all(),
+            'requirements' => Requirement::all(),
+            'skills' => Skill::all(),
+        ]);
     }
 
     public function create()
     {
-        $statuses     = JobStatus::all();
-        $degrees      = Degree::all();
-        $requirements = Requirement::all();
-        $skills       = Skill::all();
-
-        return view('job_posts.create', compact('statuses', 'degrees', 'requirements', 'skills'));
+        return Inertia::render('CreateJobPost', [
+            'statuses' => JobStatus::all(),
+            'degrees' => Degree::all(),
+            'requirements' => Requirement::all(),
+            'skills' => Skill::all(),
+        ]);
     }
 
 
     public function store(Request $request)
     {
+        // Validate input data
         $validatedData = $request->validate([
             'job_title'            => 'required|string|max:255',
             'job_description'      => 'required|string',
@@ -45,38 +48,38 @@ class JobPostController extends Controller
             'min_salary'           => 'required|numeric',
             'max_salary'           => 'required|numeric',
             'min_experience_years' => 'required|integer',
-            'company'            => 'required|string|max:255',
+            'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
-
+            'views',
             'requirements'          => 'nullable|array',
-            'requirements.*'        => 'exists:requirements,requirement_id',
-
+            'requirements.*'        => 'exists:requirements,requirement_id',  // Validate requirement IDs
             'skills'               => 'nullable|array',
-            'skills.*'             => 'exists:skills,skill_id'
+            'skills.*'             => 'exists:skills,skill_id'  // Validate skill IDs
         ]);
 
+        // Extract and unset the `skills` and `requirements` fields
         $requirementIds = $validatedData['requirements'] ?? [];
         unset($validatedData['requirements']);
 
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
 
-        $validatedData['user_id'] = auth()->id();
+        $validatedData['user_id'] = auth()->id();  // Add the user ID
 
+        // Create a new job post
         $jobPost = JobPost::create($validatedData);
 
-        if (!empty($skillIds )) {
+        // Attach skills and requirements if they exist
+        if (!empty($skillIds)) {
             $jobPost->skills()->attach($skillIds);
-
         }
-        if (!empty($requirementIds )) {
+        if (!empty($requirementIds)) {
             $jobPost->requirements()->attach($requirementIds);
+        }
 
-        };
-
-        return redirect()->route('job_posts.create')
-            ->with('success', 'Job post created successfully.');
+        // Redirect or return a success message
+        return Inertia::render('CreateJobPost')->with('success', 'Job post created successfully.');
     }
 
 
@@ -99,6 +102,7 @@ class JobPostController extends Controller
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
+            'views',
 
             'requirements'          => 'nullable|array',
             'requirements.*'        => 'exists:requirements,requirement_id',
@@ -144,6 +148,8 @@ class JobPostController extends Controller
             'min_experience_years',
             'degree_id',
             'company',
+
+
         )
             ->with([
                 'skills' => function ($query) {
@@ -154,7 +160,10 @@ class JobPostController extends Controller
                 }
             ])
             ->get()
+
             ->toArray();
+
+//        $jobs->increment('views');
 
         return Inertia::render('FindWork', [
             'jobs' => $jobs
@@ -164,6 +173,21 @@ class JobPostController extends Controller
 
     public function showDashboard()
     {
+        $placements = Placement::select(
+            'id',
+            'user_id',
+            'job_post_id',
+            'placement_status',
+            'created_at',
+            'additional_remarks'
+        )
+            ->with([
+                'user:id,first_name',
+                'jobPost:id,job_title'
+            ])
+            ->get();
+
+        // Fetch job posts for the dashboard
         $jobs = JobPost::select(
             'id',
             'job_title',
@@ -171,14 +195,15 @@ class JobPostController extends Controller
             'job_location',
             'job_type',
             'created_at',
-            'company',
-        )->get(); // Make sure to fetch the jobs using `->get()`
+            'company'
+        )->get();
 
-        return Inertia::render('JobSeekerDashboard', [
-            'jobs' => $jobs, // Pass the jobs to the frontend
+        // Returning both jobs and placements to the frontend
+        return Inertia::render('dashboard', [
+            'jobs' => $jobs,       // Pass jobs to the frontend
+            'placements' => $placements,  // Pass placements to the frontend
         ]);
     }
-
 }
 
 

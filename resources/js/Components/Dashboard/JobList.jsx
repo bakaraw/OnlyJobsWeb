@@ -1,8 +1,6 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-
-
-export default function JobList({ job }) {
+export default function JobList({ job, placements }) {
     const [showDetails, setShowDetails] = useState(false);
     const {
         id,
@@ -13,13 +11,15 @@ export default function JobList({ job }) {
         company = ""
     } = job;
 
+    // Filter placements related to this job
+    const jobPlacements = placements;
 
     return (
         <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
-            <h2 className="text-lg font-semibold">{job_title}</h2>
-            <p className="text-sm text-gray-600">{company} - {job_location}</p>
-            <p className="text-sm text-gray-500 mb-2">{job_type}</p>
-            <p className="mb-3">{job_description}</p>
+            <h2 className="text-lg font-semibold">Job Title: {job_title}</h2>
+            <p className="text-sm text-gray-600"> Company Name: {company} - Location: {job_location}</p>
+            <p className="text-sm text-gray-500 mb-2">Job Type: {job_type}</p>
+            <p className="mb-3">Job Description: {job_description}</p>
 
             <button
                 onClick={() => setShowDetails(true)}
@@ -47,6 +47,36 @@ export default function JobList({ job }) {
                             <p className="font-semibold">Description:</p>
                             <p className="text-gray-600">{job_description}</p>
                         </div>
+
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold mb-4">Placements</h3>
+                            {jobPlacements.length > 0 ? (
+                                <table className="w-full">
+                                    <thead>
+                                    <tr>
+                                        <th className="py-2">User</th>
+                                        <th className="py-2">Status</th>
+                                        <th className="py-2">Date Placed</th>
+                                        <th className="py-2">Additional Remarks</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {jobPlacements.map((placement) => (
+                                        <tr key={placement.id} className="border-t">
+                                            <td className="py-2">{placement.user.first_name}</td>
+                                            <td className="py-2">{placement.placement_status}</td>
+                                            <td className="py-2">{new Date(placement.created_at).toLocaleDateString()}</td>
+                                            <td className="py-2">{placement.additional_remarks}</td>
+
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p className="text-gray-500">No placements available.</p>
+                            )}
+                        </div>
+
                         <div className="flex justify-end">
                             <button
                                 onClick={() => setShowDetails(false)}
