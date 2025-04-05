@@ -17,6 +17,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                     <h2 className="text-3xl font-semibold leading-tight text-gray-800">
                         {auth.user.first_name}'s Profile
                     </h2>
+                    <p className='mt-2'>This serves as your resume</p>
                 </ContentLayout>
             }
         >

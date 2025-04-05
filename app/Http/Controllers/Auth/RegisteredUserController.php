@@ -55,27 +55,6 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        /*$address = Address::create([*/
-        /*    'street' => $request->street,*/
-        /*    'street2' => $request->street2,*/
-        /*    'city' => $request->city,*/
-        /*    'province' => $request->province,*/
-        /*    'postal_code' => $request->postal_code,*/
-        /*    'country' => $request->country,*/
-        /*]);*/
-        /**/
-        /*$user = User::create([*/
-        /*    'first_name' => $request->first_name,*/
-        /*    'last_name' => $request->last_name,*/
-        /*    'middle_name' => $request->middle_name,*/
-        /*    'suffix' => $request->suffix,*/
-        /*    'birthdate' => $request->birthdate,*/
-        /*    'gender' => $request->gender,*/
-        /*    'address_id' => $address->id,*/
-        /*    'contact_number' => $request->contact_number,*/
-        /*    'email' => $request->email,*/
-        /*    'password' => Hash::make($request->password),*/
-        /*]);*/
         $user = DB::transaction(function () use ($validated) {
             // Create the address first
             $address = Address::create([
