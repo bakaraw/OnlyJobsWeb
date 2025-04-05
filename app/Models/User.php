@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Educations;
 
 class User extends Authenticatable
 {
@@ -57,5 +58,10 @@ class User extends Authenticatable
     public function placements()
     {
         return $this->hasMany(Placement::class);
+    }
+
+    public function educations()
+    {
+        return $this->hasMany(Educations::class);
     }
 }

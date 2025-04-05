@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerDocumentController;
 use App\Http\Controllers\PageController;
@@ -93,6 +94,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
+
+    Route::get('/education/store', [EducationController::class, 'edit'])
+        ->name('education.edit');
+
+    Route::post('/education/store', [EducationController::class, 'store'])
+        ->name('education.store');
 });
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
