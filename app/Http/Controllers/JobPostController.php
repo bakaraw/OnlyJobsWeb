@@ -51,6 +51,7 @@ class JobPostController extends Controller
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
+            'views',
             'requirements'          => 'nullable|array',
             'requirements.*'        => 'exists:requirements,requirement_id',  // Validate requirement IDs
             'skills'               => 'nullable|array',
@@ -101,6 +102,7 @@ class JobPostController extends Controller
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
+            'views',
 
             'requirements'          => 'nullable|array',
             'requirements.*'        => 'exists:requirements,requirement_id',
@@ -146,6 +148,8 @@ class JobPostController extends Controller
             'min_experience_years',
             'degree_id',
             'company',
+
+
         )
             ->with([
                 'skills' => function ($query) {
@@ -156,7 +160,10 @@ class JobPostController extends Controller
                 }
             ])
             ->get()
+
             ->toArray();
+
+//        $jobs->increment('views');
 
         return Inertia::render('FindWork', [
             'jobs' => $jobs
@@ -175,8 +182,8 @@ class JobPostController extends Controller
             'additional_remarks'
         )
             ->with([
-                'user:id,first_name', // Eager load user with only 'id' and 'first_name'
-                'jobPost:id,job_title' // Eager load job post with only 'id' and 'job_title'
+                'user:id,first_name',
+                'jobPost:id,job_title'
             ])
             ->get();
 

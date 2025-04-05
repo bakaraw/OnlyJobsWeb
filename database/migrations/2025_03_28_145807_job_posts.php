@@ -22,6 +22,9 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('degree_id')->nullable();
 
+            $table->unsignedBigInteger('views')->default(0);
+
+
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 

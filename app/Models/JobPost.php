@@ -22,7 +22,9 @@ class JobPost extends Model
         'requirement',
         'skills',
         'company',
-        'user_id'
+        'user_id',
+        'views'
+
     ];
 
     public function status()
