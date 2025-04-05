@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../Components/Dashboard/Sidebar";
-import JobList from "@/Components/Dashboard/JobList.jsx"; // Job card component
+import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 
 export default function dashboard({ jobs, placements, auth }) {
@@ -16,7 +16,8 @@ export default function dashboard({ jobs, placements, auth }) {
 
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
-                    <DashboardContent />
+                    <DashboardContent jobs={jobs} placements={placements}  />
+
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-lg shadow-lg">
                         {/* Left: Job Listings (Only Show if Authenticated) */}
