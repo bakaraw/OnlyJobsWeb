@@ -72,12 +72,15 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'yawa',
             'middle_name' => 'A',
             'suffix' => 'Jr',
-            'email' => 'john.doe@example.com',
+            'email' => 'lean@example.com',
             'contact_number' => '1234567890',
             'birthdate' => '1990-01-01',
             'gender' => 'Male',
+            'address_id' => $adminAddress->id,
             'password' => bcrypt('password123'),
         ]);
+
+
 
         //        // creates default data in certificates
         //        $response = Http::get('https://gist.githubusercontent.com/killa-kyle/44b955f5a45632eefe02af63bc72e8b7/raw/8fac85b48278de43073e6f1478239e6d911a0778/professionalCertifications.json');

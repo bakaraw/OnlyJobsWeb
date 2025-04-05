@@ -48,7 +48,6 @@ export default function JobList({ job, placements }) {
                             <p className="text-gray-600">{job_description}</p>
                         </div>
 
-                        {/* Placements Table */}
                         <div className="mb-6">
                             <h3 className="text-xl font-semibold mb-4">Placements</h3>
                             {jobPlacements.length > 0 ? (
@@ -57,6 +56,8 @@ export default function JobList({ job, placements }) {
                                     <tr>
                                         <th className="py-2">User</th>
                                         <th className="py-2">Status</th>
+                                        <th className="py-2">Date Placed</th>
+                                        <th className="py-2">Additional Remarks</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -64,6 +65,9 @@ export default function JobList({ job, placements }) {
                                         <tr key={placement.id} className="border-t">
                                             <td className="py-2">{placement.user.first_name}</td>
                                             <td className="py-2">{placement.placement_status}</td>
+                                            <td className="py-2">{new Date(placement.created_at).toLocaleDateString()}</td>
+                                            <td className="py-2">{placement.additional_remarks}</td>
+
                                         </tr>
                                     ))}
                                     </tbody>

@@ -171,7 +171,7 @@ class JobPostController extends Controller
             'user_id',
             'job_post_id',
             'placement_status',
-            'date_placed',
+            'created_at',
             'additional_remarks'
         )
             ->with([
