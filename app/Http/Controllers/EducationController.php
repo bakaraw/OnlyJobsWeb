@@ -33,4 +33,9 @@ class EducationController extends Controller
 
         return Redirect::route('profile.edit')->with('success', 'Education updated successfully');
     }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        return Redirect::back();
+    }
 }
