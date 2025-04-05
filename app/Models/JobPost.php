@@ -22,7 +22,9 @@ class JobPost extends Model
         'requirement',
         'skills',
         'company',
-        'user_id'
+        'user_id',
+        'views'
+
     ];
 
     public function status()
@@ -47,7 +49,7 @@ class JobPost extends Model
     }
 
 
-    public function placement()
+    public function placements()
     {
         return $this->hasMany(Placement::class);
     }

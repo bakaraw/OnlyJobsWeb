@@ -13,17 +13,17 @@ class Placement extends Model
 
     protected $table = 'placement';
     protected $fillable = [
-        'user_id', 'job_post_id', 'placement_status',
+        'user_id', 'job_post_id', 'placement_status' , 'date_placement', 'additional_remarks'
     ];
 
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function jobPost()
     {
-        return $this->belongsTo(JobPost::class);
+        return $this->belongsTo(JobPost::class, 'job_post_id');
     }
 }
