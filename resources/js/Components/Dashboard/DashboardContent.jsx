@@ -22,9 +22,10 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
 
     const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
     const pieData = [
+        { name: 'Jobs', value: totalJob },
         { name: 'Users', value: totalUsers },
         { name: 'Views', value: totalViews },
-        { name: 'Jobs', value: totalJob },
+
     ]
     // Job views chart data
     const chartData = {
