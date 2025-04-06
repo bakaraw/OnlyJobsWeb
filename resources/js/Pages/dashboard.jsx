@@ -12,12 +12,9 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
 
     return (
         <>
-            {/* ✅ Fixed Navigation Bar */}
             <NavBar />
-
-            {/* ✅ Main Content with Top Padding to avoid overlap */}
-            <div className="flex pt-20">
-                {/* Sidebar Component */}
+        <div className="flex">
+            {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
 
             <div className="flex-1 p-6">
@@ -47,7 +44,7 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
                     </div>
                 )}
             </div>
-            </div>
+        </div>
         </>
     );
 }

@@ -26,11 +26,11 @@ Route::get('/', function () {
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    });
-});
+//Route::middleware(['auth'])->group(function () {
+//    Route::get('/dashboard', function () {
+//        return Inertia::render('Dashboard');
+//    });
+//});
 // Placements
 
 // Job Seeker Documents
@@ -109,3 +109,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';
+
+
+
