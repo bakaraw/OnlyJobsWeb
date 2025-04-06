@@ -8,6 +8,7 @@ use App\Models\Degree;
 use App\Models\Placement;
 use App\Models\Requirement;
 use App\Models\Skill;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -176,6 +177,9 @@ class JobPostController extends Controller
 
     public function showDashboard()
     {
+        $totalViews = JobPost::sum('views');
+        $totalUsers = User::count();
+
         $placements = Placement::select(
             'id',
             'user_id',
@@ -190,7 +194,6 @@ class JobPostController extends Controller
             ])
             ->get();
 
-        // Fetch job posts for the dashboard
         $jobs = JobPost::select(
             'id',
             'job_title',
@@ -202,32 +205,19 @@ class JobPostController extends Controller
             'views',
         )->get();
 
-        // Returning both jobs and placements to the frontend
+
+
         return Inertia::render('dashboard', [
-            'jobs' => $jobs,       // Pass jobs to the frontend
-            'placements' => $placements,  // Pass placements to the frontend
+            'jobs' => $jobs,
+            'placements' => $placements,
+
+
+            'totalViews' => $totalUsers,
+            'totalUsers' => $totalViews,
         ]);
     }
 
-    public function getPlacementsByJob($jobId)
-    {
-        $placements = Placement::where('job_post_id', $jobId)
-            ->with([
-                'user:id,first_name',
-            ])
-            ->select(
-                'id',
-                'user_id',
-                'job_post_id',
-                'placement_status',
-                'created_at',
-                'additional_remarks'
-            )
-            ->get();
 
-        return Inertia::render('dashboard', [
-            'placements' => $placements
-        ]);    }
 }
 
 

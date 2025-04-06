@@ -74,6 +74,20 @@ class PlacementController extends Controller
 
     }
 
+    public function viewsVsUsers()
+    {
+        $totalUsers = \App\Models\User::count();
+        $totalViews = \App\Models\JobPost::sum('views');
+
+        return Inertia::render('dashboard', [
+            'usersCount' => $totalUsers,
+            'viewsCount' => $totalViews,
+        ]);
+
+
+    }
+
+
 
 
 }
