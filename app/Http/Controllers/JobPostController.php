@@ -179,6 +179,7 @@ class JobPostController extends Controller
     {
         $totalViews = JobPost::sum('views');
         $totalUsers = User::count();
+        $totalJob = JobPost::count();
 
         $placements = Placement::select(
             'id',
@@ -214,6 +215,7 @@ class JobPostController extends Controller
 
             'totalViews' => $totalUsers,
             'totalUsers' => $totalViews,
+            'totalJob' => $totalJob,
         ]);
     }
 

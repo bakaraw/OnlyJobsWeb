@@ -6,29 +6,27 @@ import {
     LinearScale,
     BarElement,
     Title,
-    Tooltip,
-    Legend
+    Tooltip as ChartTooltip,
+    Legend as ChartLegend
 } from "chart.js";
 import JobList from "./Modal/JobList.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
-import { PieChart, Pie, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend, Label } from "recharts";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
-export default function DashboardContent({ jobs, placements, totalViews, totalUsers }) {
+export default function DashboardContent({ jobs, placements, totalViews, totalUsers, totalJob }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [selectedPlacement, setSelectedPlacement] = useState(null);
-    const COLORS = ['#0088FE', '#00C49F'];
 
-    console.log(totalViews)
-    console.log(totalUsers)
-
+    const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
     const pieData = [
         { name: 'Users', value: totalUsers },
-        { name: 'Views', value: totalViews }
-    ];
-
+        { name: 'Views', value: totalViews },
+        { name: 'Jobs', value: totalJob },
+    ]
+    // Job views chart data
     const chartData = {
         labels: jobs.map((job) => job.job_title),
         datasets: [
@@ -40,6 +38,14 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                 borderWidth: 1,
             },
         ],
+    };
+
+    const handleAccept = (placement) => {
+        console.log(`Accepted placement: ${placement.id}`);
+    };
+
+    const handleReject = (placement) => {
+        console.log(`Rejected placement: ${placement.id}`);
     };
 
     return (
@@ -65,6 +71,71 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                                 },
                             }}
                         />
+                    </div>
+                </div>
+
+                {/* Job Table Card */}
+                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
+                    <h3 className="text-xl font-semibold mb-4">Job List Overview</h3>
+                    <div className="overflow-x-auto">
+                        <table className="table-auto w-full border-collapse">
+                            <thead>
+                            <tr>
+                                <th className="py-2 px-4 border-b">Title</th>
+                                <th className="py-2 px-4 border-b">Location</th>
+                                <th className="py-2 px-4 border-b">Type</th>
+                                <th className="py-2 px-4 border-b">Views</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {jobs.length > 0 ? (
+                                jobs.map((job, index) => (
+                                    <tr
+                                        key={job.id}
+                                        className="border-t hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => {
+                                            setSelectedJob(job);
+                                            setShowDetails(true);
+                                        }}
+                                    >
+                                        <td className="py-2 px-4">{job.job_title}</td>
+                                        <td className="py-2 px-4">{job.job_location || "N/A"}</td>
+                                        <td className="py-2 px-4">{job.job_type || "N/A"}</td>
+                                        <td className="py-2 px-4 text-center">{job.views}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="py-2 px-4 text-center text-gray-500">
+                                        No jobs found.
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center">
+                    <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
+                        <h4 className="text-2xl font-semibold mb-4">Overall Views </h4>
+                        <PieChart width={400} height={300}>
+                            <Pie
+                                dataKey="value"
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={100}
+                                fill="#8884d8"
+                                label
+                            >
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <PieTooltip />
+                            <PieLegend />
+                        </PieChart>
                     </div>
                 </div>
 
@@ -119,29 +190,7 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                     )}
                 </div>
 
-                {/* Pie Chart Section */}
-                <div className="flex flex-col items-center">
-                    <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
-                        <h2 className="text-xl font-bold mb-4">Total views in all Users</h2>
 
-                    <PieChart width={400} height={300}>
-
-                        <Pie
-                            dataKey="value"
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            fill="#8884d8"
-                            label
-                        >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                        </Pie>
-                    </PieChart>
-                    </div>
-                </div>
 
                 <br />
             </div>
