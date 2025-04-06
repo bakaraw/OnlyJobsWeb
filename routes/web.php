@@ -32,6 +32,11 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 //    });
 //});
 // Placements
+Route::get('/placement', [PlacementController::class, 'index'])->name('placement.index');
+Route::get('/placement/create', [PlacementController::class, 'create'])->name('placement.create');
+Route::post('/placement', [PlacementController::class, 'store'])->name('placement.store');
+Route::get('/placement/{placement}', [PlacementController::class, 'show'])->name('placement.show');
+Route::delete('/placement/{placement}', [PlacementController::class, 'destroy'])->name('placement.destroy');
 
 // Job Seeker Documents
 Route::get('/documents', [JobSeekerDocumentController::class, 'index'])->name('documents.index');
