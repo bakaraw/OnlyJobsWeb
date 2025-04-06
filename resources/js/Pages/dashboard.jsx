@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../Components/Dashboard/Sidebar";
 import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
+import NavBar from "@/Components/NavBar.jsx";
 
 export default function dashboard({ jobs, placements, auth, totalViews, totalUsers, totalJob}) {
     const [activeView, setActiveView] = useState("dashboard");
@@ -10,6 +11,8 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
     console.log("jobs", jobs);
 
     return (
+        <>
+            <NavBar />
         <div className="flex">
             {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
@@ -42,5 +45,6 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
                 )}
             </div>
         </div>
+        </>
     );
 }

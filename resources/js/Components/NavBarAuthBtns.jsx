@@ -69,6 +69,11 @@ export default function NavBarAuthBtns() {
                             >
                                 Log Out
                             </Dropdown.Link>
+
+                            <Dropdown.Link href={route("dashboard")}>
+                                {typeof route("dashboard") === "string" ? "Dashboard" : "Invalid Route"}
+                            </Dropdown.Link>
+
                         </Dropdown.Content>
                     </Dropdown>
                 </div>
@@ -80,6 +85,7 @@ export default function NavBarAuthBtns() {
                     <Link href={route("register")} className="bg-primary text-white px-4 py-2 rounded-md hover:bg-light hover:text-dark transition">
                         Sign Up
                     </Link>
+
                 </>
             )}
         </>

@@ -26,7 +26,7 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
         { name: 'Views', value: totalViews },
         { name: 'Jobs', value: totalJob },
     ]
-    // Job views chart data
+
     const chartData = {
         labels: jobs.map((job) => job.job_title),
         datasets: [
@@ -38,14 +38,6 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                 borderWidth: 1,
             },
         ],
-    };
-
-    const handleAccept = (placement) => {
-        console.log(`Accepted placement: ${placement.id}`);
-    };
-
-    const handleReject = (placement) => {
-        console.log(`Rejected placement: ${placement.id}`);
     };
 
     return (
