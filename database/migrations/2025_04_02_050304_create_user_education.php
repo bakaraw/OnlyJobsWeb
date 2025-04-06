@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('educations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Foreign Key
-            $table->enum('education_level', ['elementary', 'junior_high', 'senior_high', 'college']);
+            $table->enum('education_level', ['Elementary', 'High School', 'Undergraduate', 'Graduate', 'Vocational', 'Others']);
             $table->string('school');
             $table->string('degree', 255)->nullable();
             $table->integer('start_year');
