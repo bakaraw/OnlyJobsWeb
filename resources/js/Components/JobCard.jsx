@@ -8,6 +8,7 @@ export default function JobCard({ job }) {
         job_description = "N/A", job_location = "N/A",
         company = "", created_at = "N/A", skills = [], requirements = [], } = job;
 
+<<<<<<< HEAD
     const handleClick = () => {
         // Handle click event, e.g., navigate to job details page
         console.log(`Job ID: ${id}`);
@@ -17,6 +18,20 @@ export default function JobCard({ job }) {
             onClick={handleClick}
             className="cursor-pointer border p-4 rounded shadow hover:shadow-lg transition"
         >
+=======
+    const handleClick = async () => {
+
+        try {
+            await axios.post(`/job_posts/${id}/increment_views`);
+            console.log(`View incremented for Job ID: ${id}`);
+        } catch (error) {
+            console.error("Error incrementing view:", error);
+        }
+    };
+
+    return (
+
+>>>>>>> main
         <a>
 
 
@@ -55,7 +70,11 @@ export default function JobCard({ job }) {
                 </div>
 
 
+<<<<<<< HEAD
                 <div className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
+=======
+                <div onClick={handleClick}   className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
+>>>>>>> main
                     <SecondaryButton className="justify-center"> View Job </SecondaryButton>
                 </div>
 

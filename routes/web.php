@@ -26,11 +26,11 @@ Route::get('/', function () {
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    });
-});
+//Route::middleware(['auth'])->group(function () {
+//    Route::get('/dashboard', function () {
+//        return Inertia::render('Dashboard');
+//    });
+//});
 // Placements
 
 // Job Seeker Documents
@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     //Route::get('/find_work', [JobPostController::class, 'show'])->name('jobs.show');
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
+    Route::post('/job_posts/{id}/increment_views', [JobPostController::class, 'incrementViews'])->name('job_posts.increment_views');
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
@@ -99,6 +100,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/education/{education}', [EducationController::class, 'destroy'])
         ->name('education.destroy');
+
+    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
+        ->name('dashboard');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
