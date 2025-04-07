@@ -66,18 +66,9 @@ class JobPostController extends Controller
         $skillIds = $validatedData['skills'] ?? [];
         unset($validatedData['skills']);
 
-<<<<<<< HEAD
-        $validatedData['user_id'] = auth()->id();  // Add the user ID
-
-        // Create a new job post
-        $jobPost = JobPost::create($validatedData);
-
-        // Attach skills and requirements if they exist
-=======
         $validatedData['user_id'] = auth()->id();
         $jobPost = JobPost::create($validatedData);
 
->>>>>>> main
         if (!empty($skillIds)) {
             $jobPost->skills()->attach($skillIds);
         }
@@ -85,10 +76,6 @@ class JobPostController extends Controller
             $jobPost->requirements()->attach($requirementIds);
         }
 
-<<<<<<< HEAD
-        // Redirect or return a success message
-=======
->>>>>>> main
         return Inertia::render('CreateJobPost')->with('success', 'Job post created successfully.');
     }
 
@@ -159,12 +146,6 @@ class JobPostController extends Controller
             'min_experience_years',
             'degree_id',
             'company',
-
-
-<<<<<<< HEAD
-=======
-
->>>>>>> main
         )
             ->with([
                 'skills' => function ($query) {
@@ -178,15 +159,9 @@ class JobPostController extends Controller
 
             ->toArray();
 
-<<<<<<< HEAD
-//        $jobs->increment('views');
-=======
->>>>>>> main
-
         return Inertia::render('FindWork', [
             'jobs' => $jobs,
         ]);
-
     }
 
     public function incrementViews($id)
@@ -198,13 +173,9 @@ class JobPostController extends Controller
 
     public function showDashboard()
     {
-<<<<<<< HEAD
-=======
         $totalViews = JobPost::sum('views');
         $totalUsers = User::count();
         $totalJob = JobPost::count();
-
->>>>>>> main
         $placements = Placement::select(
             'id',
             'user_id',
@@ -219,10 +190,6 @@ class JobPostController extends Controller
             ])
             ->get();
 
-<<<<<<< HEAD
-        // Fetch job posts for the dashboard
-=======
->>>>>>> main
         $jobs = JobPost::select(
             'id',
             'job_title',
@@ -230,17 +197,6 @@ class JobPostController extends Controller
             'job_location',
             'job_type',
             'created_at',
-<<<<<<< HEAD
-            'company'
-        )->get();
-
-        // Returning both jobs and placements to the frontend
-        return Inertia::render('dashboard', [
-            'jobs' => $jobs,       // Pass jobs to the frontend
-            'placements' => $placements,  // Pass placements to the frontend
-        ]);
-    }
-=======
             'company',
             'views',
         )->get();
@@ -257,9 +213,4 @@ class JobPostController extends Controller
             'totalJob' => $totalJob,
         ]);
     }
-
-
->>>>>>> main
 }
-
-
