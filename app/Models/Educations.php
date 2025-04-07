@@ -15,7 +15,8 @@ class Educations extends Model
         'degree',
         'start_year',
         'end_year',
-        'attached_file'
+        'attached_file_url',
+        'attached_file_public_id'
     ];
 
     public function user(): BelongsTo

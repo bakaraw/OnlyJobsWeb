@@ -59,6 +59,7 @@ class JobPostController extends Controller
             'skills.*'             => 'exists:skills,skill_id'  // Validate skill IDs
         ]);
 
+        // Extract and unset the `skills` and `requirements` fields
         $requirementIds = $validatedData['requirements'] ?? [];
         unset($validatedData['requirements']);
 
@@ -145,9 +146,6 @@ class JobPostController extends Controller
             'min_experience_years',
             'degree_id',
             'company',
-
-
-
         )
             ->with([
                 'skills' => function ($query) {
@@ -161,11 +159,9 @@ class JobPostController extends Controller
 
             ->toArray();
 
-
         return Inertia::render('FindWork', [
             'jobs' => $jobs,
         ]);
-
     }
 
     public function incrementViews($id)
@@ -180,7 +176,6 @@ class JobPostController extends Controller
         $totalViews = JobPost::sum('views');
         $totalUsers = User::count();
         $totalJob = JobPost::count();
-
         $placements = Placement::select(
             'id',
             'user_id',
@@ -218,8 +213,4 @@ class JobPostController extends Controller
             'totalJob' => $totalJob,
         ]);
     }
-
-
 }
-
-

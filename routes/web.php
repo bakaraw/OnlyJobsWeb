@@ -32,11 +32,6 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 //    });
 //});
 // Placements
-Route::get('/placement', [PlacementController::class, 'index'])->name('placement.index');
-Route::get('/placement/create', [PlacementController::class, 'create'])->name('placement.create');
-Route::post('/placement', [PlacementController::class, 'store'])->name('placement.store');
-Route::get('/placement/{placement}', [PlacementController::class, 'show'])->name('placement.show');
-Route::delete('/placement/{placement}', [PlacementController::class, 'destroy'])->name('placement.destroy');
 
 // Job Seeker Documents
 Route::get('/documents', [JobSeekerDocumentController::class, 'index'])->name('documents.index');
@@ -94,11 +89,17 @@ Route::middleware('auth')->group(function () {
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
 
-    Route::get('/education/store', [EducationController::class, 'edit'])
+    Route::get('/education', [EducationController::class, 'edit'])
         ->name('education.edit');
 
-    Route::post('/education/store', [EducationController::class, 'store'])
+    Route::post('/education', [EducationController::class, 'store'])
         ->name('education.store');
+
+    Route::put('/education/{education}', [EducationController::class, 'update'])
+        ->name('education.update');
+
+    Route::delete('/education/{education}', [EducationController::class, 'destroy'])
+        ->name('education.destroy');
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
@@ -114,6 +115,3 @@ Route::middleware('auth')->group(function () {
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';
-
-
-

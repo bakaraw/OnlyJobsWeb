@@ -15,7 +15,10 @@ export default function PrimaryButton({
             }
             disabled={disabled}
         >
-            {children}
+            <div className="flex items-center justify-between">
+                {disabled ? <div class="w-6 h-6 border-4 border-t-transparent border-blue-500 border-solid rounded-full animate-spin"></div> : <></>}
+                {children}
+            </div>
         </button>
     );
 }
