@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('degree', 255)->nullable();
             $table->integer('start_year');
             $table->integer('end_year');
-            $table->string('attached_file', 2083)->nullable();
+            $table->string('attached_file_url')->nullable();
+            $table->string('attached_file_public_id')->nullable();
             $table->timestamps();
         });
     }

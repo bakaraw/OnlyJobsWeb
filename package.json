@@ -20,6 +20,8 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
+        "@cloudinary/react": "^1.14.1",
+        "@cloudinary/url-gen": "^1.21.0",
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "lucide-react": "^0.486.0",

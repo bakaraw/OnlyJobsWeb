@@ -226,15 +226,9 @@ export default function UpdateEducation({ className }) {
                     <div className=''>
                         <InputLabel htmlFor="wow" value="Attach File" />
                         <div className="">
-                            <FileInput onFileSelect={handleFileUpload} />
-                            {selectedFile && (
-                                <p className="mt-2 text-green-600">File uploaded: {selectedFile.name}</p>
-                            )}
+                            <FileInput onFileSelect={(file) => setData('attached_file', file)} />
                         </div>
                     </div>
-                    {
-                        //<AddressForm data={data} setData={setData} errors={errors} />
-                    }
                     <div className='flex items-center justify-center'>
                         <PrimaryButton className='' type='submit' disabled={processing}>
                             Add

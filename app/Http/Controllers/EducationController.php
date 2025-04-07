@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Educations;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 
@@ -21,40 +22,35 @@ class EducationController extends Controller
     }
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'education_level' => ['required', Rule::in(['Elementary', 'High School', 'Undergraduate', 'Graduate', 'Vocational', 'Others'])],
             'school' => 'required|string|max:255',
             'degree' => 'nullable|string|max:255',
             'start_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'end_year' => 'nullable|integer|min:1900|max:' . date('Y') . '|gte:start_year',
-            'attached_file' => 'nullable|string|max:2083',
+            'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,pdf|max:10240',
         ]);
 
-        Auth::user()->educations()->create($request->all());
+        if ($request->hasFile('attached_file')) {
+            $file = $request->file('attached_file');
 
-        return Redirect::route('profile.edit')->with('success', 'Education updated successfully');
+            // Save to cloudinary disk
+            $uploadedPath = Storage::disk('cloudinary')->putFile('education_files', $file);
+
+            // Get full URL
+            $url = Storage::disk('cloudinary')->url($uploadedPath);
+
+            $validated['attached_file_url'] = $url;
+            $validated['attached_file_public_id'] = $uploadedPath; // optional if you want to delete later
+        }
+
+        unset($validated['attached_file']);
+
+        Auth::user()->educations()->create($validated);
+
+        return redirect()->route('profile.edit')->with('success', 'Education updated successfully');
     }
 
-    /*public function update(Request $request, Educations $educations): RedirectResponse*/
-    /*{*/
-    /*    $request->validate([*/
-    /*        'education_level' => ['required', Rule::in(['elementery', 'junior_high', 'senior_high', 'college'])],*/
-    /*        'school' => 'required|string|max:255',*/
-    /*        'degree' => 'nullable|string|max:255',*/
-    /*        'start_year' => 'nullable|integer|min:1900|max:' . date('Y'),*/
-    /*        'end_year' => 'nullable|integer|min:1900|max:' . date('Y') . '|gte:start_year',*/
-    /*        'attached_file' => 'nullable|string|max:2083',*/
-    /*    ]);*/
-    /**/
-    /*    // Optional: Ensure the education belongs to the authenticated user*/
-    /*    if ($educations->user_id !== auth()->id()) {*/
-    /*        abort(403);*/
-    /*    }*/
-    /**/
-    /*    $educations->update($request->all());*/
-    /**/
-    /*    return Redirect::back()->with('success', 'Education updated.');*/
-    /*}*/
     public function update(Request $request, Educations $education): RedirectResponse
     {
         // Validate the incoming request data
@@ -91,6 +87,11 @@ class EducationController extends Controller
         // Ensure the education record belongs to the authenticated user
         if ($education->user_id !== auth()->id()) {
             abort(403); // Forbidden if user is not the owner
+        }
+
+        if ($education->attached_file_public_id) {
+            // Call Cloudinary to delete the file using the public ID
+            Storage::disk('cloudinary')->delete($education->attached_file_public_id);
         }
 
         $education->delete();
