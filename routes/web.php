@@ -26,12 +26,17 @@ Route::get('/', function () {
 });
 Route::get('/about', [PageController::class, 'about'])->name('about');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    });
-});
+//Route::middleware(['auth'])->group(function () {
+//    Route::get('/dashboard', function () {
+//        return Inertia::render('Dashboard');
+//    });
+//});
 // Placements
+Route::get('/placement', [PlacementController::class, 'index'])->name('placement.index');
+Route::get('/placement/create', [PlacementController::class, 'create'])->name('placement.create');
+Route::post('/placement', [PlacementController::class, 'store'])->name('placement.store');
+Route::get('/placement/{placement}', [PlacementController::class, 'show'])->name('placement.show');
+Route::delete('/placement/{placement}', [PlacementController::class, 'destroy'])->name('placement.destroy');
 
 // Job Seeker Documents
 Route::get('/documents', [JobSeekerDocumentController::class, 'index'])->name('documents.index');
@@ -84,6 +89,7 @@ Route::middleware('auth')->group(function () {
     //Route::get('/find_work', [JobPostController::class, 'show'])->name('jobs.show');
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
+    Route::post('/job_posts/{id}/increment_views', [JobPostController::class, 'incrementViews'])->name('job_posts.increment_views');
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
@@ -93,6 +99,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/education/store', [EducationController::class, 'store'])
         ->name('education.store');
+
+    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
+        ->name('dashboard');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
@@ -105,3 +114,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';
+
+
+
