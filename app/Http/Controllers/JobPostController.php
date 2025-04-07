@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use PHPUnit\Util\PHP\Job;
 use Symfony\Component\HttpFoundation\Response;
 
 class JobPostController extends Controller
@@ -118,6 +119,40 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
+    public function incrementViews($id)
+    {
+        $jobPost = JobPost::findOrFail($id);
+        $jobPost->increment('views');
+        return response()->json(['success' => true]);
+    }
+
+    public function JobView($id)
+    {
+        $jobview = JobPost::with([
+            'skills:skill_id,skill_name',
+            'requirements:requirement_id,requirement_name',
+            'degree',
+            'status',
+        ])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'user_id',
+                'status_id',
+                'degree_id',
+                'created_at'
+            )
+            ->findOrFail($id);
+
+        return Inertia::render('JobView', ['jobview' => $jobview]);
+    }
 
     public function destroy($id)
     {
@@ -132,6 +167,10 @@ class JobPostController extends Controller
         return redirect()->route('job_posts.create')
             ->with('success', 'Job post deleted successfully.');
     }
+
+
+
+
     public function show()
     {
         $jobs = JobPost::select(
@@ -168,12 +207,6 @@ class JobPostController extends Controller
 
     }
 
-    public function incrementViews($id)
-    {
-        $jobPost = JobPost::findOrFail($id);
-        $jobPost->increment('views');
-        return response()->json(['success' => true]);
-    }
 
     public function showDashboard()
     {

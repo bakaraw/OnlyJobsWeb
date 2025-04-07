@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
+
+    Route::get('/job/{id}', [JobPostController::class, 'JobView'])->name('job.view');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

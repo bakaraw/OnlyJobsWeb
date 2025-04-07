@@ -65,11 +65,32 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 </div>
 
                 {/* Job listing section */}
-                <div className='col-span-3'>
+                <div className='col-span-3 space-y-2'>
+                {jobs && jobs.map((job) => (
+                    <JobCard key={job.id} job={job}>
+                        <PrimaryButton
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                try {
+                                    // Increment view count first
+                                    await axios.post(`/job_posts/${job.id}/increment_views`);
+                                    console.log(`View incremented for Job ID: ${job.id}`);
+                                    // Then navigate to job view
+                                    window.location.href = route('job.view', job.id);
+                                } catch (error) {
+                                    console.error("Error incrementing view:", error);
+                                }
+                            }}
+                            href={route('job.view', job.id)}
+                            className="mt-2 w-full text-sm px-3 py-1"
+                        >
+                            View Job
+                        </PrimaryButton>
+                    </JobCard>
+                ))}
+            </div>
 
-                    {jobs && jobs.map((job) => (
-                        <JobCard key={job.id} job={job} />
-                    ))}
+
 
                     <div className="flex items-center justify-center mt-6">
                         <PrimaryButton href={route('login')}>
@@ -77,7 +98,8 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                         </PrimaryButton>
                     </div>
                 </div>
-            </div>
+
+
         </MainPageLayout>
     );
 

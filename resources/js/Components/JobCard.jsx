@@ -1,22 +1,16 @@
 import Chip from "./Chip";
 import SecondaryButton from "./SecondaryButton";
+import { Inertia } from '@inertiajs/inertia';
 
-export default function JobCard({ job }) {
+export default function JobCard({ job , children }) {
     if (!job) return <p>Error: Job data is missing.</p>;
 
     const { id, job_title = "N/A", job_type = "N/A",
         job_description = "N/A", job_location = "N/A",
         company = "", created_at = "N/A", skills = [], requirements = [], } = job;
 
-    const handleClick = async () => {
 
-        try {
-            await axios.post(`/job_posts/${id}/increment_views`);
-            console.log(`View incremented for Job ID: ${id}`);
-        } catch (error) {
-            console.error("Error incrementing view:", error);
-        }
-    };
+
 
     return (
 
@@ -57,11 +51,10 @@ export default function JobCard({ job }) {
                     </div>
                 </div>
 
-
-                <div onClick={handleClick}   className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
-                    <SecondaryButton className="justify-center"> View Job </SecondaryButton>
+                {/* Button will be passed as children */}
+                <div className="col-span-1 px-4 py-2 flex items-center justify-center h-full">
+                    {children}
                 </div>
-
             </div>
             <div className="px-4 py-2">
                 <hr className="w-full border-t-1 border-gray-300 my-4" />
