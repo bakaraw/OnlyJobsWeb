@@ -26,10 +26,7 @@
         "@inertiajs/inertia-react": "^0.8.1",
         "chart.js": "^4.4.8",
         "lucide-react": "^0.486.0",
-<<<<<<< HEAD
-=======
         "react-chartjs-2": "^5.3.0",
->>>>>>> main
         "react-select": "^5.10.1",
         "recharts": "^2.15.1"
     }
