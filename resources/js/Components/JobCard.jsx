@@ -8,17 +8,6 @@ export default function JobCard({ job }) {
         job_description = "N/A", job_location = "N/A",
         company = "", created_at = "N/A", skills = [], requirements = [], } = job;
 
-<<<<<<< HEAD
-    const handleClick = () => {
-        // Handle click event, e.g., navigate to job details page
-        console.log(`Job ID: ${id}`);
-    }
-    return (
-        <div
-            onClick={handleClick}
-            className="cursor-pointer border p-4 rounded shadow hover:shadow-lg transition"
-        >
-=======
     const handleClick = async () => {
 
         try {
@@ -30,11 +19,7 @@ export default function JobCard({ job }) {
     };
 
     return (
-
->>>>>>> main
         <a>
-
-
             <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-5">
                     <div className="flex flex-col px-4 py-2">
@@ -61,20 +46,16 @@ export default function JobCard({ job }) {
                             //    Requirements:
                             //
                             <div className="flex gap-2 mt-4">
-                               {requirements.length > 0
-                                   ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
-                                   : <Chip>No Requirement posted</Chip>}
+                                {requirements.length > 0
+                                    ? requirements.map((requirement, index) => <Chip key={index}>{requirement.requirement_name}</Chip>)
+                                    : <Chip>No Requirement posted</Chip>}
                             </div>
                         }
                     </div>
                 </div>
 
 
-<<<<<<< HEAD
-                <div className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
-=======
-                <div onClick={handleClick}   className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
->>>>>>> main
+                <div onClick={handleClick} className="col-span-1 px-4 py-2 flex items-center justify-center h-full" >
                     <SecondaryButton className="justify-center"> View Job </SecondaryButton>
                 </div>
 
@@ -82,9 +63,6 @@ export default function JobCard({ job }) {
             <div className="px-4 py-2">
                 <hr className="w-full border-t-1 border-gray-300 my-4" />
             </div>
-        </a>
-        </div>
+        </a >
     );
-
-
 }
