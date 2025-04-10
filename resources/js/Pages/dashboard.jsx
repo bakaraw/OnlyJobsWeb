@@ -3,8 +3,9 @@ import Sidebar from "../Components/Dashboard/Sidebar";
 import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import NavBar from "@/Components/NavBar.jsx";
-
+import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 export default function dashboard({ jobs, placements, auth, totalViews, totalUsers, totalJob}) {
+
     const [activeView, setActiveView] = useState("dashboard");
 
     console.log("placements", placements);
@@ -17,11 +18,11 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
             {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
 
+
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
                     <DashboardContent jobs={jobs} placements={placements}  totalViews={totalViews} totalUsers={totalUsers}
                                       totalJob={totalJob} />
-
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-lg shadow-lg">
                         {/* Left: Job Listings (Only Show if Authenticated) */}

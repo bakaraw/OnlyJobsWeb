@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     //Route::get('/find_work', [JobPostController::class, 'show'])->name('jobs.show');
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
+
     Route::post('/job_posts/{id}/increment_views', [JobPostController::class, 'incrementViews'])->name('job_posts.increment_views');
 
     Route::post('job_posts', [JobPostController::class, 'store'])
@@ -113,6 +114,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
+
+
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

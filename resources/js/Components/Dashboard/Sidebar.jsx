@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useState} from "react";
 import { Package } from "lucide-react";
-
 export default function Sidebar({ auth, setActiveView }) {
+
+
     return (
         <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
             {/* Profile Section */}
@@ -40,6 +41,10 @@ export default function Sidebar({ auth, setActiveView }) {
                     </li>
 
                 </ul>
+
+
+
+
             </nav>
         </div>
     );

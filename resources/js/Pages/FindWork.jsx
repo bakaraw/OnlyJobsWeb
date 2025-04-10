@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react'
 
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
@@ -71,17 +72,11 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                         <PrimaryButton
                             onClick={async (e) => {
                                 e.preventDefault();
-                                try {
-                                    // Increment view count first
-                                    await axios.post(`/job_posts/${job.id}/increment_views`);
-                                    console.log(`View incremented for Job ID: ${job.id}`);
-                                    // Then navigate to job view
-                                    window.location.href = route('job.view', job.id);
-                                } catch (error) {
-                                    console.error("Error incrementing view:", error);
-                                }
+                                await axios.post(`/job_posts/${job.id}/increment_views`);
+                                console.log(`View incremented for Job ID: ${job.id}`);
+                                router.visit(route('job.view', job.id))
+
                             }}
-                            href={route('job.view', job.id)}
                             className="mt-2 w-full text-sm px-3 py-1"
                         >
                             View Job

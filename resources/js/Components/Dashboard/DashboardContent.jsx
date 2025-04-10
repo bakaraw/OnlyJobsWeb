@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { router } from "@inertiajs/react";
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,6 +14,8 @@ import {
 import JobList from "./Modal/JobList.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend, Label } from "recharts";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import NavBar from "@/Components/NavBar.jsx";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
@@ -42,13 +46,18 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
     };
 
     return (
+        <>
+            <NavBar />
+
         <div className="p-6">
             <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
                 {/* Job Views Chart */}
-                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full cursor-pointer">
+                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full flex flex-col">
                     <h3 className="text-xl font-semibold mb-4">Job Views Overview</h3>
-                    <div className="chart-container">
+                    <div className="flex-grow flex items-end">
                         <Bar
                             data={chartData}
                             options={{
@@ -70,6 +79,11 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                 {/* Job Table Card */}
                 <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
                     <h3 className="text-xl font-semibold mb-4">Job List Overview</h3>
+                    <div className="mb-4 flex justify-end">
+                        <PrimaryButton onClick={() => router.visit(route('job_posts.create'))}>
+                            Create Job
+                        </PrimaryButton>
+                    </div>
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border-collapse">
                             <thead>
@@ -82,7 +96,7 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                             </thead>
                             <tbody>
                             {jobs.length > 0 ? (
-                                jobs.map((job, index) => (
+                                jobs.map((job) => (
                                     <tr
                                         key={job.id}
                                         className="border-t hover:bg-gray-100 cursor-pointer"
@@ -192,5 +206,6 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
             )}
         </div>
+        </>
     );
 }

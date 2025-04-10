@@ -38,7 +38,6 @@ class JobPostController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         // Validate input data
@@ -53,30 +52,47 @@ class JobPostController extends Controller
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
-            'views',
-            'requirements'          => 'nullable|array',
-            'requirements.*'        => 'exists:requirements,requirement_id',  // Validate requirement IDs
+            'views'                => 'nullable|integer',
+            'requirements'         => 'nullable|array',
+            'requirements.*'       => 'exists:requirements,requirement_id',
             'skills'               => 'nullable|array',
-            'skills.*'             => 'exists:skills,skill_id'  // Validate skill IDs
+            'skills.*'             => 'exists:skills,skill_id',
+            'custom_skills'        => 'nullable|array',
+            'custom_skills.*'      => 'string|max:255'
         ]);
 
+        // Separate the arrays from validated data
         $requirementIds = $validatedData['requirements'] ?? [];
-        unset($validatedData['requirements']);
-
         $skillIds = $validatedData['skills'] ?? [];
-        unset($validatedData['skills']);
+        $customSkills = $validatedData['custom_skills'] ?? [];
 
+        // Remove these fields from the validated data
+        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills']);
+
+        // Add the user_id to the validated data
         $validatedData['user_id'] = auth()->id();
+
+        // Create the job post
         $jobPost = JobPost::create($validatedData);
 
+        // Attach skills to the job post
         if (!empty($skillIds)) {
             $jobPost->skills()->attach($skillIds);
         }
+
+        // Attach requirements to the job post
         if (!empty($requirementIds)) {
             $jobPost->requirements()->attach($requirementIds);
         }
 
-        return Inertia::render('CreateJobPost')->with('success', 'Job post created successfully.');
+        // Create and attach custom skills
+        foreach ($customSkills as $customSkillName) {
+            $newSkill = Skill::create(['skill_name' => $customSkillName]);
+            $jobPost->skills()->attach($newSkill->skill_id);
+        }
+
+        // Redirect or return success message
+        return redirect()->route('dashboard')->with('success', 'Job post created successfully.');
     }
 
 
@@ -151,8 +167,11 @@ class JobPostController extends Controller
             )
             ->findOrFail($id);
 
-        return Inertia::render('JobView', ['jobview' => $jobview]);
+        return Inertia::render('JobView', [
+            'jobview' => $jobview
+        ]);
     }
+
 
     public function destroy($id)
     {
@@ -184,7 +203,6 @@ class JobPostController extends Controller
             'min_experience_years',
             'degree_id',
             'company',
-
 
 
         )
