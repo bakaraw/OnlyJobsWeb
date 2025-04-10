@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePage } from '@inertiajs/react';
+import {router, usePage} from '@inertiajs/react';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -55,8 +55,14 @@ export default function JobView() {
         <MainPageLayout
             header={
                 <ContentLayout>
-                    <PrimaryButton href={route('find_work')} className="float-right">
+                    <PrimaryButton href={route('find_work')} className="float-right"
+                                   onClick={async (e) => {
+                                       e.preventDefault();
+                                       router.visit(route('find_work'));
+                                   }}
+                    >
                         Back to Job List
+
                     </PrimaryButton>
                     <p className="text-3xl font-semibold text-primary">{jobview.job_title}</p>
                     <p className="text-md mt-2 text-gray-600">{jobview.company} — {jobview.job_location}</p>

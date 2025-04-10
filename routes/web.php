@@ -58,7 +58,6 @@ Route::delete('/requirements/{requirement}', [RequirementController::class, 'des
 
 //Route::get('/placements', [PlacementController::class, 'show'])->name('placements.show');
 
-Route::get('/find_work', [JobPostController::class, 'show'])->name('find_work');
 
 Route::get('/about_us', function () {
     return Inertia::render('AboutUs');
@@ -115,6 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
+    Route::get('/find_work', [JobPostController::class, 'show'])->name('find_work');
 
 });
 //Route::get('/dashboard', function () {
