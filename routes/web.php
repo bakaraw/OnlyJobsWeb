@@ -94,16 +94,25 @@ Route::middleware('auth')->group(function () {
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
 
-    Route::get('/education/store', [EducationController::class, 'edit'])
+    Route::get('/education', [EducationController::class, 'edit'])
         ->name('education.edit');
 
-    Route::post('/education/store', [EducationController::class, 'store'])
+    Route::post('/education', [EducationController::class, 'store'])
         ->name('education.store');
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
     Route::get('/job/{id}', [JobPostController::class, 'JobView'])->name('job.view');
+
+    Route::put('/education/{education}', [EducationController::class, 'update'])
+        ->name('education.update');
+
+    Route::delete('/education/{education}', [EducationController::class, 'destroy'])
+        ->name('education.destroy');
+
+    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
+        ->name('dashboard');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
