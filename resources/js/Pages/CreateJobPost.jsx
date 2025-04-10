@@ -79,6 +79,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
             ...data,
             skills: skillsArray,
             requirements: requirementsArray,
+            custom_skills: customSkills // add this line to include custom skills in the payload
         });
 
         router.post(
@@ -87,6 +88,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                 ...data,
                 skills: skillsArray,
                 requirements: requirementsArray,
+                custom_skills: customSkills // include custom_skills in the payload
             },
             {
                 onSuccess: () => {
