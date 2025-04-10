@@ -1,9 +1,52 @@
-// resources/js/Pages/Job/View.jsx
 import React from 'react';
 import { usePage } from '@inertiajs/react';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
+
+const JobDescriptionCard = ({ jobDescription }) => (
+    <div>
+        <h2 className="text-2xl font-semibold text-primary mb-4">Job Description</h2>
+        <p className="text-gray-700 leading-relaxed">{jobDescription}</p>
+    </div>
+);
+
+const JobDetailsCard = ({ job }) => (
+    <div>
+        <h2 className="text-2xl font-semibold text-primary">Job Details</h2>
+        <ul className="mt-4 space-y-2 text-gray-700">
+            <li className="flex justify-between"><strong>Type:</strong> <span>{job.job_type}</span></li>
+            <li className="flex justify-between"><strong>Experience:</strong> <span>{job.min_experience_years} years</span></li>
+            <li className="flex justify-between"><strong>Salary:</strong> <span>₱{job.min_salary} - ₱{job.max_salary}</span></li>
+            <li className="flex justify-between"><strong>Degree:</strong> <span>{job.degree?.degree_name ?? 'Not specified'}</span></li>
+            <li className="flex justify-between"><strong>Status:</strong> <span>{job.status?.status_name ?? 'Pending'}</span></li>
+        </ul>
+    </div>
+);
+
+const RequirementsCard = ({ requirements }) => (
+    <div>
+        <h2 className="text-2xl font-semibold text-primary">Requirements</h2>
+        <ul className="list-disc ml-6 mt-2 text-gray-700">
+            {requirements?.map((req) => (
+                <li key={req.requirement_id} className="text-gray-600">{req.requirement_name}</li>
+            ))}
+        </ul>
+    </div>
+);
+
+const SkillsCard = ({ skills }) => (
+    <div>
+        <h2 className="text-2xl font-semibold text-primary">Skills</h2>
+        <div className="flex flex-wrap gap-3 mt-4">
+            {skills?.map((skill) => (
+                <span key={skill.skill_id} className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium">
+          {skill.skill_name}
+        </span>
+            ))}
+        </div>
+    </div>
+);
 
 export default function JobView() {
     const { jobview } = usePage().props;
@@ -12,52 +55,23 @@ export default function JobView() {
         <MainPageLayout
             header={
                 <ContentLayout>
-                    <p className="text-3xl">{jobview.job_title}</p>
+                    <PrimaryButton href={route('find_work')} className="float-right">
+                        Back to Job List
+                    </PrimaryButton>
+                    <p className="text-3xl font-semibold text-primary">{jobview.job_title}</p>
                     <p className="text-md mt-2 text-gray-600">{jobview.company} — {jobview.job_location}</p>
                 </ContentLayout>
             }
         >
-            <div className="p-6 bg-white rounded-lg shadow-md space-y-4">
-                <div>
-                    <h2 className="text-xl font-semibold">Job Description</h2>
-                    <p className="mt-2 text-gray-700">{jobview.job_description}</p>
-                </div>
+                <JobDescriptionCard jobDescription={jobview.job_description} />
 
-                <div>
-                    <h2 className="text-xl font-semibold">Job Details</h2>
-                    <ul className="mt-2 space-y-1 text-gray-700">
-                        <li><strong>Type:</strong> {jobview.job_type}</li>
-                        <li><strong>Experience:</strong> {jobview.min_experience_years} years</li>
-                        <li><strong>Salary:</strong> ₱{jobview.min_salary} - ₱{jobview.max_salary}</li>
-                        <li><strong>Degree:</strong> {jobview.degree?.degree_name ?? 'Not specified'}</li>
-                        <li><strong>Status:</strong> {jobview.status?.status_name ?? 'Pending'}</li>
-                    </ul>
-                </div>
+                <JobDetailsCard job={jobview} />
 
-                <div>
-                    <h2 className="text-xl font-semibold">Requirements</h2>
-                    <ul className="list-disc ml-6 text-gray-700">
-                        {jobview.requirements?.map((req) => (
-                            <li key={req.requirement_id}>{req.requirement_name}</li>
-                        ))}
-                    </ul>
-                </div>
+                <RequirementsCard requirements={jobview.requirements} />
 
-                <div>
-                    <h2 className="text-xl font-semibold">Skills</h2>
-                    <ul className="flex flex-wrap gap-2 mt-2">
-                        {jobview.skills?.map((skill) => (
-                            <span key={skill.skill_id} className="bg-secondary text-white px-3 py-1 rounded-full text-sm">
-                                {skill.skill_name}
-                            </span>
-                        ))}
-                    </ul>
-                </div>
+                {/* Skills Card */}
+                <SkillsCard skills={jobview.skills} />
 
-                <PrimaryButton className="mt-6" href={route('findwork')}>
-                    Back to Job List
-                </PrimaryButton>
-            </div>
         </MainPageLayout>
     );
 }
