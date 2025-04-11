@@ -135,12 +135,6 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
-    public function incrementViews($id)
-    {
-        $jobPost = JobPost::findOrFail($id);
-        $jobPost->increment('views');
-        return response()->json(['success' => true]);
-    }
 
     public function JobView($id)
     {

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
+use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\JobSeekerDocumentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlacementController;
@@ -89,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
 
-    Route::post('/job_posts/{id}/increment_views', [JobPostController::class, 'incrementViews'])->name('job_posts.increment_views');
+    Route::post('/job_posts/{id}/increment_views', [JobSeekerController::class, 'incrementViews'])->name('job_posts.increment_views');
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
@@ -103,7 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
-    Route::get('/job/{id}', [JobPostController::class, 'JobView'])->name('job.view');
+    Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
 
     Route::put('/education/{education}', [EducationController::class, 'update'])
         ->name('education.update');

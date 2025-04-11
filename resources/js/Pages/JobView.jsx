@@ -6,21 +6,18 @@ import PrimaryButton from '@/Components/PrimaryButton';
 
 const JobDescriptionCard = ({ jobDescription }) => (
     <div>
-        <h2 className="text-2xl font-semibold text-primary mb-4">Job Description</h2>
         <p className="text-gray-700 leading-relaxed">{jobDescription}</p>
     </div>
 );
 
 const JobDetailsCard = ({ job }) => (
-    <div>
-        <h2 className="text-2xl font-semibold text-primary">Job Details</h2>
-        <ul className="mt-4 space-y-2 text-gray-700">
-            <li className="flex justify-between"><strong>Type:</strong> <span>{job.job_type}</span></li>
-            <li className="flex justify-between"><strong>Experience:</strong> <span>{job.min_experience_years} years</span></li>
-            <li className="flex justify-between"><strong>Salary:</strong> <span>₱{job.min_salary} - ₱{job.max_salary}</span></li>
-            <li className="flex justify-between"><strong>Degree:</strong> <span>{job.degree?.degree_name ?? 'Not specified'}</span></li>
-            <li className="flex justify-between"><strong>Status:</strong> <span>{job.status?.status_name ?? 'Pending'}</span></li>
-        </ul>
+    <div style={{marginTop: "15px"}}>
+        <h2 className="text-2xl font-semibold ">Salary</h2>
+        <p>
+            <h3  className="text-1xl font-semibold ">
+                ₱{job.min_salary} - ₱{job.max_salary}
+            </h3>
+        </p>
     </div>
 );
 
@@ -41,16 +38,24 @@ const SkillsCard = ({ skills }) => (
         <div className="flex flex-wrap gap-3 mt-4">
             {skills?.map((skill) => (
                 <span key={skill.skill_id} className="bg-secondary text-black px-4 py-2 rounded-full text-sm font-medium">
-          {skill.skill_name}
-        </span>
+                    {skill.skill_name}
+                </span>
             ))}
         </div>
     </div>
 );
 
-export default function JobView() {
-    const { jobview } = usePage().props;
+const JobCompanyCard = ({ JobCompany }) => (
+    <div>
+        <h3>About the Company: </h3>
+        <p className="text-gray-700 leading-relaxed font-semibold text-primary">{JobCompany}</p>
+    </div>
+);
 
+export default function JobView() {
+    const { jobview, authUser } = usePage().props; // Access both jobview and authUser from Inertia props
+
+    console.log(authUser.first_name)
     return (
         <MainPageLayout
             header={
@@ -62,22 +67,50 @@ export default function JobView() {
                                    }}
                     >
                         Back to Job List
-
                     </PrimaryButton>
-                    <p className="text-3xl font-semibold text-primary">{jobview.job_title}</p>
-                    <p className="text-md mt-2 text-gray-600">{jobview.company} — {jobview.job_location}</p>
+                    <p className="text-3xl font-bold ">{jobview.job_title}</p>
+                    <p className="text-gray-500  text-md">
+                        Posted {new Date(jobview.created_at).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "2-digit",
+                        year: "numeric",
+                    })} {"  "}
+                        {jobview.job_location}
+                    </p>
+
+                    <div style={{marginTop: "15px"}} className="text-md mt-2 ">
+                        {jobview.job_type}
+                    </div>
                 </ContentLayout>
             }
         >
+            <div style={{marginTop: "15px"}}>
                 <JobDescriptionCard jobDescription={jobview.job_description} />
+            </div>
 
-                <JobDetailsCard job={jobview} />
+            <JobDetailsCard job={jobview} />
 
-                <RequirementsCard requirements={jobview.requirements} />
-
-                {/* Skills Card */}
+            <div style={{marginTop: "15px"}}>
                 <SkillsCard skills={jobview.skills} />
+            </div>
 
+            <div style={{marginTop: "15px"}}>
+                <RequirementsCard requirements={jobview.requirements} />
+            </div>
+
+            <div style={{marginTop: "15px"}  }>
+                <JobCompanyCard JobCompany={jobview.company} />
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-2 border-4 border-gray-300 ring-2 ring-white">
+                </div>
+            </div>
+
+
+            <div style={{marginTop: "50px"}} >
+
+                <PrimaryButton>
+                    Apply
+                </PrimaryButton>
+            </div>
         </MainPageLayout>
     );
 }

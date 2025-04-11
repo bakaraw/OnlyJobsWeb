@@ -57,9 +57,11 @@ export default function NavBarAuthBtns() {
                         </Dropdown.Trigger>
 
                         <Dropdown.Content>
-                            <Dropdown.Link href={route("dashboard")}>
-                                {typeof route("dashboard") === "string" ? "Dashboard" : "Invalid Route"}
-                            </Dropdown.Link>
+                            {auth.user && auth.user.id === 1 && (
+                                <Dropdown.Link href={route("dashboard")}>
+                                    {typeof route("dashboard") === "string" ? "Dashboard" : "Invalid Route"}
+                                </Dropdown.Link>
+                            )}
 
                             <Dropdown.Link
                                 href={route('profile.edit')}

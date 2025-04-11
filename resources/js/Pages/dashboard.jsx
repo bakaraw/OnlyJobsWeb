@@ -12,8 +12,7 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
     console.log("jobs", jobs);
 
     return (
-        <>
-            <NavBar />
+
         <div className="flex">
             {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
@@ -46,6 +45,6 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
                 )}
             </div>
         </div>
-        </>
+
     );
 }

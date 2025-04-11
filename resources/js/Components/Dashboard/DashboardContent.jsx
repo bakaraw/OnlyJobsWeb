@@ -46,8 +46,6 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
     };
 
     return (
-        <>
-            <NavBar />
 
         <div className="p-6">
             <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
@@ -206,6 +204,5 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
             )}
         </div>
-        </>
     );
 }
