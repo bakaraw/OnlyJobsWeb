@@ -35,7 +35,7 @@ class EducationController extends Controller
             $file = $request->file('attached_file');
 
             // Save to cloudinary disk
-            $uploadedPath = Storage::disk('cloudinary')->putFile('education_files', $file);
+            $uploadedPath = Storage::disk('cloudinary')->putFile('education_files/documents', $file);
 
             // Get full URL
             $url = Storage::disk('cloudinary')->url($uploadedPath);

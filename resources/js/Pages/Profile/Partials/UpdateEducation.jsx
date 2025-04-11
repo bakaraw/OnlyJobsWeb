@@ -83,7 +83,7 @@ export default function UpdateEducation({ className }) {
                     </div>
                     <div className='flex items-center justify-end w-full'>
                         <SecondaryButton onClick={() => setIsAddModalOpen(true)} className=''>
-                            Add Education
+                            Add
                         </SecondaryButton>
                     </div>
                 </div>

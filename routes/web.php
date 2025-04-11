@@ -10,6 +10,7 @@ use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\ViewsController;
+use App\Http\Controllers\WorkHistoryController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +104,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
+
+    Route::post('/work_history', [WorkHistoryController::class, 'store'])
+        ->name('work_history.store');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
