@@ -2,33 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JobPost;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
-use App\Models\Educations;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 
 class ApplicantController extends Controller
 {
 
-    public function pendingAccepted() {
-
+    public function qualifiedAccepted(Request $request) {
         $user = Auth::user();
 
-        $user->appliedJobs()->where('job_post_id', null)->update([
-            'accepted' => true
-        ])
-
+        $user->appliedJobs()
+            ->where('job_post_id', $request->job_post_id)
+            ->where('user_id', $request->user_id)
+            ->update(['qualified' => true]);
     }
 
+    public function finalApplicant(Request $request) {
+        $user = Auth::user();
 
+        $user->appliedJobs()
+            ->where('job_post_id', $request->job_post_id)
+            ->where('user_id', $request->user_id)
+            ->update(['accepted' => true]);
+    }
+
+    public function rejectApplicant(Request $request) {
+        $user = Auth::user();
+
+        $user->appliedJobs()
+            ->where('job_post_id', $request->job_post_id)
+            ->where('user_id', $request->user_id)
+            ->update(['rejected' => true]);
+    }
 
 }
 

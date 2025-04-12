@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
@@ -121,6 +122,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
 
+    Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
+    Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');
+    Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
 
 });
 //Route::get('/dashboard', function () {

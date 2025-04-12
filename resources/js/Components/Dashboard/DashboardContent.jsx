@@ -148,60 +148,60 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                 </DashboardCard>
             </div>
 
-            {/* Job Applicant Overview */}
-            <DashboardCard title="Job Applicant Overview">
-                {applicants.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse">
-                            <thead>
-                            <tr>
-                                <th>Applicant</th>
-                                <th>Job Title</th>
-                                <th>Status</th>
-                                <th>Date Placed</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {applicants.map((application) => {
-                                const job = jobs.find(j => j.id === application.job_id);
-                                return (
-                                    <tr key={application.id} className="border-t cursor-pointer hover:bg-gray-100">
-                                        <td className="py-2 px-4">
-                                            {application.user.first_name} {application.user.last_name}
-                                        </td>
-                                        <td className="py-2 px-4">
-                                            {application.job_post?.job_title || 'Unknown Job'}
-                                        </td>
+            {/*/!* Job Applicant Overview *!/*/}
+            {/*<DashboardCard title="Job Applicant Overview">*/}
+            {/*    {applicants.length > 0 ? (*/}
+            {/*        <div className="overflow-x-auto">*/}
+            {/*            <table className="table-auto w-full border-collapse">*/}
+            {/*                <thead>*/}
+            {/*                <tr>*/}
+            {/*                    <th>Applicant</th>*/}
+            {/*                    <th>Job Title</th>*/}
+            {/*                    <th>Status</th>*/}
+            {/*                    <th>Date Placed</th>*/}
+            {/*                </tr>*/}
+            {/*                </thead>*/}
+            {/*                <tbody>*/}
+            {/*                {applicants.map((application) => {*/}
+            {/*                    const job = jobs.find(j => j.id === application.job_id);*/}
+            {/*                    return (*/}
+            {/*                        <tr key={application.id} className="border-t cursor-pointer hover:bg-gray-100">*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {application.user.first_name} {application.user.last_name}*/}
+            {/*                            </td>*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {application.job_post?.job_title || 'Unknown Job'}*/}
+            {/*                            </td>*/}
 
 
-                                        <td className="py-2 px-4">{application.status}</td>
-                                        <td className="py-2 px-4">
-                                            {new Date(application.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="py-2 px-4 flex space-x-2">
-                                            <PrimaryButton
-                                                className="px-4 py-2 flex items-center justify-center"
-                                                onClick={() => handleAccept(application)}
-                                            >
-                                                Accept
-                                            </PrimaryButton>
-                                            <SecondaryButton
-                                                className="px-4 py-2 flex items-center justify-center"
-                                                onClick={() => handleReject(application)}
-                                            >
-                                                Reject
-                                            </SecondaryButton>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <p className="text-gray-500">No applicants available.</p>
-                )}
-            </DashboardCard>
+            {/*                            <td className="py-2 px-4">{application.status}</td>*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {new Date(application.created_at).toLocaleDateString()}*/}
+            {/*                            </td>*/}
+            {/*                            <td className="py-2 px-4 flex space-x-2">*/}
+            {/*                                <PrimaryButton*/}
+            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
+            {/*                                    onClick={() => handleAccept(application)}*/}
+            {/*                                >*/}
+            {/*                                    Accept*/}
+            {/*                                </PrimaryButton>*/}
+            {/*                                <SecondaryButton*/}
+            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
+            {/*                                    onClick={() => handleReject(application)}*/}
+            {/*                                >*/}
+            {/*                                    Reject*/}
+            {/*                                </SecondaryButton>*/}
+            {/*                            </td>*/}
+            {/*                        </tr>*/}
+            {/*                    );*/}
+            {/*                })}*/}
+            {/*                </tbody>*/}
+            {/*            </table>*/}
+            {/*        </div>*/}
+            {/*    ) : (*/}
+            {/*        <p className="text-gray-500">No applicants available.</p>*/}
+            {/*    )}*/}
+            {/*</DashboardCard>*/}
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
