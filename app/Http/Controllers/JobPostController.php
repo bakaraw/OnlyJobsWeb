@@ -213,9 +213,9 @@ class JobPostController extends Controller
             'auth' => [
                 'user' => auth()->user(),
             ],
-            'totalViews' => $totalUsers,
+            'totalViews' => $totalViews,
             'totalApplicants' =>$totalApplicants,
-            'totalUsers' => $totalViews,
+            'totalUsers' => $totalUsers,
             'totalJob' => $totalJob,
         ]);
     }

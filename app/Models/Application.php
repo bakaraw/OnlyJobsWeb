@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Application extends Model
 {
-    use HasFactory;
-
-    protected $table = 'applications';
-
     protected $fillable = [
-        'user_id', 'job_post_id', 'status' , 'created_at'
+        'user_id',
+        'job_post_id',
+        'status'
     ];
-
 
     public function user()
     {
@@ -24,6 +19,6 @@ class Application extends Model
 
     public function jobPost()
     {
-        return $this->belongsTo(JobPost::class, 'job_post_id');
+        return $this->belongsTo(JobPost::class, "job_post_id");
     }
 }

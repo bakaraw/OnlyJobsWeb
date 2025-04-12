@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DashboardCard from "./DashboardCard.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 function JobDetails({ job, applicants, onClose }) {
     const {
@@ -73,12 +74,12 @@ function JobDetails({ job, applicants, onClose }) {
                                         {new Date(application.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="py-2 px-4 flex space-x-2">
-                                        <SecondaryButton
+                                        <PrimaryButton
                                             className="px-3 py-1"
                                             onClick={() => handleAccept(application)}
                                         >
                                             Accept
-                                        </SecondaryButton>
+                                        </PrimaryButton>
                                         <SecondaryButton
                                             className="px-3 py-1"
                                             onClick={() => handleReject(application)}
@@ -172,7 +173,7 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
                             <td className="py-3 px-4 text-center">
 
                                 <SecondaryButton
-                                    className="px-3 py-1 bg-red-500 text-white hover:bg-red-600"
+                                    className="px-3 py-1 bg-red-500  hover:bg-red-600"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleDeleteJob(job.id);

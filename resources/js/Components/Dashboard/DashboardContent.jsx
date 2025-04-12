@@ -25,6 +25,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
 
+    console.log("view", totalViews);
 
     useEffect(() => {
         if (!auth.user) {
@@ -118,7 +119,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-sm text-gray-500">Total Applicants</h2>
-                            <p className="text-2xl font-semibold text-gray-800">{applicants.length}</p>
+                            <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
                         </div>
                         <div className="text-green-500 text-3xl">👤</div>
                     </div>
@@ -178,12 +179,12 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                             {new Date(application.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="py-2 px-4 flex space-x-2">
-                                            <SecondaryButton
+                                            <PrimaryButton
                                                 className="px-4 py-2 flex items-center justify-center"
                                                 onClick={() => handleAccept(application)}
                                             >
                                                 Accept
-                                            </SecondaryButton>
+                                            </PrimaryButton>
                                             <SecondaryButton
                                                 className="px-4 py-2 flex items-center justify-center"
                                                 onClick={() => handleReject(application)}
