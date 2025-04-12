@@ -139,82 +139,15 @@ class JobPostController extends Controller
     }
 
 
-    public function JobView($id)
-    {
-        $jobview = JobPost::with([
-            'skills:skill_id,skill_name',
-            'requirements:requirement_id,requirement_name',
-            'degree',
-            'status',
-        ])
-            ->select(
-                'id',
-                'job_title',
-                'job_description',
-                'job_location',
-                'job_type',
-                'min_salary',
-                'max_salary',
-                'min_experience_years',
-                'company',
-                'user_id',
-                'status_id',
-                'degree_id',
-                'created_at'
-            )
-            ->findOrFail($id);
-
-        return Inertia::render('JobView', [
-            'jobview' => $jobview
-        ]);
-    }
-    public function show()
-    {
-        $jobs = JobPost::select(
-            'id',
-            'job_title',
-            'user_id',
-            'job_description',
-            'job_location',
-            'job_type',
-            'created_at',
-            'min_experience_years',
-            'degree_id',
-            'company',
-
-
-        )
-            ->with([
-                'skills' => function ($query) {
-                    $query->select('skills.skill_id', 'skills.skill_name');
-                },
-                'requirements' => function ($query) {
-                    $query->select('requirements.requirement_id', 'requirements.requirement_name');
-                }
-            ])
-            ->get()
-
-            ->toArray();
-
-
-        return Inertia::render('FindWork', [
-            'jobs' => $jobs,
-        ]);
-
-    }
-
 
     public function destroy($id)
     {
         $jobPost = JobPost::findOrFail($id);
 
-        if ($jobPost->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $jobPost->delete();
 
-        return redirect()->route('job_posts.create')
+        return redirect()->route('dashboard')
             ->with('success', 'Job post deleted successfully.');
     }
 
@@ -255,8 +188,23 @@ class JobPostController extends Controller
             'created_at',
             'company',
             'views',
-        )->get();
-
+        )
+            ->withCount([
+                'applications',
+                'applications as pending_count' => function ($query) {
+                    $query->where('status', 'pending');
+                },
+                'applications as qualified_count' => function ($query) {
+                    $query->where('status', 'qualified');
+                },
+                'applications as accepted_count' => function ($query) {
+                    $query->where('status', 'accepted');
+                },
+                'applications as rejected_count' => function ($query) {
+                    $query->where('status', 'rejected');
+                },
+            ])
+            ->get();
 
 
         return Inertia::render('dashboard', [

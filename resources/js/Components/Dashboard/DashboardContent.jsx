@@ -80,7 +80,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
             </div>
 
             {/* Overall Views Pie Chart */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mb-4">
                 <DashboardCard title="Overall Views">
                     <PieChart width={400} height={300}>
                         <Pie
@@ -102,6 +102,51 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                 </DashboardCard>
             </div>
 
+            {/* Quick Stats Summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Jobs</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{jobs.length}</p>
+                        </div>
+                        <div className="text-blue-500 text-3xl">📄</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Applicants</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{applicants.length}</p>
+                        </div>
+                        <div className="text-green-500 text-3xl">👤</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Pending Applications</h2>
+                            <p className="text-2xl font-semibold text-gray-800">
+                                {applicants.filter(app => app.status === 'pending').length}
+                            </p>
+                        </div>
+                        <div className="text-yellow-500 text-3xl">⏳</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Views</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{totalViews}</p>
+                        </div>
+                        <div className="text-orange-500 text-3xl">👀</div>
+                    </div>
+                </DashboardCard>
+            </div>
+
             {/* Job Applicant Overview */}
             <DashboardCard title="Job Applicant Overview">
                 {applicants.length > 0 ? (
@@ -109,8 +154,8 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                         <table className="table-auto w-full border-collapse">
                             <thead>
                             <tr>
-                                <th>Job Title</th>
                                 <th>Applicant</th>
+                                <th>Job Title</th>
                                 <th>Status</th>
                                 <th>Date Placed</th>
                             </tr>
@@ -121,12 +166,13 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 return (
                                     <tr key={application.id} className="border-t cursor-pointer hover:bg-gray-100">
                                         <td className="py-2 px-4">
+                                            {application.user.first_name} {application.user.last_name}
+                                        </td>
+                                        <td className="py-2 px-4">
                                             {application.job_post?.job_title || 'Unknown Job'}
                                         </td>
 
-                                        <td className="py-2 px-4">
-                                            {application.user.first_name} {application.user.last_name}
-                                        </td>
+
                                         <td className="py-2 px-4">{application.status}</td>
                                         <td className="py-2 px-4">
                                             {new Date(application.created_at).toLocaleDateString()}

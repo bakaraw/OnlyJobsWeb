@@ -8,7 +8,9 @@ function JobDetails({ job, applicants, onClose }) {
         job_type = "N/A",
         job_description = "N/A",
         job_location = "N/A",
-        company = ""
+        company = "",
+        views = 'N/A',
+        applications = "N/A",
     } = job;
 
     // Filter only applicants for this specific job
@@ -54,10 +56,10 @@ function JobDetails({ job, applicants, onClose }) {
                         <table className="table-auto w-full border-collapse">
                             <thead>
                             <tr>
-                                <th className="py-2 px-4">Applicant</th>
-                                <th className="py-2 px-4">Status</th>
-                                <th className="py-2 px-4">Date Placed</th>
-                                <th className="py-2 px-4">Actions</th>
+                                <th className="py-2 px-4 text-left">Applicant</th>
+                                <th className="py-2 px-4 text-left">Status</th>
+                                <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -106,9 +108,24 @@ function JobDetails({ job, applicants, onClose }) {
     );
 }
 
+const handleDeleteJob = async (jobId) => {
+    if (confirm("Are you sure you want to delete this job post?")) {
+        try {
+            await axios.delete(`/job-posts/${jobId}`);
+            alert("Job deleted!");
+        } catch (error) {
+            alert("Something went wrong!");
+            console.error(error);
+        }
+
+    }
+};
+
+
 export default function JobList({ jobs, applicants, totalApplicants }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJobDetails, setSelectedJobDetails] = useState(null);
+
 
     return (
         <div className="w-full px-4">
@@ -125,6 +142,8 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
                         <th className="py-3 px-4 text-center">Applicants</th>
                         <th className="py-3 px-4 text-center">Qualified Candidate</th>
                         <th className="py-3 px-4 text-center">Hired Candidate</th>
+                        <th className="py-3 px-4 text-center">Rejected Candidate</th>
+
 
 
 
@@ -141,12 +160,27 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
                             }}
                         >
                             <td className="py-3 px-4">{job.job_title}</td>
-                            <td className="py-3 px-4">{job.job_location || "N/A"}</td>
-                            <td className="py-3 px-4">{job.job_type || "N/A"}</td>
-                            <td className="py-3 px-4 text-center">{totalApplicants}</td>
-                            <td className="py-3 px-4 text-center">{job.views}</td>
-                            <td className="py-3 px-4 text-center">0{}</td>
-                            <td className="py-3 px-4 text-center">0{}</td>
+                            <td className="py-3 px-4">{job.job_location}</td>
+                            <td className="py-3 px-4">{job.job_type}</td>
+                            <td className="py-3 px-4">{job.views || "None"}</td>
+                            <td className="py-3 px-4 text-center">{job.applications_count}</td>
+                            <td className="py-3 px-4 text-center">{job.qualified_count}</td>
+                            <td className="py-3 px-4 text-center">{job.accepted_count}</td>
+                            <td className="py-3 px-4 text-center">{job.rejected_count}</td>
+
+
+                            <td className="py-3 px-4 text-center">
+
+                                <SecondaryButton
+                                    className="px-3 py-1 bg-red-500 text-white hover:bg-red-600"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteJob(job.id);
+                                    }}
+                                >
+                                    Delete
+                                </SecondaryButton>
+                            </td>
 
 
 
