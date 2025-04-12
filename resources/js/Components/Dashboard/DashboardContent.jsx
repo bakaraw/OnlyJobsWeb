@@ -5,6 +5,7 @@ import JobList from "./Modal/JobList.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from "recharts";
 import DashboardCard from "./Modal/DashboardCard.jsx";
+import { Link } from '@inertiajs/react';
 
 import {
     Chart as ChartJS,
@@ -15,6 +16,7 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend
 } from "chart.js";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
@@ -50,11 +52,19 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
+                <Link href={route('job_posts.create')}>
+                    <PrimaryButton>
+                        Create Job
+                    </PrimaryButton>
+                </Link>
+            </div>
             <div className="grid grid-cols-1 gap-4">
 
+
                 {/* Job Views Chart */}
-                <DashboardCard title="Job Views Overview">
+                <DashboardCard>
                     <div className="flex-grow flex items-end">
                         <Bar
                             data={chartData}
