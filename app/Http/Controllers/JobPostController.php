@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\JobPost;
 use App\Models\JobStatus;
 use App\Models\Degree;
@@ -48,7 +49,9 @@ class JobPostController extends Controller
             'job_type'             => 'required|string|max:255',
             'min_salary'           => 'required|numeric',
             'max_salary'           => 'required|numeric',
+
             'min_experience_years' => 'required|integer',
+
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
@@ -226,13 +229,12 @@ class JobPostController extends Controller
         $totalUsers = User::count();
         $totalJob = JobPost::count();
 
-        $placements = Placement::select(
+        $applicants = Application::select(
             'id',
             'user_id',
             'job_post_id',
-            'placement_status',
+            'status',
             'created_at',
-            'additional_remarks'
         )
             ->with([
                 'user:id,first_name',
@@ -255,7 +257,7 @@ class JobPostController extends Controller
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
-            'placements' => $placements,
+            'applicants' => $applicants,
 
 
             'totalViews' => $totalUsers,

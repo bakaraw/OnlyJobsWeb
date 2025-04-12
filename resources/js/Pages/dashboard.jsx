@@ -4,7 +4,7 @@ import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card comp
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import NavBar from "@/Components/NavBar.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
-export default function dashboard({ jobs, placements, auth, totalViews, totalUsers, totalJob}) {
+export default function dashboard({ jobs, placements, auth, totalViews, totalUsers, totalJob, applicants}) {
 
     const [activeView, setActiveView] = useState("dashboard");
 
@@ -21,7 +21,7 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
                     <DashboardContent jobs={jobs} placements={placements}  totalViews={totalViews} totalUsers={totalUsers}
-                                      totalJob={totalJob} />
+                                      totalJob={totalJob} applicants={applicants}/>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-lg shadow-lg">
                         {/* Left: Job Listings (Only Show if Authenticated) */}
@@ -29,9 +29,7 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
                             <div className="w-full">
                                 <h2 className="text-xl font-semibold mb-4">Job Listings</h2>
                                 {jobs && jobs.length > 0 ? (
-                                    jobs.map((job) => (
-                                        <JobList key={job.id} job={job} placements={placements} />
-                                    ))
+                                    <JobList jobs={jobs} placements={placements} />
                                 ) : (
                                     <p className="text-gray-500">No job postings available.</p>
                                 )}

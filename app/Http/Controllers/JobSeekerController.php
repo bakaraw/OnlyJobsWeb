@@ -3,12 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class JobSeekerController extends Controller
 {
 
 
+    public function apply($jobPostId) {
+
+        $user = Auth::user();
+
+        if($user->appliedJobs()->where('job_post_id', $jobPostId)->exists()) {
+            return redirect()->route('find_work')->with('You have already applied for this job');
+
+        }
+
+        $user->appliedJobs()->attach($jobPostId, [
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return redirect()->route('find_work')->with('success');
+
+
+    }
 
 
     public function incrementViews($id)

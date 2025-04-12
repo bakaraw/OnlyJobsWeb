@@ -71,24 +71,49 @@ function JobDetails({ job, placements, onClose }) {
     );
 }
 
-export default function JobList({ job, placements }) {
+export default function JobList({ jobs, placements, setSelectedJob }) {
     const [showDetails, setShowDetails] = useState(false);
+    const [selectedJobDetails, setSelectedJobDetails] = useState(null);
 
     return (
         <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
-            <h2 className="text-lg font-semibold">Job Title: {job.job_title}</h2>
-            <p className="text-sm text-gray-600"> Company Name: {job.company} - Location: {job.job_location}</p>
-            <p className="text-sm text-gray-500 mb-2">Job Type: {job.job_type}</p>
-            <p className="mb-3">Job Description: {job.job_description}</p>
+            <div className="overflow-x-auto">
+                <table className="table-auto w-full border-collapse">
+                    <thead>
+                    <tr>
+                        <th className="py-2 px-4 border-b">Title</th>
+                        <th className="py-2 px-4 border-b">Location</th>
+                        <th className="py-2 px-4 border-b">Type</th>
+                        <th className="py-2 px-4 border-b">Views</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {jobs.map((job) => (
+                        <tr
+                            key={job.id}
+                            className="border-t hover:bg-gray-100 cursor-pointer"
+                            onClick={() => {
+                                setSelectedJob?.(job);
+                                setSelectedJobDetails(job);
+                                setShowDetails(true);
+                            }}
+                        >
+                            <td className="py-2 px-4">{job.job_title}</td>
+                            <td className="py-2 px-4">{job.job_location || "N/A"}</td>
+                            <td className="py-2 px-4">{job.job_type || "N/A"}</td>
+                            <td className="py-2 px-4 text-center">{job.views}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
 
-            <button
-                onClick={() => setShowDetails(true)}
-                className="text-blue-500 hover:underline text-sm"
-            >
-                View Job
-            </button>
-            {showDetails && (
-                <JobDetails job={job} placements={placements} onClose={() => setShowDetails(false)} />
+            {showDetails && selectedJobDetails && (
+                <JobDetails
+                    job={selectedJobDetails}
+                    placements={placements.filter(p => p.job_post_id === selectedJobDetails.id)}
+                    onClose={() => setShowDetails(false)}
+                />
             )}
         </div>
     );
