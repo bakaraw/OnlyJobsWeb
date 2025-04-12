@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Bar } from "react-chartjs-2";
 import { router } from "@inertiajs/react";
 
@@ -19,10 +19,17 @@ import NavBar from "@/Components/NavBar.jsx";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
-export default function DashboardContent({ jobs, applicants, totalViews, totalUsers, totalJob }) {
+export default function DashboardContent({auth,  jobs, applicants, totalViews, totalUsers, totalJob }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [selectedPlacement, setSelectedPlacement] = useState(null);
+
+    useEffect(() => {
+        if (!auth.user) {
+            router.visit('/login');
+        }
+    }, [auth]);
+
 
     console.log("applicant", applicants)
     const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
@@ -50,8 +57,7 @@ export default function DashboardContent({ jobs, applicants, totalViews, totalUs
 
         <div className="p-6">
             <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+            <div className="grid grid-cols-1 gap-4">
 
                 {/* Job Views Chart */}
                 <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full flex flex-col">
@@ -62,20 +68,22 @@ export default function DashboardContent({ jobs, applicants, totalViews, totalUs
                             options={{
                                 responsive: true,
                                 maintainAspectRatio: false,
-                                onClick: (event, elements) => {
-                                    if (elements.length > 0) {
-                                        const index = elements[0].index;
-                                        const job = jobs[index];
-                                        setShowDetails(true);
-                                        setSelectedJob(job);
-                                    }
-                                },
+                                // onClick: (event, elements) => {
+                                //     if (elements.length > 0) {
+                                //         const index = elements[0].index;
+                                //         const job = jobs[index];
+                                //         setShowDetails(true);
+                                //         setSelectedJob(job);
+                                //     }
+                                // },
                             }}
                         />
                     </div>
                 </div>
+            </div>
 
-                <div className="flex flex-col items-center">
+
+            <div className="flex flex-col items-center">
                     <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
                         <h4 className="text-2xl font-semibold mb-4">Overall Views </h4>
                         <PieChart width={400} height={300}>
@@ -107,41 +115,46 @@ export default function DashboardContent({ jobs, applicants, totalViews, totalUs
                             <table className="table-auto w-full border-collapse">
                                 <thead>
                                 <tr>
-                                    <th className="py-2 px-4 border-b">User</th>
-                                    <th className="py-2 px-4 border-b">Status</th>
-                                    <th className="py-2 px-4 border-b">Date Placed</th>
-                                    <th className="py-2 px-4 border-b">Additional Remarks</th>
+                                    <th>Job Title</th>
+                                    <th>Applicant</th>
+                                    <th>Status</th>
+                                    <th>Date Placed</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {applicants.map((application) => (
-                                    <tr
-                                        key={application.id}
-                                        className="border-t cursor-pointer hover:bg-gray-100"
-                                    >
-                                        <td className="py-2 px-4">
-                                            {application.user.first_name} {application.user.last_name}
-                                        </td>
-                                        <td className="py-2 px-4">{application.status}</td>
-                                        <td className="py-2 px-4">
-                                            {new Date(application.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="py-2 px-4 flex space-x-2">
-                                            <SecondaryButton
-                                                className="px-4 py-2 flex items-center justify-center"
-                                                onClick={() => handleAccept(application)}
-                                            >
-                                                Accept
-                                            </SecondaryButton>
-                                            <SecondaryButton
-                                                className="px-4 py-2 flex items-center justify-center"
-                                                onClick={() => handleReject(application)}
-                                            >
-                                                Reject
-                                            </SecondaryButton>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {applicants.map((application) => {
+                                    const job = jobs.find(j => j.id === application.job_id); // Match job by ID
+                                    return (
+                                        <tr
+                                            key={application.id}
+                                            className="border-t cursor-pointer hover:bg-gray-100"
+                                        >
+                                            {application.job_post?.job_title || 'Unknown Job'}
+
+                                            <td className="py-2 px-4">
+                                                {application.user.first_name} {application.user.last_name}
+                                            </td>
+                                            <td className="py-2 px-4">{application.status}</td>
+                                            <td className="py-2 px-4">
+                                                {new Date(application.created_at).toLocaleDateString()}
+                                            </td>
+                                            <td className="py-2 px-4 flex space-x-2">
+                                                <SecondaryButton
+                                                    className="px-4 py-2 flex items-center justify-center"
+                                                    onClick={() => handleAccept(application)}
+                                                >
+                                                    Accept
+                                                </SecondaryButton>
+                                                <SecondaryButton
+                                                    className="px-4 py-2 flex items-center justify-center"
+                                                    onClick={() => handleReject(application)}
+                                                >
+                                                    Reject
+                                                </SecondaryButton>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 </tbody>
                             </table>
                         </div>
@@ -190,7 +203,7 @@ export default function DashboardContent({ jobs, applicants, totalViews, totalUs
                 {/*</div>*/}
 
                 <br />
-            </div>
+
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />

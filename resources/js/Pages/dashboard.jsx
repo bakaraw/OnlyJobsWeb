@@ -21,15 +21,14 @@ export default function dashboard({ jobs, placements, auth, totalViews, totalUse
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
                     <DashboardContent jobs={jobs} placements={placements}  totalViews={totalViews} totalUsers={totalUsers}
-                                      totalJob={totalJob} applicants={applicants}/>
+                                      totalJob={totalJob} applicants={applicants}  auth={auth}/>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-lg shadow-lg">
+                    <div >
                         {/* Left: Job Listings (Only Show if Authenticated) */}
                         {auth?.user ? (
                             <div className="w-full">
-                                <h2 className="text-xl font-semibold mb-4">Job Listings</h2>
                                 {jobs && jobs.length > 0 ? (
-                                    <JobList jobs={jobs} placements={placements} />
+                                    <JobList jobs={jobs} applicants={applicants}/>
                                 ) : (
                                     <p className="text-gray-500">No job postings available.</p>
                                 )}

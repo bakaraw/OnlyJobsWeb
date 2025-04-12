@@ -225,6 +225,7 @@ class JobPostController extends Controller
 
     public function showDashboard()
     {
+
         $totalViews = JobPost::sum('views');
         $totalUsers = User::count();
         $totalJob = JobPost::count();
@@ -258,8 +259,9 @@ class JobPostController extends Controller
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
             'applicants' => $applicants,
-
-
+            'auth' => [
+                'user' => auth()->user(),
+            ],
             'totalViews' => $totalUsers,
             'totalUsers' => $totalViews,
             'totalJob' => $totalJob,

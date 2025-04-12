@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function JobDetails({ job, placements, onClose }) {
+function JobDetails({ job, applicants, onClose }) {
     const {
         job_title = "N/A",
         job_type = "N/A",
@@ -8,6 +8,8 @@ function JobDetails({ job, placements, onClose }) {
         job_location = "N/A",
         company = ""
     } = job;
+
+    const filteredApplicants = applicants.filter(app => app.job_post_id === job.id);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -31,30 +33,28 @@ function JobDetails({ job, placements, onClose }) {
                 </div>
 
                 <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-4">Placements</h3>
-                    {placements.length > 0 ? (
+                    <h3 className="text-xl font-semibold mb-4">Applicants</h3>
+                    {filteredApplicants.length > 0 ? (
                         <table className="w-full">
                             <thead>
                             <tr>
                                 <th className="py-2">User</th>
                                 <th className="py-2">Status</th>
                                 <th className="py-2">Date Placed</th>
-                                <th className="py-2">Additional Remarks</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {placements.map((placement) => (
-                                <tr key={placement.id} className="border-t">
-                                    <td className="py-2">{placement.user.first_name}</td>
-                                    <td className="py-2">{placement.placement_status}</td>
-                                    <td className="py-2">{new Date(placement.created_at).toLocaleDateString()}</td>
-                                    <td className="py-2">{placement.additional_remarks}</td>
+                            {filteredApplicants.map((applicant) => (
+                                <tr key={applicant.id} className="border-t">
+                                    <td className="py-2">{applicant.user?.first_name || "N/A"}</td>
+                                    <td className="py-2">{applicant.status}</td>
+                                    <td className="py-2">{new Date(applicant.created_at).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                             </tbody>
                         </table>
                     ) : (
-                        <p className="text-gray-500">No placements available.</p>
+                        <p className="text-gray-500">No applicants available.</p>
                     )}
                 </div>
 
@@ -71,37 +71,38 @@ function JobDetails({ job, placements, onClose }) {
     );
 }
 
-export default function JobList({ jobs, placements, setSelectedJob }) {
+export default function JobList({ jobs, applicants }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJobDetails, setSelectedJobDetails] = useState(null);
 
     return (
-        <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
+        <div className="w-full px-4">
+            <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
+
             <div className="overflow-x-auto">
                 <table className="table-auto w-full border-collapse">
-                    <thead>
+                    <thead className="bg-gray-100 text-left">
                     <tr>
-                        <th className="py-2 px-4 border-b">Title</th>
-                        <th className="py-2 px-4 border-b">Location</th>
-                        <th className="py-2 px-4 border-b">Type</th>
-                        <th className="py-2 px-4 border-b">Views</th>
+                        <th className="py-3 px-4">Title</th>
+                        <th className="py-3 px-4">Location</th>
+                        <th className="py-3 px-4">Type</th>
+                        <th className="py-3 px-4 text-center">Views</th>
                     </tr>
                     </thead>
                     <tbody>
                     {jobs.map((job) => (
                         <tr
                             key={job.id}
-                            className="border-t hover:bg-gray-100 cursor-pointer"
+                            className="border-b hover:bg-gray-50 cursor-pointer"
                             onClick={() => {
-                                setSelectedJob?.(job);
                                 setSelectedJobDetails(job);
                                 setShowDetails(true);
                             }}
                         >
-                            <td className="py-2 px-4">{job.job_title}</td>
-                            <td className="py-2 px-4">{job.job_location || "N/A"}</td>
-                            <td className="py-2 px-4">{job.job_type || "N/A"}</td>
-                            <td className="py-2 px-4 text-center">{job.views}</td>
+                            <td className="py-3 px-4">{job.job_title}</td>
+                            <td className="py-3 px-4">{job.job_location || "N/A"}</td>
+                            <td className="py-3 px-4">{job.job_type || "N/A"}</td>
+                            <td className="py-3 px-4 text-center">{job.views}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -111,7 +112,7 @@ export default function JobList({ jobs, placements, setSelectedJob }) {
             {showDetails && selectedJobDetails && (
                 <JobDetails
                     job={selectedJobDetails}
-                    placements={placements.filter(p => p.job_post_id === selectedJobDetails.id)}
+                    applicants={applicants}
                     onClose={() => setShowDetails(false)}
                 />
             )}
