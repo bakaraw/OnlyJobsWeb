@@ -18,11 +18,13 @@ import {
 } from "chart.js";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
+
 
     useEffect(() => {
         if (!auth.user) {
@@ -121,6 +123,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                         <td className="py-2 px-4">
                                             {application.job_post?.job_title || 'Unknown Job'}
                                         </td>
+
                                         <td className="py-2 px-4">
                                             {application.user.first_name} {application.user.last_name}
                                         </td>

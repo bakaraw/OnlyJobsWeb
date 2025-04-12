@@ -54,7 +54,6 @@ function JobDetails({ job, applicants, onClose }) {
                         <table className="table-auto w-full border-collapse">
                             <thead>
                             <tr>
-                                <th className="py-2 px-4">Job Title</th>
                                 <th className="py-2 px-4">Applicant</th>
                                 <th className="py-2 px-4">Status</th>
                                 <th className="py-2 px-4">Date Placed</th>
@@ -64,9 +63,8 @@ function JobDetails({ job, applicants, onClose }) {
                             <tbody>
                             {filteredApplicants.map((application) => (
                                 <tr key={application.id} className="border-t hover:bg-gray-100">
-                                    <td className="py-2 px-4">{job_title}</td>
                                     <td className="py-2 px-4">
-                                        {application.user.first_name} {application.user.last_name}
+                                        {application.user.first_name}  {application.user.last_name}
                                     </td>
                                     <td className="py-2 px-4">{application.status}</td>
                                     <td className="py-2 px-4">
@@ -108,7 +106,7 @@ function JobDetails({ job, applicants, onClose }) {
     );
 }
 
-export default function JobList({ jobs, applicants }) {
+export default function JobList({ jobs, applicants, totalApplicants }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJobDetails, setSelectedJobDetails] = useState(null);
 
@@ -124,6 +122,12 @@ export default function JobList({ jobs, applicants }) {
                         <th className="py-3 px-4">Location</th>
                         <th className="py-3 px-4">Type</th>
                         <th className="py-3 px-4 text-center">Views</th>
+                        <th className="py-3 px-4 text-center">Applicants</th>
+                        <th className="py-3 px-4 text-center">Qualified Candidate</th>
+                        <th className="py-3 px-4 text-center">Hired Candidate</th>
+
+
+
                     </tr>
                     </thead>
                     <tbody>
@@ -139,7 +143,14 @@ export default function JobList({ jobs, applicants }) {
                             <td className="py-3 px-4">{job.job_title}</td>
                             <td className="py-3 px-4">{job.job_location || "N/A"}</td>
                             <td className="py-3 px-4">{job.job_type || "N/A"}</td>
+                            <td className="py-3 px-4 text-center">{totalApplicants}</td>
                             <td className="py-3 px-4 text-center">{job.views}</td>
+                            <td className="py-3 px-4 text-center">0{}</td>
+                            <td className="py-3 px-4 text-center">0{}</td>
+
+
+
+
                         </tr>
                     ))}
                     </tbody>

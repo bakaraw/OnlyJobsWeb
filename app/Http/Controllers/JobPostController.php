@@ -168,25 +168,6 @@ class JobPostController extends Controller
             'jobview' => $jobview
         ]);
     }
-
-
-    public function destroy($id)
-    {
-        $jobPost = JobPost::findOrFail($id);
-
-        if ($jobPost->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $jobPost->delete();
-
-        return redirect()->route('job_posts.create')
-            ->with('success', 'Job post deleted successfully.');
-    }
-
-
-
-
     public function show()
     {
         $jobs = JobPost::select(
@@ -223,12 +204,34 @@ class JobPostController extends Controller
     }
 
 
+    public function destroy($id)
+    {
+        $jobPost = JobPost::findOrFail($id);
+
+        if ($jobPost->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $jobPost->delete();
+
+        return redirect()->route('job_posts.create')
+            ->with('success', 'Job post deleted successfully.');
+    }
+
+
+
+
+
+
+
     public function showDashboard()
     {
 
         $totalViews = JobPost::sum('views');
         $totalUsers = User::count();
         $totalJob = JobPost::count();
+        $totalApplicants = Application::count();
+
 
         $applicants = Application::select(
             'id',
@@ -263,6 +266,7 @@ class JobPostController extends Controller
                 'user' => auth()->user(),
             ],
             'totalViews' => $totalUsers,
+            'totalApplicants' =>$totalApplicants,
             'totalUsers' => $totalViews,
             'totalJob' => $totalJob,
         ]);
