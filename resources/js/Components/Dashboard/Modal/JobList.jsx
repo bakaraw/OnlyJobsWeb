@@ -132,7 +132,7 @@ function JobDetails({ job, applicants, onClose }) {
                                             {application.remarks && application.remarks !== ""
                                                 ? application.remarks
                                                 : "No remarks"}
-                                          </span>
+                                                </span>
                                             )}
                                         </td>
                                         <td className="py-2 px-4 flex space-x-2">
