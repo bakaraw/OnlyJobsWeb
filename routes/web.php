@@ -125,6 +125,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
     Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');
     Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
+    Route::patch('/applications/update-remark', [ApplicantController::class, 'updateRemark']);
 
 });
 //Route::get('/dashboard', function () {

@@ -189,6 +189,11 @@ class JobPostController extends Controller
             'company',
             'views',
         )
+            ->with([
+                'applications' => function ($query) {
+                    $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
+                }
+                ])
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {

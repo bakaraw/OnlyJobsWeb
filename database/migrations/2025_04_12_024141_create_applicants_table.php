@@ -13,6 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('job_post_id');
             $table->enum('status', ['pending', 'qualified','accepted', 'rejected'])->default('pending');
+            $table->text('remarks')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

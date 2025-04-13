@@ -60,10 +60,17 @@ class User extends Authenticatable
         return $this->hasMany(Placement::class);
     }
 
-    public function appliedJobs() {
-        return $this->belongsToMany(JobPost::class, 'applications')
-            ->withTimestamps()->withPivot('status');
+//    public function appliedJobs()
+//    {
+//        return $this->belongsToMany(JobPost::class, 'applications', 'user_id', 'job_post_id')
+//            ->withPivot('status', 'remarks')
+//            ->withTimestamps();
+//    }
+
+    public function applications() {
+        return $this->hasMany(Application::class);
     }
+
 
     public function educations()
     {

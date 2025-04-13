@@ -29,7 +29,29 @@ function JobDetails({ job, applicants, onClose }) {
         console.log("Rejected:", application);
     };
 
+    const [editingId, setEditingId] = useState(null);
+    const [remarkInput, setRemarkInput] = useState("");
 
+    // Save updated remark to the backend using the new updateRemark endpoint.
+    const saveRemark = async (application) => {
+        try {
+            const response = await axios.patch("/applications/update-remark", {
+                application_id: application.id, // use the unique id for the application record
+                remarks: remarkInput.trim(),
+            });
+
+            if (response.data.success) {
+                application.remarks = remarkInput.trim();
+                setEditingId(null);
+                setRemarkInput("");
+            } else {
+                throw new Error(response.data.message || "Failed to update remark");
+            }
+        } catch (error) {
+            console.error("Failed to save remark:", error);
+            alert(error.response?.data?.message || "Failed to save remark. Please try again.");
+        }
+    };
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md mt-6">
@@ -81,6 +103,7 @@ function JobDetails({ job, applicants, onClose }) {
                                 <th className="py-2 px-4 text-left">Applicant</th>
                                 <th className="py-2 px-4 text-left">Status</th>
                                 <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Remarks</th>
                                 <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
                             </thead>
@@ -96,19 +119,66 @@ function JobDetails({ job, applicants, onClose }) {
                                         <td className="py-2 px-4">
                                             {new Date(application.created_at).toLocaleDateString()}
                                         </td>
+                                        <td className="py-2 px-4">
+                                            {editingId === application.id ? (
+                                                <textarea
+                                                    className="w-full border p-1"
+                                                    value={remarkInput}
+                                                    onChange={(e) => setRemarkInput(e.target.value)}
+                                                    rows={2}
+                                                />
+                                            ) : (
+                                                <span>
+                                            {application.remarks && application.remarks !== ""
+                                                ? application.remarks
+                                                : "No remarks"}
+                                          </span>
+                                            )}
+                                        </td>
                                         <td className="py-2 px-4 flex space-x-2">
-                                            <PrimaryButton
-                                                className="px-3 py-1"
-                                                onClick={() => handleAccept(application)}
-                                            >
-                                                Accept
-                                            </PrimaryButton>
-                                            <SecondaryButton
-                                                className="px-3 py-1"
-                                                onClick={() => handleReject(application)}
-                                            >
-                                                Reject
-                                            </SecondaryButton>
+                                            {editingId === application.id ? (
+                                                <>
+                                                    <PrimaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => saveRemark(application)}
+                                                    >
+                                                        Save
+                                                    </PrimaryButton>
+                                                    <SecondaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => {
+                                                            setEditingId(null);
+                                                            setRemarkInput("");
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </SecondaryButton>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <PrimaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => {
+                                                            setEditingId(application.id);
+                                                            setRemarkInput(application.remarks || "");
+                                                        }}
+                                                    >
+                                                        Add Remark
+                                                    </PrimaryButton>
+                                                    <PrimaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => handleAccept(application)}
+                                                    >
+                                                        Accept
+                                                    </PrimaryButton>
+                                                    <SecondaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => handleReject(application)}
+                                                    >
+                                                        Reject
+                                                    </SecondaryButton>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
