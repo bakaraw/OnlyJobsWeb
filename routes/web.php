@@ -107,6 +107,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/work_history', [WorkHistoryController::class, 'store'])
         ->name('work_history.store');
+
+    Route::put('/work_history/{work_history}', [WorkHistoryController::class, 'update'])
+        ->name('work_history.update');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

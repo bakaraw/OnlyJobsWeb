@@ -1,17 +1,54 @@
-import InputLabel from "@/Components/InputLabel";
 import SecondaryButton from "@/Components/SecondaryButton";
-import TextInput from "@/Components/TextInput";
+import DangerButton from "@/Components/DangerButton";
 import Modal from "@/Components/Modal";
+import { useForm } from "@inertiajs/react";
+import { useState } from "react";
+import InputLabel from "@/Components/InputLabel";
+import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { useEffect, useState } from "react";
-import { usePage, useForm } from '@inertiajs/react';
-import WorkHistoriesCard from "./WorkHistoriesCard";
 
-export default function UpdateWorkHistory({ className }) {
-    const { props } = usePage();
-    const work_histories = props.work_histories || [];
+function formatToMonthYear(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+    });
+}
+
+export default function WorkHistoriesCard({
+    className,
+    id,
+    job_title,
+    job_description,
+    employer,
+    start_date,
+    end_date
+}) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { data, setData, put, processing, errors, reset } = useForm({
+        job_title: job_title,
+        job_description: job_description,
+        employer: employer,
+        start_date: start_date ?? `${new Date().getFullYear()}-01-01`,
+        end_date: end_date ?? `${new Date().getFullYear()}-01-01`
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        put(route('work_history.update', id), {
+            preserveScroll: true, // Keeps the page from jumping to the top
+            onSuccess: () => {
+                setIsModalOpen(false);
+                reset('job_title', 'job_description', 'employer', 'start_date', 'end_date');
+            },
+        });
+    };
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
     const months = [
         { name: 'January', value: 1 },
@@ -28,86 +65,18 @@ export default function UpdateWorkHistory({ className }) {
         { name: 'December', value: 12 }
     ];
 
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        job_title: '',
-        job_description: '',
-        employer: '',
-        start_date: currentYear + '-01-01',
-        end_date: currentYear + '-01-01'
-    });
+    const [startMonth, setStartMonth] = useState(startDate.getMonth() + 1 + "");
+    const [startYear, setStartYear] = useState(startDate.getFullYear() + "");
 
-    const [startMonth, setStartMonth] = useState("01");
-    const [startYear, setStartYear] = useState(currentYear);
+    const [endMonth, setEndMonth] = useState(endDate.getMonth() + 1 + "");
+    const [endYear, setEndYear] = useState(endDate.getFullYear() + "");
 
-    const [endMonth, setEndMonth] = useState("01");
-    const [endYear, setEndYear] = useState(currentYear);
-
-    const submit = (e) => {
-        e.preventDefault();
-
-        post(route('work_history.store'), {
-            preserveScroll: true, // Keeps the page from jumping to the top
-            onSuccess: () => {
-                setIsModalOpen(false);
-                reset('job_title', 'job_description', 'employer', 'start_date', 'end_date');
-            },
-        });
-    };
 
     return (
-        <section className={"" + className}>
-            <header>
-                <div className='flex items-center justify-between'>
-                    <div className='w-full'>
-                        <h2 className="text-lg font-medium text-gray-900">
-                            Work History
-                        </h2>
-                        <p className="mt-1 text-sm text-gray-600">
-                            Add work history
-                        </p>
-                    </div>
-                    <div className='flex items-center justify-end w-full'>
-                        <SecondaryButton onClick={() => setIsModalOpen(true)} className=''>
-                            Add
-                        </SecondaryButton>
-                    </div>
-                </div>
-                <hr className="mt-5 block w-full items-center justify-center" />
-            </header>
-            <div className='grid grid-cols-12 gap-3 mt-3'>
-                <div className='col-span-2'>
-                    <p className='font-medium'>Job Title</p>
-                </div>
-                <div className='col-span-3'>
-                    <p className='font-medium'>Job Description</p>
-                </div>
-                <div className='col-span-3'>
-                    <p className='font-medium'>Employer</p>
-                </div>
-                <div className='col-span-2'>
-                    <p className='font-medium'>Duration</p>
-                </div>
-                <div className='col-span-2'>
-                </div>
-            </div>
-            <hr className='w-full mt-3' />
-            {
-                work_histories.lenth != 0 ?
-                    work_histories.map((work) => (
-                        <WorkHistoriesCard
-                            key={work.id}
-                            id={work.id}
-                            job_title={work.job_title}
-                            job_description={work.job_description}
-                            employer={work.employer}
-                            start_date={work.start_date}
-                            end_date={work.end_date}
-                        />
-                    )) : <div> no work history</div>
-            }
+        <>
             <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} maxWidth="2xl">
                 <div className="font-semibold text-xl flex justify-between">
                     <p>Add Work History</p>
@@ -152,11 +121,11 @@ export default function UpdateWorkHistory({ className }) {
                                     onChange={(e) => {
                                         const newMonth = e.target.value;  // Capture the new month value
                                         setStartMonth(newMonth);  // Update the month
-                                        setData('start_date', `${startYear}-${newMonth.padStart(2, '0')}-01`); // Format the start_date correctly
+                                        setData('start_date', `${startYear}-${String(newMonth).padStart(2, '0')}-01`); // Format the start_date correctly
                                     }}
                                 >
                                     {months.map(m => (
-                                        <option key={m.value} value={m.value}>
+                                        <option key={m.value} value={String(m.value)}>
                                             {m.name}
                                         </option>
                                     ))}
@@ -166,7 +135,7 @@ export default function UpdateWorkHistory({ className }) {
                                     onChange={(e) => {
                                         const newYear = e.target.value;  // Capture the new month value
                                         setStartYear(newYear);
-                                        setData('start_date', `${newYear}-${startMonth.padStart(2, '0')}-01`); // Format the start_date correctly
+                                        setData('start_date', `${newYear}-${String(startMonth).padStart(2, '0')}-01`); // Format the start_date correctly
                                     }}
                                 >
                                     {years.map(y => (
@@ -186,12 +155,12 @@ export default function UpdateWorkHistory({ className }) {
                                     onChange={(e) => {
                                         const newMonth = e.target.value;  // Capture the new month value
                                         setEndMonth(newMonth);
-                                        setData('end_date', `${endYear}-${newMonth.padStart(2, '0')}-01`); // Format the start_date correctly
+                                        setData('end_date', `${endYear}-${String(newMonth).padStart(2, '0')}-01`); // Format the start_date correctly
                                     }}
                                 >
                                     {
                                         months.map(m => (
-                                            <option key={m.value} value={m.value}>
+                                            <option key={m.value} value={String(m.value)}>
                                                 {m.name}
                                             </option>
                                         ))
@@ -202,7 +171,7 @@ export default function UpdateWorkHistory({ className }) {
                                     onChange={(e) => {
                                         const newYear = e.target.value;  // Capture the new month value
                                         setEndYear(e.target.value);
-                                        setData('end_date', `${newYear}-${endMonth.padStart(2, '0')}-01`); // Format the start_date correctly
+                                        setData('end_date', `${newYear}-${String(endMonth).padStart(2, '0')}-01`); // Format the start_date correctly
                                     }}
                                 >
                                     {years.map(y => (
@@ -224,6 +193,32 @@ export default function UpdateWorkHistory({ className }) {
                     </div>
                 </form>
             </Modal>
-        </section>
+
+            <div className={"grid grid-cols-12 gap-3 my-3 mb-3" + className}>
+                <div className="col-span-2">
+                    {job_title}
+                </div>
+                <div className="col-span-3">
+                    {job_description}
+                </div>
+                <div className="col-span-3">
+                    {employer}
+                </div>
+                <div className="col-span-2">
+                    {formatToMonthYear(start_date)} - {formatToMonthYear(end_date)}
+                </div>
+                <div className="col-span-2">
+                    <div className="flex items-center justify-center">
+                        <SecondaryButton onClick={() => setIsModalOpen(true)} className="mr-3">Edit</SecondaryButton>
+                        <DangerButton >Delete</DangerButton>
+                    </div>
+                </div>
+                <div className="col-span-12">
+                    <hr className="block w-full items-center justify-center" />
+                </div>
+
+            </div>
+        </>
     );
+
 }

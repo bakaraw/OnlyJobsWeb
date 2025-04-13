@@ -105,7 +105,7 @@ export default function UpdateEducation({ className }) {
                 <div className='col-span-2'>
                 </div>
             </div>
-            <hr className='w-full mt-3 mb-6' />
+            <hr className='w-full mt-3' />
             {
                 educations.length != 0 ?
                     educations.map((edu, index) => (
