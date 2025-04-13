@@ -1,94 +1,228 @@
 import React, { useState } from "react";
+import DashboardCard from "./DashboardCard.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-function JobDetails({ job, placements, onClose }) {
+function JobDetails({ job, applicants, onClose }) {
     const {
         job_title = "N/A",
         job_type = "N/A",
         job_description = "N/A",
         job_location = "N/A",
-        company = ""
+        company = "",
+        views = 'N/A',
+        applications = "N/A",
     } = job;
 
+    const [filterStatus, setFilterStatus] = useState("pending");
+
+    const filteredApplicants = applicants.filter(
+        app => app.job_post_id === job.id && app.status === filterStatus
+    );
+    const handleAccept = (application) => {
+        // Your logic here
+        console.log("Accepted:", application);
+    };
+
+    const handleReject = (application) => {
+        // Your logic here
+        console.log("Rejected:", application);
+    };
+
+
+
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4">
-                <h2 className="text-2xl font-bold mb-4">{job_title}</h2>
-                <div className="mb-4">
-                    <p className="font-semibold">Company:</p>
-                    <p className="text-gray-600">{company}</p>
-                </div>
-                <div className="mb-4">
-                    <p className="font-semibold">Location:</p>
-                    <p className="text-gray-600">{job_location}</p>
-                </div>
-                <div className="mb-4">
-                    <p className="font-semibold">Type:</p>
-                    <p className="text-gray-600">{job_type}</p>
-                </div>
-                <div className="mb-6">
-                    <p className="font-semibold">Description:</p>
-                    <p className="text-gray-600">{job_description}</p>
+        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h2 className="text-2xl font-bold mb-4">{job_title}</h2>
+
+            <div className="mb-4">
+                <p className="font-semibold">Company:</p>
+                <p className="text-gray-600">{company}</p>
+            </div>
+
+            <div className="mb-4">
+                <p className="font-semibold">Location:</p>
+                <p className="text-gray-600">{job_location}</p>
+            </div>
+
+            <div className="mb-4">
+                <p className="font-semibold">Type:</p>
+                <p className="text-gray-600">{job_type}</p>
+            </div>
+
+            <div className="mb-6">
+                <p className="font-semibold">Description:</p>
+                <p className="text-gray-600">{job_description}</p>
+            </div>
+
+            <DashboardCard title="Job Applicant Overview">
+                {/* Filter Buttons */}
+                <div className="flex space-x-2 mb-4">
+                    {["pending", "qualified","accepted", "rejected"].map(status => (
+                        <PrimaryButton
+                            key={status}
+                            className={`px-4 py-2 rounded capitalize ${
+                                filterStatus === status
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-gray-200 text-gray-700"
+                            }`}
+                            onClick={() => setFilterStatus(status)}
+                        >
+                            {status}
+                        </PrimaryButton>
+                    ))}
                 </div>
 
-                <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-4">Placements</h3>
-                    {placements.length > 0 ? (
-                        <table className="w-full">
+                {filteredApplicants.filter(app => app.status === filterStatus).length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="table-auto w-full border-collapse">
                             <thead>
                             <tr>
-                                <th className="py-2">User</th>
-                                <th className="py-2">Status</th>
-                                <th className="py-2">Date Placed</th>
-                                <th className="py-2">Additional Remarks</th>
+                                <th className="py-2 px-4 text-left">Applicant</th>
+                                <th className="py-2 px-4 text-left">Status</th>
+                                <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {placements.map((placement) => (
-                                <tr key={placement.id} className="border-t">
-                                    <td className="py-2">{placement.user.first_name}</td>
-                                    <td className="py-2">{placement.placement_status}</td>
-                                    <td className="py-2">{new Date(placement.created_at).toLocaleDateString()}</td>
-                                    <td className="py-2">{placement.additional_remarks}</td>
-                                </tr>
-                            ))}
+                            {filteredApplicants
+                                .filter(application => application.status === filterStatus)
+                                .map((application) => (
+                                    <tr key={application.id} className="border-t hover:bg-gray-100">
+                                        <td className="py-2 px-4">
+                                            {application.user.first_name} {application.user.last_name}
+                                        </td>
+                                        <td className="py-2 px-4 capitalize">{application.status}</td>
+                                        <td className="py-2 px-4">
+                                            {new Date(application.created_at).toLocaleDateString()}
+                                        </td>
+                                        <td className="py-2 px-4 flex space-x-2">
+                                            <PrimaryButton
+                                                className="px-3 py-1"
+                                                onClick={() => handleAccept(application)}
+                                            >
+                                                Accept
+                                            </PrimaryButton>
+                                            <SecondaryButton
+                                                className="px-3 py-1"
+                                                onClick={() => handleReject(application)}
+                                            >
+                                                Reject
+                                            </SecondaryButton>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
-                    ) : (
-                        <p className="text-gray-500">No placements available.</p>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <p className="text-gray-500 capitalize">
+                        No {filterStatus} applicants available.
+                    </p>
+                )}
+            </DashboardCard>
 
-                <div className="flex justify-end">
-                    <button
-                        onClick={onClose}
-                        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-                    >
-                        Close
-                    </button>
-                </div>
+            <div className="flex justify-end mt-4">
+                <button
+                    onClick={onClose}
+                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                >
+                    Close
+                </button>
             </div>
         </div>
     );
 }
 
-export default function JobList({ job, placements }) {
+const handleDeleteJob = async (jobId) => {
+    if (confirm("Are you sure you want to delete this job post?")) {
+        try {
+            await axios.delete(`/job-posts/${jobId}`);
+            alert("Job deleted!");
+        } catch (error) {
+            alert("Something went wrong!");
+            console.error(error);
+        }
+
+    }
+};
+
+
+export default function JobList({ jobs, applicants, totalApplicants }) {
     const [showDetails, setShowDetails] = useState(false);
+    const [selectedJobDetails, setSelectedJobDetails] = useState(null);
+
 
     return (
-        <div className="border p-4 rounded-md shadow-md bg-white hover:shadow-lg transition">
-            <h2 className="text-lg font-semibold">Job Title: {job.job_title}</h2>
-            <p className="text-sm text-gray-600"> Company Name: {job.company} - Location: {job.job_location}</p>
-            <p className="text-sm text-gray-500 mb-2">Job Type: {job.job_type}</p>
-            <p className="mb-3">Job Description: {job.job_description}</p>
+        <div className="w-full px-4">
+            <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
 
-            <button
-                onClick={() => setShowDetails(true)}
-                className="text-blue-500 hover:underline text-sm"
-            >
-                View Job
-            </button>
-            {showDetails && (
-                <JobDetails job={job} placements={placements} onClose={() => setShowDetails(false)} />
+            <div className="overflow-x-auto">
+                <table className="table-auto w-full border-collapse">
+                    <thead className="bg-gray-100 text-left">
+                    <tr>
+                        <th className="py-3 px-4">Title</th>
+                        <th className="py-3 px-4">Location</th>
+                        <th className="py-3 px-4">Type</th>
+                        <th className="py-3 px-4 text-center">Views</th>
+                        <th className="py-3 px-4 text-center">Applicants</th>
+                        <th className="py-3 px-4 text-center">Qualified Candidate</th>
+                        <th className="py-3 px-4 text-center">Hired Candidate</th>
+                        <th className="py-3 px-4 text-center">Rejected Candidate</th>
+
+
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {jobs.map((job) => (
+                        <tr
+                            key={job.id}
+                            className="border-b hover:bg-gray-50 cursor-pointer"
+                            onClick={() => {
+                                setSelectedJobDetails(job);
+                                setShowDetails(true);
+                            }}
+                        >
+                            <td className="py-3 px-4">{job.job_title}</td>
+                            <td className="py-3 px-4">{job.job_location}</td>
+                            <td className="py-3 px-4">{job.job_type}</td>
+                            <td className="py-3 px-4">{job.views || "None"}</td>
+                            <td className="py-3 px-4 text-center">{job.applications_count}</td>
+                            <td className="py-3 px-4 text-center">{job.qualified_count}</td>
+                            <td className="py-3 px-4 text-center">{job.accepted_count}</td>
+                            <td className="py-3 px-4 text-center">{job.rejected_count}</td>
+
+
+                            <td className="py-3 px-4 text-center">
+
+                                <SecondaryButton
+                                    className="px-3 py-1 bg-red-500  hover:bg-red-600"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteJob(job.id);
+                                    }}
+                                >
+                                    Delete
+                                </SecondaryButton>
+                            </td>
+
+
+
+
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {showDetails && selectedJobDetails && (
+                <JobDetails
+                    job={selectedJobDetails}
+                    applicants={applicants}
+                    onClose={() => setShowDetails(false)}
+                />
             )}
         </div>
     );

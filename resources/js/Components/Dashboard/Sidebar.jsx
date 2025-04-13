@@ -1,14 +1,18 @@
-import React from "react";
+import React, {useState} from "react";
 import { Package } from "lucide-react";
 
 export default function Sidebar({ auth, setActiveView }) {
+
+
     return (
+
+
         <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
             {/* Profile Section */}
             <div className="flex flex-col items-center py-6 border-b border-gray-200">
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-2 border-4 border-gray-300 ring-2 ring-white">
                     <img
-                        src={auth?.user?.profileImage || "/default-profile.png"}
+                       // src={auth?.user?.profileImage || "/default-profile.png"}
                         alt="Image"
                         className="w-full h-full object-cover"
                     />
@@ -40,7 +44,22 @@ export default function Sidebar({ auth, setActiveView }) {
                     </li>
 
                 </ul>
+
+
+
+
             </nav>
+            <div className="mt-auto mb-4 px-6">
+                <form action={route('logout')} method="POST" style={{ display: 'inline' }}>
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                    <button
+                        type="submit"
+                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 w-full"
+                    >
+                        Log Out
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

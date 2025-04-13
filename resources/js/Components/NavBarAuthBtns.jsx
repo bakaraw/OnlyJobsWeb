@@ -57,6 +57,12 @@ export default function NavBarAuthBtns() {
                         </Dropdown.Trigger>
 
                         <Dropdown.Content>
+                            {auth.user && auth.user.id === 1 && (
+                                <Dropdown.Link href={route("dashboard")}>
+                                    {typeof route("dashboard") === "string" ? "Dashboard" : "Invalid Route"}
+                                </Dropdown.Link>
+                            )}
+
                             <Dropdown.Link
                                 href={route('profile.edit')}
                             >
@@ -70,9 +76,6 @@ export default function NavBarAuthBtns() {
                                 Log Out
                             </Dropdown.Link>
 
-                            <Dropdown.Link href={route("dashboard")}>
-                                {typeof route("dashboard") === "string" ? "Dashboard" : "Invalid Route"}
-                            </Dropdown.Link>
 
                         </Dropdown.Content>
                     </Dropdown>

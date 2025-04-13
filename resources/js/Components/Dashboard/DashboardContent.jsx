@@ -1,5 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { router } from "@inertiajs/react";
+import JobList from "./Modal/JobList.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from "recharts";
+import DashboardCard from "./Modal/DashboardCard.jsx";
+import { Link } from '@inertiajs/react';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -9,24 +16,29 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend
 } from "chart.js";
-import JobList from "./Modal/JobList.jsx";
-import SecondaryButton from "@/Components/SecondaryButton.jsx";
-import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend, Label } from "recharts";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 
-export default function DashboardContent({ jobs, placements, totalViews, totalUsers, totalJob }) {
+export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
-    const [selectedPlacement, setSelectedPlacement] = useState(null);
+
+    console.log("view", totalViews);
+
+    useEffect(() => {
+        if (!auth.user) {
+            router.visit('/login');
+        }
+    }, [auth]);
 
     const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
     const pieData = [
         { name: 'Jobs', value: totalJob },
         { name: 'Users', value: totalUsers },
         { name: 'Views', value: totalViews },
-
-    ]
+    ];
 
     const chartData = {
         labels: jobs.map((job) => job.job_title),
@@ -43,150 +55,153 @@ export default function DashboardContent({ jobs, placements, totalViews, totalUs
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
+                <Link href={route('job_posts.create')}>
+                    <PrimaryButton>
+                        Create Job
+                    </PrimaryButton>
+                </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+
+
                 {/* Job Views Chart */}
-                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full cursor-pointer">
-                    <h3 className="text-xl font-semibold mb-4">Job Views Overview</h3>
-                    <div className="chart-container">
+                <DashboardCard>
+                    <div className="flex-grow flex items-end">
                         <Bar
                             data={chartData}
                             options={{
                                 responsive: true,
                                 maintainAspectRatio: false,
-                                onClick: (event, elements) => {
-                                    if (elements.length > 0) {
-                                        const index = elements[0].index;
-                                        const job = jobs[index];
-                                        setShowDetails(true);
-                                        setSelectedJob(job);
-                                    }
-                                },
                             }}
                         />
                     </div>
-                </div>
-
-                {/* Job Table Card */}
-                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
-                    <h3 className="text-xl font-semibold mb-4">Job List Overview</h3>
-                    <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse">
-                            <thead>
-                            <tr>
-                                <th className="py-2 px-4 border-b">Title</th>
-                                <th className="py-2 px-4 border-b">Location</th>
-                                <th className="py-2 px-4 border-b">Type</th>
-                                <th className="py-2 px-4 border-b">Views</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {jobs.length > 0 ? (
-                                jobs.map((job, index) => (
-                                    <tr
-                                        key={job.id}
-                                        className="border-t hover:bg-gray-100 cursor-pointer"
-                                        onClick={() => {
-                                            setSelectedJob(job);
-                                            setShowDetails(true);
-                                        }}
-                                    >
-                                        <td className="py-2 px-4">{job.job_title}</td>
-                                        <td className="py-2 px-4">{job.job_location || "N/A"}</td>
-                                        <td className="py-2 px-4">{job.job_type || "N/A"}</td>
-                                        <td className="py-2 px-4 text-center">{job.views}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="4" className="py-2 px-4 text-center text-gray-500">
-                                        No jobs found.
-                                    </td>
-                                </tr>
-                            )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                    <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
-                        <h4 className="text-2xl font-semibold mb-4">Overall Views </h4>
-                        <PieChart width={400} height={300}>
-                            <Pie
-                                dataKey="value"
-                                data={pieData}
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={100}
-                                fill="#8884d8"
-                                label
-                            >
-                                {pieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <PieTooltip />
-                            <PieLegend />
-                        </PieChart>
-                    </div>
-                </div>
-
-                <div className="dashboard-cards p-4 bg-white rounded-md shadow-md w-full">
-                    <h3 className="text-xl font-semibold mb-4">Job Applicant Overview</h3>
-                    {selectedJob ? (
-                        <div className="overflow-x-auto">
-                            <table className="table-auto w-full border-collapse">
-                                <thead>
-                                <tr>
-                                    <th className="py-2 px-4 border-b">User</th>
-                                    <th className="py-2 px-4 border-b">Status</th>
-                                    <th className="py-2 px-4 border-b">Date Placed</th>
-                                    <th className="py-2 px-4 border-b">Additional Remarks</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {placements.filter(p => p.job_post_id === selectedJob.id).length > 0 ? (
-                                    placements.filter(p => p.job_post_id === selectedJob.id)
-                                        .map((placement) => (
-                                            <tr key={placement.id} className="border-t cursor-pointer hover:bg-gray-100">
-                                                <td className="py-2">{placement.user.first_name}</td>
-                                                <td className="py-2">{placement.placement_status}</td>
-                                                <td className="py-2">{new Date(placement.created_at).toLocaleDateString()}</td>
-                                                <td className="py-2">{placement.additional_remarks}</td>
-                                                <td className="py-2">
-                                                    <SecondaryButton
-                                                        className="col-span-1 px-4 py-2 flex items-center justify-center h-full"
-                                                        onClick={() => handleAccept(placement)}>
-                                                        Accept
-                                                    </SecondaryButton>
-                                                    <SecondaryButton
-                                                        className="col-span-1 px-4 py-2 flex items-center justify-center h-full"
-                                                        onClick={() => handleReject(placement)}>
-                                                        Reject
-                                                    </SecondaryButton>
-                                                </td>
-                                            </tr>
-                                        ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="4" className="py-2 px-4 text-center text-gray-500">
-                                            No placements available.
-                                        </td>
-                                    </tr>
-                                )}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <p className="text-gray-500">Select a job to view placements.</p>
-                    )}
-                </div>
-
-
-
-                <br />
+                </DashboardCard>
             </div>
+
+            {/* Overall Views Pie Chart */}
+            <div className="flex flex-col items-center mb-4">
+                <DashboardCard title="Overall Views">
+                    <PieChart width={400} height={300}>
+                        <Pie
+                            dataKey="value"
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            fill="#8884d8"
+                            label
+                        >
+                            {pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <PieTooltip />
+                        <PieLegend />
+                    </PieChart>
+                </DashboardCard>
+            </div>
+
+            {/* Quick Stats Summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Jobs</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{jobs.length}</p>
+                        </div>
+                        <div className="text-blue-500 text-3xl">📄</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Applicants</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
+                        </div>
+                        <div className="text-green-500 text-3xl">👤</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Pending Applications</h2>
+                            <p className="text-2xl font-semibold text-gray-800">
+                                {applicants.filter(app => app.status === 'pending').length}
+                            </p>
+                        </div>
+                        <div className="text-yellow-500 text-3xl">⏳</div>
+                    </div>
+                </DashboardCard>
+
+                <DashboardCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm text-gray-500">Total Views</h2>
+                            <p className="text-2xl font-semibold text-gray-800">{totalViews}</p>
+                        </div>
+                        <div className="text-orange-500 text-3xl">👀</div>
+                    </div>
+                </DashboardCard>
+            </div>
+
+            {/*/!* Job Applicant Overview *!/*/}
+            {/*<DashboardCard title="Job Applicant Overview">*/}
+            {/*    {applicants.length > 0 ? (*/}
+            {/*        <div className="overflow-x-auto">*/}
+            {/*            <table className="table-auto w-full border-collapse">*/}
+            {/*                <thead>*/}
+            {/*                <tr>*/}
+            {/*                    <th>Applicant</th>*/}
+            {/*                    <th>Job Title</th>*/}
+            {/*                    <th>Status</th>*/}
+            {/*                    <th>Date Placed</th>*/}
+            {/*                </tr>*/}
+            {/*                </thead>*/}
+            {/*                <tbody>*/}
+            {/*                {applicants.map((application) => {*/}
+            {/*                    const job = jobs.find(j => j.id === application.job_id);*/}
+            {/*                    return (*/}
+            {/*                        <tr key={application.id} className="border-t cursor-pointer hover:bg-gray-100">*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {application.user.first_name} {application.user.last_name}*/}
+            {/*                            </td>*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {application.job_post?.job_title || 'Unknown Job'}*/}
+            {/*                            </td>*/}
+
+
+            {/*                            <td className="py-2 px-4">{application.status}</td>*/}
+            {/*                            <td className="py-2 px-4">*/}
+            {/*                                {new Date(application.created_at).toLocaleDateString()}*/}
+            {/*                            </td>*/}
+            {/*                            <td className="py-2 px-4 flex space-x-2">*/}
+            {/*                                <PrimaryButton*/}
+            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
+            {/*                                    onClick={() => handleAccept(application)}*/}
+            {/*                                >*/}
+            {/*                                    Accept*/}
+            {/*                                </PrimaryButton>*/}
+            {/*                                <SecondaryButton*/}
+            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
+            {/*                                    onClick={() => handleReject(application)}*/}
+            {/*                                >*/}
+            {/*                                    Reject*/}
+            {/*                                </SecondaryButton>*/}
+            {/*                            </td>*/}
+            {/*                        </tr>*/}
+            {/*                    );*/}
+            {/*                })}*/}
+            {/*                </tbody>*/}
+            {/*            </table>*/}
+            {/*        </div>*/}
+            {/*    ) : (*/}
+            {/*        <p className="text-gray-500">No applicants available.</p>*/}
+            {/*    )}*/}
+            {/*</DashboardCard>*/}
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />

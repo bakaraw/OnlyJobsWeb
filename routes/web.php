@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
+use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\JobSeekerDocumentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlacementController;
@@ -32,6 +34,11 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 //    });
 //});
 // Placements
+Route::get('/placement', [PlacementController::class, 'index'])->name('placement.index');
+Route::get('/placement/create', [PlacementController::class, 'create'])->name('placement.create');
+Route::post('/placement', [PlacementController::class, 'store'])->name('placement.store');
+Route::get('/placement/{placement}', [PlacementController::class, 'show'])->name('placement.show');
+Route::delete('/placement/{placement}', [PlacementController::class, 'destroy'])->name('placement.destroy');
 
 // Job Seeker Documents
 Route::get('/documents', [JobSeekerDocumentController::class, 'index'])->name('documents.index');
@@ -53,7 +60,6 @@ Route::delete('/requirements/{requirement}', [RequirementController::class, 'des
 
 //Route::get('/placements', [PlacementController::class, 'show'])->name('placements.show');
 
-Route::get('/find_work', [JobPostController::class, 'show'])->name('find_work');
 
 Route::get('/about_us', function () {
     return Inertia::render('AboutUs');
@@ -84,7 +90,8 @@ Route::middleware('auth')->group(function () {
     //Route::get('/find_work', [JobPostController::class, 'show'])->name('jobs.show');
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
-    Route::post('/job_posts/{id}/increment_views', [JobPostController::class, 'incrementViews'])->name('job_posts.increment_views');
+
+    Route::post('/job_posts/{id}/increment_views', [JobSeekerController::class, 'incrementViews'])->name('job_posts.increment_views');
 
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
@@ -95,6 +102,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/education', [EducationController::class, 'store'])
         ->name('education.store');
 
+    Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
+        ->name('dashboard');
+
+    Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
+
     Route::put('/education/{education}', [EducationController::class, 'update'])
         ->name('education.update');
 
@@ -103,6 +115,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
+
+    Route::get('/find_work', [JobSeekerController::class, 'show'])->name('find_work');
+
+    Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
+
+    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
+
+    Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
+    Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');
+    Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
+
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
@@ -115,3 +138,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';
+
+
+
