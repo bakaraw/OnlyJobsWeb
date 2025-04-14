@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import DashboardCard from "./DashboardCard.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
@@ -14,20 +15,29 @@ function JobDetails({ job, applicants, onClose }) {
         applications = "N/A",
     } = job;
 
+
     const [filterStatus, setFilterStatus] = useState("pending");
 
     const filteredApplicants = applicants.filter(
         app => app.job_post_id === job.id && app.status === filterStatus
     );
-    const handleAccept = (application) => {
-        // Your logic here
-        console.log("Accepted:", application);
+    const handleAccept = async (application) => {
+        try {
+            const response = await axios.post('/applicants/qualified', {
+                application_id: application.id
+            });
+            console.log(response.data.message);
+        } catch (error) {
+            console.error("Error accepting application:", error);
+        }
     };
 
-    const handleReject = (application) => {
-        // Your logic here
-        console.log("Rejected:", application);
-    };
+    // const handleReject = (application) => {
+    //     try {
+    //         const response = await axios
+    //     }
+    //     // Your logic here
+    // };
 
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");

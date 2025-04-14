@@ -61,16 +61,21 @@ class JobPostController extends Controller
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id',
             'custom_skills'        => 'nullable|array',
-            'custom_skills.*'      => 'string|max:255'
+            'custom_skills.*'      => 'string|max:255',
+
+             'custom_requirements'        => 'nullable|array',
+            'custom_requirements.*'      => 'string|max:255'
         ]);
 
         // Separate the arrays from validated data
         $requirementIds = $validatedData['requirements'] ?? [];
         $skillIds = $validatedData['skills'] ?? [];
         $customSkills = $validatedData['custom_skills'] ?? [];
+        $customRequirements = $validatedData['custom_requirements'] ?? [];
+
 
         // Remove these fields from the validated data
-        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills']);
+        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);
 
         // Add the user_id to the validated data
         $validatedData['user_id'] = auth()->id();
@@ -92,6 +97,11 @@ class JobPostController extends Controller
         foreach ($customSkills as $customSkillName) {
             $newSkill = Skill::create(['skill_name' => $customSkillName]);
             $jobPost->skills()->attach($newSkill->skill_id);
+        }
+
+        foreach ($customRequirements as $customRequirementName) {
+            $newRequirement = Requirement::create(['requirement_name' => $customRequirementName]);
+            $jobPost->requirements()->attach($newRequirement->requirement_id);
         }
 
         // Redirect or return success message

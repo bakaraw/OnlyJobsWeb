@@ -18,7 +18,6 @@ class ApplicantController extends Controller
 
         $user = Auth::user();
 
-        // Create a new application record with the desired status
         $application = Application::create([
             'user_id'     => $user->id,
             'job_post_id' => $request->job_post_id,
@@ -39,25 +38,27 @@ class ApplicantController extends Controller
         ]);
 
         $application = Application::findOrFail($request->application_id);
-
-//        // Optionally, ensure the authenticated user owns this application
-//        if ($application->user_id !== Auth::id()) {
-//            return response()->json(['message' => 'Unauthorized'], 403);
-//        }
-
         $application->update(['remarks' => $request->remarks]);
 
         return response()->json(['success' => true, 'message' => 'Remark updated successfully']);
     }
 
-    public function qualifiedAccepted(Request $request) {
-        $user = Auth::user();
+    public function qualifiedAccepted(Request $request)
+    {
+        $validated = $request->validate([
+            'application_id' => 'required|integer',
+        ]);
 
-        $user->appliedJobs()
-            ->where('job_post_id', $request->job_post_id)
-            ->where('user_id', $request->user_id)
-            ->update(['qualified' => true]);
+        $applicant = Application::findOrFail($validated['application_id']);
+
+        if ($applicant->status == 'pending') {
+            $applicant->status = 'qualified';
+            $applicant->save();
+            return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Application already submitted']);
     }
+
 
     public function finalApplicant(Request $request) {
         $user = Auth::user();
@@ -77,31 +78,6 @@ class ApplicantController extends Controller
             ->update(['rejected' => true]);
     }
 
-//    public function updateRemark(Request $request)
-//    {
-//        $request->validate([
-//            'job_post_id' => 'required|integer',
-//            'user_id' => 'required|integer',
-//            'remarks' => 'nullable|string',
-//        ]);
 //
-//        $user = Auth::user();
-//
-//        $job = $user->appliedJobs()
-//            ->where('job_post_id', $request->job_post_id)
-//            ->where('user_id', $request->user_id)
-//            ->first();
-//
-//        if ($job) {
-//            $user->appliedJobs()
-//                ->where('job_post_id', $request->job_post_id)
-//                ->where('user_id', $request->user_id)
-//                ->update(['remarks' => $request->remarks]);
-//
-//            return response()->json(['message' => 'Remark updated successfully']);
-//        } else {
-//            return response()->json(['message' => 'Application not found'], 404);
-//        }
-//    }
 }
 

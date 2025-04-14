@@ -2,13 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { router } from "@inertiajs/react";
 import JobList from "./Modal/JobList.jsx";
-import SecondaryButton from "@/Components/SecondaryButton.jsx";
-
 import { Doughnut } from 'react-chartjs-2';
-
 import DashboardCard from "./Modal/DashboardCard.jsx";
 import { Link } from '@inertiajs/react';
-
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -21,18 +18,19 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend
 } from "chart.js";
-import PrimaryButton from "@/Components/PrimaryButton.jsx";
+
 ChartJS.register(
     ArcElement, Tooltip, Legend,
-
-    CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend
-);
+    CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
 
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
-
-    console.log("view", totalViews);
+    const [selectedStatus, setSelectedStatus] = useState("all");
+    const filteredApplicants = selectedStatus === "all"
+        ? applicants
+        : applicants.filter((app) => app.status === selectedStatus
+        );
 
     useEffect(() => {
         if (!auth.user) {
@@ -66,11 +64,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         ],
     };
 
-    const [selectedStatus, setSelectedStatus] = useState("all");
 
-    const filteredApplicants = selectedStatus === "all"
-        ? applicants
-        : applicants.filter((app) => app.status === selectedStatus);
 
 
     return (
@@ -86,7 +80,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
             <div className="space-y-6"> {/* <-- Adds vertical spacing between charts */}
-                {/* Job Views Chart */}
                 <DashboardCard>
                     <div className="flex-grow flex items-end">
                         <Bar
@@ -99,7 +92,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     </div>
                 </DashboardCard>
 
-            {/* Overall Views Pie Chart */}
 
                 <div className="flex flex-row items-start mb-4 space-x-4">
                     <DashboardCard title="Metrics Distribution" className="flex-1 h-50">
@@ -187,8 +179,8 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                             <tr className="bg-gray-100">
                                 <th className="py-2 px-4 text-left">Applicant</th>
                                 <th className="py-2 px-4 text-left">Job Title</th>
-                                <th className="py-2 px-4 text-left">Status</th>
                                 <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Remarks</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -196,8 +188,9 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <tr key={application.id} className="border-t hover:bg-gray-50">
                                     <td className="py-2 px-4">{application.user.first_name} {application.user.last_name}</td>
                                     <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
-                                    <td className="py-2 px-4 capitalize">{application.status}</td>
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
+
+                                    <td className="py-2 px-4 capitalize">{application.remarks}</td>
                                 </tr>
                             ))}
                             </tbody>
@@ -207,7 +200,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     <p className="text-gray-500">No applicants found.</p>
                 )}
             </DashboardCard>
-
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
