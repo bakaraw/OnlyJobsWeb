@@ -12,6 +12,7 @@ use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\ViewsController;
+use App\Http\Controllers\WorkHistoryController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +80,7 @@ Route::get('/contact_us', function () {
 
 //Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
 
+Route::get('/find_work', [JobSeekerController::class, 'show'])->name('find_work');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -116,16 +118,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
-    Route::get('/find_work', [JobSeekerController::class, 'show'])->name('find_work');
+    Route::post('/work_history', [WorkHistoryController::class, 'store'])
+        ->name('work_history.store');
+
+    Route::put('/work_history/{work_history}', [WorkHistoryController::class, 'update'])
+        ->name('work_history.update');
+
+    Route::delete('/work_history/{work_history}', [WorkHistoryController::class, 'destroy'])
+        ->name('work_history.destroy');
 
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
-
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
 
     Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
     Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');
     Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
-
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
@@ -138,6 +145,3 @@ Route::middleware('auth')->group(function () {
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 require __DIR__ . '/auth.php';
-
-
-

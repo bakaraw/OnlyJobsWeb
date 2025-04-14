@@ -83,7 +83,7 @@ export default function UpdateEducation({ className }) {
                     </div>
                     <div className='flex items-center justify-end w-full'>
                         <SecondaryButton onClick={() => setIsAddModalOpen(true)} className=''>
-                            Add Education
+                            Add
                         </SecondaryButton>
                     </div>
                 </div>
@@ -105,7 +105,7 @@ export default function UpdateEducation({ className }) {
                 <div className='col-span-2'>
                 </div>
             </div>
-            <hr className='w-full mt-3 mb-6' />
+            <hr className='w-full mt-3' />
             {
                 educations.length != 0 ?
                     educations.map((edu, index) => (

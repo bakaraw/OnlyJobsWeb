@@ -9,7 +9,7 @@ import { useForm } from "@inertiajs/inertia-react";
 import { router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
-export default function EducationCard({ className, id, userId, educationLevel, school, degree, startYear, endYear, attachedFile, years }) {
+export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attachedFile, years }) {
     let eduLevel = '';
 
 
