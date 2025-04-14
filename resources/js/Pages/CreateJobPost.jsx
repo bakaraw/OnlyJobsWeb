@@ -108,13 +108,13 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                 {/* Job Title Field */}
                 <InputLabel htmlFor="job_title"/>
                 <div className="grid grid-cols-6 gap-3">
-                    <div className="col-span-2 flex flex-col">
+                    <div className="col-span-6 flex flex-col mb-4">
                         <TextInput
                             id="job_title"
                             name="job_title"
                             placeholder="Job Title"
                             value={data.job_title}
-                            className="mt-1 block w-full"
+                            className="mt-1 block w-full "
                             autoComplete="job_title"
                             isFocused={true}
                             onChange={(e) => setData("job_title", e.target.value)}
@@ -128,12 +128,13 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             name="company"
                             placeholder="Company"
                             value={data.company}
-                            className="mt-1 block w-full"
+                            className="mt-1 block w-full "
                             autoComplete="company"
                             onChange={(e) => setData("company", e.target.value)}
                         />
                         <InputError message={errors.company} className="mt-2" />
                     </div>
+
                     {/* Job Location Field */}
                     <div className="col-span-2 flex flex-col">
                         <TextInput
@@ -148,9 +149,30 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                         <InputError message={errors.job_location} className="mt-2" />
                     </div>
 
+                    <div className="col-span-2 flex flex-col">
+                        <InputLabel htmlFor="job_type"  />
+                        <select
+                            id="job_type"
+                            name="job_type"
+                            value={data.job_type}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                            onChange={(e) => setData("job_type", e.target.value)}
+                        >
+                            <option value="">Job Type</option>
+                            <option value="Full Time">Full Time</option>
+                            <option value="Part Time">Part Time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Temporary">Temporary</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Freelance">Freelance</option>
+                        </select>
+                        <InputError message={errors.job_type} className="mt-2" />
+                    </div>
+
                     {/* Job Description Field */}
                     <div className="col-span-6">
-                        <InputLabel htmlFor="job_description" value="Job Description" />
+                        <InputLabel htmlFor="job_description"  />
                         <textarea
                             id="job_description"
                             name="job_description"
@@ -166,49 +188,12 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                 {/* Job Type, Status, Degree, Salary, Experience */}
                 <div className="mt-3 grid grid-cols-9 gap-3">
                     {/* Job Type */}
-                    <div className="col-span-3">
-                        <InputLabel htmlFor="job_type" value="Job Type" />
-                        <select
-                            id="job_type"
-                            name="job_type"
-                            value={data.job_type}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            onChange={(e) => setData("job_type", e.target.value)}
-                        >
-                            <option value="">Select Job Type</option>
-                            <option value="Full Time">Full Time</option>
-                            <option value="Part Time">Part Time</option>
-                            <option value="Contract">Contract</option>
-                            <option value="Temporary">Temporary</option>
-                            <option value="Internship">Internship</option>
-                            <option value="Remote">Remote</option>
-                            <option value="Freelance">Freelance</option>
-                        </select>
-                        <InputError message={errors.job_type} className="mt-2" />
-                    </div>
 
-                    {/*/!* Job Status *!/*/}
-                    {/*<div className="col-span-3">*/}
-                    {/*    <InputLabel htmlFor="status_id" value="Job Status" />*/}
-                    {/*    <select*/}
-                    {/*        id="status_id"*/}
-                    {/*        name="status_id"*/}
-                    {/*        value={data.status_id}*/}
-                    {/*        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"*/}
-                    {/*        onChange={(e) => setData("status_id", e.target.value)}*/}
-                    {/*    >*/}
-                    {/*        {statuses.map((status) => (*/}
-                    {/*            <option key={status.id} value={status.id}>*/}
-                    {/*                {status.name}*/}
-                    {/*            </option>*/}
-                    {/*        ))}*/}
-                    {/*    </select>*/}
-                    {/*    <InputError message={errors.status_id} className="mt-2" />*/}
-                    {/*</div>*/}
+
 
                     {/* Degree Required */}
                     <div className="col-span-3">
-                        <InputLabel htmlFor="degree_id" value="Degree Required" />
+                        <InputLabel htmlFor="degree_id"  />
                         <select
                             id="degree_id"
                             name="degree_id"
@@ -229,7 +214,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                     </div>
 
                     <div className="col-span-3">
-                        <InputLabel htmlFor="min_experience_years" value="Experience Level" />
+                        <InputLabel htmlFor="min_experience_years"  />
                         <select
                             id="Minimum Experience"
                             name="Minimum Experience"
@@ -237,7 +222,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                             onChange={(e) => setData("min_experience_years", e.target.value)}
                         >
-                            <option value="">Select Job Type</option>
+                            <option value="">Experience Level</option>
                             <option value="1">Entry Level</option>
                             <option value="3" >Intermediate  Level</option>
                             <option value="5">Expert Level</option>
@@ -248,31 +233,37 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
 
 
                     {/* Salary and Experience Fields */}
-                    <div className="col-span-3">
-                        <InputLabel htmlFor="min_salary" value="Minimum Salary" />
-                        <TextInput
-                            id="min_salary"
-                            name="min_salary"
-                            placeholder="₱ 20,000"
-                            value={data.min_salary}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData("min_salary", e.target.value)}
-                        />
-                        <InputError message={errors.min_salary} className="mt-2" />
-                    </div>
-                    <div className="col-span-3">
-                        <InputLabel htmlFor="max_salary" value="Maximum Salary" />
-                        <TextInput
-                            id="max_salary"
-                            name="max_salary"
-                            placeholder="₱ 50,000"
-                            value={data.max_salary}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData("max_salary", e.target.value)}
-                        />
-                        <InputError message={errors.max_salary} className="mt-2" />
-                    </div>
 
+
+                </div>
+
+                <div className="mt-3 grid grid-cols-9 gap-3">
+
+
+                <div className="col-span-3">
+                    <InputLabel htmlFor="min_salary" value="Minimum Salary" />
+                    <TextInput
+                        id="min_salary"
+                        name="min_salary"
+                        placeholder="₱ 20,000"
+                        value={data.min_salary}
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData("min_salary", e.target.value)}
+                    />
+                    <InputError message={errors.min_salary} className="mt-2" />
+                </div>
+                <div className="col-span-3">
+                    <InputLabel htmlFor="max_salary" value="Maximum Salary" />
+                    <TextInput
+                        id="max_salary"
+                        name="max_salary"
+                        placeholder="₱ 50,000"
+                        value={data.max_salary}
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData("max_salary", e.target.value)}
+                    />
+                    <InputError message={errors.max_salary} className="mt-2" />
+                </div>
 
                 </div>
 

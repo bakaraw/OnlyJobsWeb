@@ -61,12 +61,20 @@ class ApplicantController extends Controller
 
 
     public function finalApplicant(Request $request) {
-        $user = Auth::user();
 
-        $user->appliedJobs()
-            ->where('job_post_id', $request->job_post_id)
-            ->where('user_id', $request->user_id)
-            ->update(['accepted' => true]);
+            $validated = $request->validate([
+                'application_id' => 'required|integer',
+            ]);
+
+            $applicant = Application::findOrFail($validated['application_id']);
+
+            if ($applicant->status == 'qualified') {
+                $applicant->status = 'accepted';
+                $applicant->save();
+                return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
+            }
+            return response()->json(['success' => false, 'message' => 'Application already submitted']);
+
     }
 
     public function rejectApplicant(Request $request) {

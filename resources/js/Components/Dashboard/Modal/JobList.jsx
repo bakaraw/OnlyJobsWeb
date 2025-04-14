@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import DashboardCard from "./DashboardCard.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import DangerButton from "@/Components/DangerButton.jsx";
 
 function JobDetails({ job, applicants, onClose }) {
     const {
@@ -23,15 +24,36 @@ function JobDetails({ job, applicants, onClose }) {
     );
     const handleAccept = async (application) => {
         try {
-            const response = await axios.post('/applicants/qualified', {
+            let endpoint;
+            let newStatus;
+            switch (application.status) {
+                case 'pending':
+                    endpoint = '/applicants/qualified';
+                    newStatus = 'qualified';
+                    break;
+                case 'qualified':
+                    endpoint = '/applicants/accepted';
+                    newStatus = 'accepted';
+                    break;
+                default:
+                    console.log('Invalid status for acceptance');
+                    return;
+            }
+
+            const response = await axios.post(endpoint, {
                 application_id: application.id
             });
-            console.log(response.data.message);
+
+            if (response.data.success) {
+                application.status = newStatus;
+                // Force a re-render by updating the state that contains applicants
+                window.location.reload(); // Temporary solution - consider using state management
+            }
+
         } catch (error) {
-            console.error("Error accepting application:", error);
+            console.error("Error updating application status:", error);
         }
     };
-
     // const handleReject = (application) => {
     //     try {
     //         const response = await axios
@@ -181,12 +203,12 @@ function JobDetails({ job, applicants, onClose }) {
                                                     >
                                                         Accept
                                                     </PrimaryButton>
-                                                    <SecondaryButton
+                                                    <DangerButton
                                                         className="px-3 py-1"
                                                         onClick={() => handleReject(application)}
                                                     >
                                                         Reject
-                                                    </SecondaryButton>
+                                                    </DangerButton>
                                                 </>
                                             )}
                                         </td>
@@ -277,7 +299,7 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
 
                             <td className="py-3 px-4 text-center">
 
-                                <SecondaryButton
+                                <DangerButton
                                     className="px-3 py-1 bg-red-500  hover:bg-red-600"
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -285,7 +307,7 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
                                     }}
                                 >
                                     Delete
-                                </SecondaryButton>
+                                </DangerButton>
                             </td>
 
 

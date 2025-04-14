@@ -124,7 +124,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <h2 className="text-sm text-gray-500">Total Applicants</h2>
                                     <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
                                 </div>
-                                <div className="text-green-500 text-3xl">👤</div>
+                                <div className="text-green-500 text-3xl">🧑‍💼</div>
                             </div>
                         </DashboardCard>
 
