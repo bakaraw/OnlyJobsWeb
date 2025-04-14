@@ -40,7 +40,7 @@ class WorkHistoryController extends Controller
 
     public function update(Request $request, WorkHistory $workHistory): RedirectResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'job_title' => 'required|string|max:255',
             'job_description' => 'required|string',
             'employer' => 'required|string|max:255',
@@ -61,5 +61,16 @@ class WorkHistoryController extends Controller
         ]));
 
         return Redirect::back()->with('success', 'Work History Updated');
+    }
+
+    public function destroy(WorkHistory $workHistory): RedirectResponse
+    {
+        if ($workHistory->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $workHistory->delete();
+
+        return Redirect::back()->with('success', 'Work History deleted successfully');
     }
 }

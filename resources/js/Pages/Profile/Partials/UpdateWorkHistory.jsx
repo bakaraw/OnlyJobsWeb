@@ -95,7 +95,7 @@ export default function UpdateWorkHistory({ className }) {
             </div>
             <hr className='w-full mt-3' />
             {
-                work_histories.lenth != 0 ?
+                work_histories.length != 0 ?
                     work_histories.map((work) => (
                         <WorkHistoriesCard
                             key={work.id}
@@ -106,7 +106,7 @@ export default function UpdateWorkHistory({ className }) {
                             start_date={work.start_date}
                             end_date={work.end_date}
                         />
-                    )) : <div> no work history</div>
+                    )) : <div className='flex items-center justify-center my-6'> no work history specified </div>
             }
             <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} maxWidth="2xl">
                 <div className="font-semibold text-xl flex justify-between">

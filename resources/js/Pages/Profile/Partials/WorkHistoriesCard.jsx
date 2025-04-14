@@ -6,6 +6,7 @@ import { useState } from "react";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
+import { router } from "@inertiajs/react";
 
 function formatToMonthYear(dateString) {
     if (!dateString) return '';
@@ -46,6 +47,19 @@ export default function WorkHistoriesCard({
             },
         });
     };
+
+    const deleteWorkHistory = () => {
+        router.delete(route('work_history.destroy', id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log("deleted successfully");
+            },
+            onError: (error) => {
+                console.log("An error occur: ", error);
+            }
+        });
+    };
+
 
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -210,7 +224,7 @@ export default function WorkHistoriesCard({
                 <div className="col-span-2">
                     <div className="flex items-center justify-center">
                         <SecondaryButton onClick={() => setIsModalOpen(true)} className="mr-3">Edit</SecondaryButton>
-                        <DangerButton >Delete</DangerButton>
+                        <DangerButton onClick={deleteWorkHistory}>Delete</DangerButton>
                     </div>
                 </div>
                 <div className="col-span-12">

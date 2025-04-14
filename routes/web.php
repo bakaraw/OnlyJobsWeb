@@ -110,6 +110,9 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/work_history/{work_history}', [WorkHistoryController::class, 'update'])
         ->name('work_history.update');
+
+    Route::delete('/work_history/{work_history}', [WorkHistoryController::class, 'destroy'])
+        ->name('work_history.destroy');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
