@@ -9,17 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('work_histories', function (Blueprint $table) {
-            $table->id('work_history_id');
-            $table->unsignedBigInteger('jobseeker_id');
-            $table->string('company_name');
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Foreign Key
             $table->string('job_title');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
             $table->text('job_description')->nullable();
+            $table->string('employer');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
 
             $table->timestamps();
-
-            $table->foreign('jobseeker_id')->references('jobseeker_id')->on('job_seekers')->onDelete('cascade');
         });
     }
 

@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Educations::class);
     }
+
+    public function workHistories()
+    {
+        return $this->hasMany(WorkHistory::class);
+    }
 }
