@@ -35,6 +35,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (auth()->id() === 1) {
+            return Redirect::route('dashboard'); // Replace 'admin_dashboard' with the desired route for the admin
+        }
 
         return Redirect::route('find_work');
     }
