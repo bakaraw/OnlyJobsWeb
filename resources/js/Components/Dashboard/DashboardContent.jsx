@@ -101,7 +101,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
                 <div className="flex flex-row items-start mb-4 space-x-4">
-                    <DashboardCard title="Metrics Distribution" className="flex-1 h-50 w-1/2   ">
+                    <DashboardCard  className="flex-1 h-50 w-1/2   ">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
                                 data={doughnutData}
@@ -109,12 +109,12 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     responsive: true,
                                     maintainAspectRatio: false,
                                 }}
-                                style={{ width: '150px', height: '308px' }}
+                                style={{ width: '150px', height: '352.5px' }}
                             />
                         </div>
                     </DashboardCard>
 
-                    <DashboardCard title="Applicant Status Distribution" className="w-1/2 h-[308px]">
+                    <DashboardCard  className="w-1/2 h-[385px]">
                         <ApplicantPipelineCard
                             applications={applicants}
                             showCard={false}
