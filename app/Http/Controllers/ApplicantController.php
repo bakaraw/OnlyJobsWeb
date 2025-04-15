@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\JobPost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 class ApplicantController extends Controller
@@ -85,6 +87,27 @@ class ApplicantController extends Controller
             ->where('user_id', $request->user_id)
             ->update(['rejected' => true]);
     }
+
+    public function pipeLineData(Request $request) {
+
+        $pipeline = [
+            'total' => Application::count(),
+            'pending' => Application::where('status', 'Pending')->count(),
+            'qualified' => Application::where('status', 'Qualified')->count(),
+            'accepted' => Application::where('status', 'Accepted')->count(),
+            'rejected' => Application::where('status', 'Rejected')->count(),
+        ];
+
+        if ($pipeline['total'] > 0) {
+            $pipeline['pending_percentage'] = round(($pipeline['pending'] / $pipeline['total']) * 100);
+            $pipeline['qualified_percentage'] = round(($pipeline['qualified'] / $pipeline['total']) * 100);
+            $pipeline['accepted_percentage'] = round(($pipeline['accepted'] / $pipeline['total']) * 100);
+            $pipeline['rejected_percentage'] = round(($pipeline['rejected'] / $pipeline['total']) * 100);
+
+        }
+        return response()->json(['pipeline' => $pipeline]);
+    }
+
 
 //
 }

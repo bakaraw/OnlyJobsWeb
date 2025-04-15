@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('job_post_id');
-            $table->enum('status', ['pending', 'qualified','accepted', 'rejected'])->default('pending');
+            $table->enum('status', ['Pending', 'Qualified','Accepted', 'Reject'])->default('Pending');
             $table->text('remarks')->nullable();
             $table->timestamps();
 

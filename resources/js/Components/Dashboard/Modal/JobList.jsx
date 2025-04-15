@@ -19,10 +19,10 @@ function JobDetails({ job, applicants, onClose }) {
 
 
     const [selectedStatus, setSelectedStatus] = useState("all");
-    const filteredApplicants = selectedStatus === "all"
-        ? applicants
-        : applicants.filter((app) => app.status === selectedStatus
-        );
+    const filteredApplicants = applicants
+        .filter((app) => app.job_post_id === job.id)
+        .filter((app) => selectedStatus === "all" || app.status === selectedStatus);
+
     const handleAccept = async (application) => {
         try {
             let endpoint;
@@ -30,11 +30,11 @@ function JobDetails({ job, applicants, onClose }) {
             switch (application.status) {
                 case 'pending':
                     endpoint = '/applicants/qualified';
-                    newStatus = 'qualified';
+                    newStatus = 'Qualified';
                     break;
                 case 'qualified':
                     endpoint = '/applicants/accepted';
-                    newStatus = 'accepted';
+                    newStatus = 'Accepted';
                     break;
                 default:
                     console.log('Invalid status for acceptance');
@@ -191,7 +191,7 @@ function JobDetails({ job, applicants, onClose }) {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <PrimaryButton
+                                                    <SecondaryButton
                                                         className="px-3 py-1"
                                                         onClick={() => {
                                                             setEditingId(application.id);
@@ -199,7 +199,7 @@ function JobDetails({ job, applicants, onClose }) {
                                                         }}
                                                     >
                                                         Add Remark
-                                                    </PrimaryButton>
+                                                    </SecondaryButton>
                                                     <PrimaryButton
                                                         className="px-3 py-1"
                                                         onClick={() => handleAccept(application)}

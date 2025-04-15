@@ -134,6 +134,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');
     Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
     Route::patch('/applications/update-remark', [ApplicantController::class, 'updateRemark']);
+    Route::get('/dashboard/pipeline', [ApplicantController::class, 'pipeLineData'])->name('pipelineData');
+
 
 });
 //Route::get('/dashboard', function () {

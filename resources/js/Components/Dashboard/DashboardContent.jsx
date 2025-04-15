@@ -18,6 +18,7 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend
 } from "chart.js";
+import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 
 ChartJS.register(
     ArcElement, Tooltip, Legend,
@@ -80,6 +81,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
             <div className="space-y-6"> {/* <-- Adds vertical spacing between charts */}
+
                 <DashboardCard>
                     <div className="flex-grow flex items-end">
                         <Bar
@@ -90,11 +92,16 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                             }}
                         />
                     </div>
+
+
                 </DashboardCard>
 
 
+
+
+
                 <div className="flex flex-row items-start mb-4 space-x-4">
-                    <DashboardCard title="Metrics Distribution" className="flex-1 h-50">
+                    <DashboardCard title="Metrics Distribution" className="flex-1 h-50 w-1/2   ">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
                                 data={doughnutData}
@@ -105,6 +112,13 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 style={{ width: '150px', height: '308px' }}
                             />
                         </div>
+                    </DashboardCard>
+
+                    <DashboardCard title="Applicant Status Distribution" className="w-1/2 h-[308px]">
+                        <ApplicantPipelineCard
+                            applications={applicants}
+                            showCard={false}
+                        />
                     </DashboardCard>
 
                     <div className="flex flex-col flex-1 space-y-4">
@@ -207,6 +221,9 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     <p className="text-gray-500">No applicants found.</p>
                 )}
             </DashboardCard>
+
+
+
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
