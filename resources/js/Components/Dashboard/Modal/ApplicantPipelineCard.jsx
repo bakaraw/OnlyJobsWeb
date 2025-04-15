@@ -144,7 +144,7 @@ const ApplicantPipelineCard = ({
     );
 
     return showCard ? (
-        <DashboardCard className={className}>
+        <DashboardCard title={"Application Funnel Statistics"} className={className}>
             {pipelineContent}
         </DashboardCard>
     ) : pipelineContent;

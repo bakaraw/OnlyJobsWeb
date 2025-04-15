@@ -88,8 +88,16 @@ function JobDetails({ job, applicants, onClose }) {
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h2 className="text-2xl font-bold mb-4">{job_title}</h2>
 
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">{job_title}</h2>
+                <button
+                    onClick={onClose}
+                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                >
+                    Close
+                </button>
+            </div>
             <div className="mb-4">
                 <p className="font-semibold">Company:</p>
                 <p className="text-gray-600">{company}</p>
@@ -148,6 +156,7 @@ function JobDetails({ job, applicants, onClose }) {
                                             <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
                                             {application.user.first_name} {application.user.last_name}
                                         </div>
+
                                     </td>
                                     <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
                                         <td className="py-2 px-4 capitalize">{application.status}</td>
@@ -227,14 +236,7 @@ function JobDetails({ job, applicants, onClose }) {
                 )}
             </DashboardCard>
 
-            <div className="flex justify-end mt-4">
-                <button
-                    onClick={onClose}
-                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-                >
-                    Close
-                </button>
-            </div>
+
         </div>
     );
 }
@@ -290,7 +292,13 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
                                 setShowDetails(true);
                             }}
                         >
-                            <td className="py-3 px-4">{job.job_title}</td>
+
+                            <td className="py-3 px-4">
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-gray-500">{jobs.indexOf(job) + 1}.</span>
+                                    {job.job_title}
+                                </div>
+                            </td>
                             <td className="py-3 px-4">{job.job_location}</td>
                             <td className="py-3 px-4">{job.job_type}</td>
                             <td className="py-3 px-4">{job.views || "None"}</td>
@@ -302,15 +310,30 @@ export default function JobList({ jobs, applicants, totalApplicants }) {
 
                             <td className="py-3 px-4 text-center">
 
-                                <DangerButton
-                                    className="px-3 py-1 bg-red-500  hover:bg-red-600"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteJob(job.id);
-                                    }}
-                                >
-                                    Delete
-                                </DangerButton>
+
+                                <div className="flex flex-col space-y-2">
+                                    <SecondaryButton
+                                        className="w-24"
+                                        // onClick={(e) => {
+                                        //     e.stopPropagation();
+                                        //     handleDeleteJob(job.id);
+                                        // }}
+                                    >
+                                        Edit
+                                    </SecondaryButton>
+
+                                    <DangerButton
+                                        className="w-24"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteJob(job.id);
+                                        }}
+                                    >
+                                        Delete
+                                    </DangerButton>
+                                </div>
+
+
                             </td>
 
 

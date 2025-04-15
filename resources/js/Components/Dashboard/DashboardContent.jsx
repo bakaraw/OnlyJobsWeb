@@ -96,8 +96,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
             </div>
 
 
-            <div className="space-y-6"> {/* <-- Adds vertical spacing between charts */}
-
+            <div className="space-y-6">
                 <DashboardCard>
                     <div className="flex-grow flex items-end">
                         <Bar
@@ -188,21 +187,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
             <DashboardCard>
-                {/*<div className="mb-4 flex space-x-4">*/}
-                {/*    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (*/}
-                {/*        <PrimaryButton*/}
-                {/*            key={status}*/}
-                {/*            onClick={() => setSelectedStatus(status)}*/}
-                {/*            className={`px-4 py-2 rounded-full border transition-all ${*/}
-                {/*                selectedStatus === status*/}
-                {/*                    ? 'bg-blue-600 text-white'*/}
-                {/*                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'*/}
-                {/*            }`}*/}
-                {/*        >*/}
-                {/*            {status.charAt(0).toUpperCase() + status.slice(1)}*/}
-                {/*        </PrimaryButton>*/}
-                {/*    ))}*/}
-                {/*</div>*/}
+
 
                 {filteredApplicants.length > 0 ? (
                     <div className="overflow-x-auto">
@@ -228,7 +213,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
-
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
                                 </tr>
                             ))}
@@ -239,9 +223,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     <p className="text-gray-500">No applicants found.</p>
                 )}
             </DashboardCard>
-
-
-
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
