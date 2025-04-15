@@ -17,11 +17,12 @@ function JobDetails({ job, applicants, onClose }) {
     } = job;
 
 
-    const [filterStatus, setFilterStatus] = useState("pending");
 
-    const filteredApplicants = applicants.filter(
-        app => app.job_post_id === job.id && app.status === filterStatus
-    );
+    const [selectedStatus, setSelectedStatus] = useState("all");
+    const filteredApplicants = selectedStatus === "all"
+        ? applicants
+        : applicants.filter((app) => app.status === selectedStatus
+        );
     const handleAccept = async (application) => {
         try {
             let endpoint;
@@ -112,22 +113,22 @@ function JobDetails({ job, applicants, onClose }) {
             <DashboardCard title="Job Applicant Overview">
                 {/* Filter Buttons */}
                 <div className="flex space-x-2 mb-4">
-                    {["pending", "qualified","accepted", "rejected"].map(status => (
+                    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
                         <PrimaryButton
                             key={status}
-                            className={`px-4 py-2 rounded capitalize ${
-                                filterStatus === status
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-200 text-gray-700"
+                            onClick={() => setSelectedStatus(status)}
+                            className={`px-4 py-2 rounded-full border transition-all ${
+                                selectedStatus === status
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
-                            onClick={() => setFilterStatus(status)}
                         >
-                            {status}
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
                         </PrimaryButton>
                     ))}
                 </div>
 
-                {filteredApplicants.filter(app => app.status === filterStatus).length > 0 ? (
+                {filteredApplicants.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border-collapse">
                             <thead>
@@ -140,13 +141,15 @@ function JobDetails({ job, applicants, onClose }) {
                             </tr>
                             </thead>
                             <tbody>
-                            {filteredApplicants
-                                .filter(application => application.status === filterStatus)
-                                .map((application) => (
-                                    <tr key={application.id} className="border-t hover:bg-gray-100">
-                                        <td className="py-2 px-4">
+                            {filteredApplicants.map((application) => (
+                                <tr key={application.id} className="border-t hover:bg-gray-50">
+                                    <td className="py-2 px-4">
+                                        <div className="flex items-center">
+                                            <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
                                             {application.user.first_name} {application.user.last_name}
-                                        </td>
+                                        </div>
+                                    </td>
+                                    <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
                                         <td className="py-2 px-4 capitalize">{application.status}</td>
                                         <td className="py-2 px-4">
                                             {new Date(application.created_at).toLocaleDateString()}
@@ -219,7 +222,7 @@ function JobDetails({ job, applicants, onClose }) {
                     </div>
                 ) : (
                     <p className="text-gray-500 capitalize">
-                        No {filterStatus} applicants available.
+                        No  applicants available.
                     </p>
                 )}
             </DashboardCard>

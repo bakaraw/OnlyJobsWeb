@@ -180,15 +180,22 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <th className="py-2 px-4 text-left">Applicant</th>
                                 <th className="py-2 px-4 text-left">Job Title</th>
                                 <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Status</th>
                                 <th className="py-2 px-4 text-left">Remarks</th>
                             </tr>
                             </thead>
                             <tbody>
                             {filteredApplicants.map((application) => (
                                 <tr key={application.id} className="border-t hover:bg-gray-50">
-                                    <td className="py-2 px-4">{application.user.first_name} {application.user.last_name}</td>
+                                    <td className="py-2 px-4">
+                                        <div className="flex items-center">
+                                            <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
+                                            {application.user.first_name} {application.user.last_name}
+                                        </div>
+                                    </td>
                                     <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
 
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
                                 </tr>
