@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
@@ -126,6 +127,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/work_history/{work_history}', [WorkHistoryController::class, 'destroy'])
         ->name('work_history.destroy');
+
+    Route::post('/certification', [CertificationController::class, 'store'])
+        ->name('certification.store');
 
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');

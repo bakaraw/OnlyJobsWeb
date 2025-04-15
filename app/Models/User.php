@@ -60,7 +60,8 @@ class User extends Authenticatable
         return $this->hasMany(Placement::class);
     }
 
-    public function appliedJobs() {
+    public function appliedJobs()
+    {
         return $this->belongsToMany(JobPost::class, 'applications')
             ->withTimestamps()->withPivot('status');
     }
@@ -73,5 +74,10 @@ class User extends Authenticatable
     public function workHistories()
     {
         return $this->hasMany(WorkHistory::class);
+    }
+
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class);
     }
 }

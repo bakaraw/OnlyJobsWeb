@@ -8,6 +8,7 @@ import ContentLayout from '@/Layouts/ContentLayout';
 import { usePage } from '@inertiajs/react';
 import UpdateEducation from './Partials/UpdateEducation';
 import UpdateWorkHistory from './Partials/UpdateWorkHistory';
+import UpdateCertification from './Partials/UpdateCertification';
 
 export default function Edit({ mustVerifyEmail, status }) {
     const { auth } = usePage().props;
@@ -40,6 +41,10 @@ export default function Edit({ mustVerifyEmail, status }) {
 
                     <div className='bg-white p-4 shadow sm:rounded-lg sm:p-8'>
                         <UpdateWorkHistory />
+                    </div>
+
+                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                        <UpdateCertification />
                     </div>
 
                     <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
