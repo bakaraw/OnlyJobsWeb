@@ -6,6 +6,7 @@ import { Doughnut } from 'react-chartjs-2';
 import DashboardCard from "./Modal/DashboardCard.jsx";
 import { Link } from '@inertiajs/react';
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
     Chart as ChartJS,
     ArcElement,
@@ -22,7 +23,9 @@ import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelin
 
 ChartJS.register(
     ArcElement, Tooltip, Legend,
-    CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
+    CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
+    ChartDataLabels
+);
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
 
     const [showDetails, setShowDetails] = useState(false);
@@ -44,12 +47,25 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         labels: ['Jobs', 'Users', 'Views'],
         datasets: [
             {
-                label: 'Overall Stats',
                 data: [totalJob, totalUsers, totalViews],
                 backgroundColor: ['#8884d8', '#82ca9d', '#ffc658'],
                 borderWidth: 1,
             },
         ],
+        options: {
+            plugins: {
+                datalabels: {
+                    color: '#000000',
+                    formatter: (value, context) => {
+                        return `${context.chart.data.labels[context.dataIndex]}: ${value}`;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                }
+            }
+        }
     };
 
     const chartData = {
@@ -101,7 +117,15 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
                 <div className="flex flex-row items-start mb-4 space-x-4">
-                    <DashboardCard  className="flex-1 h-50 w-1/2   ">
+
+                        <ApplicantPipelineCard
+                            applications={applicants}
+                            onStatusClick={(status) => setSelectedStatus(status)}
+                            className="h-[404px]"
+
+                        />
+
+                    <DashboardCard className="flex-1 h-50 w-1/2">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
                                 data={doughnutData}
@@ -109,17 +133,11 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     responsive: true,
                                     maintainAspectRatio: false,
                                 }}
-                                style={{ width: '150px', height: '352.5px' }}
+                                style={{ width: '300px', height: '372px' }}
                             />
                         </div>
                     </DashboardCard>
 
-                    <DashboardCard  className="w-1/2 h-[385px]">
-                        <ApplicantPipelineCard
-                            applications={applicants}
-                            showCard={false}
-                        />
-                    </DashboardCard>
 
                     <div className="flex flex-col flex-1 space-y-4">
                         <DashboardCard>
@@ -170,21 +188,21 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
             <DashboardCard>
-                <div className="mb-4 flex space-x-4">
-                    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
-                        <PrimaryButton
-                            key={status}
-                            onClick={() => setSelectedStatus(status)}
-                            className={`px-4 py-2 rounded-full border transition-all ${
-                                selectedStatus === status
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
-                        >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </PrimaryButton>
-                    ))}
-                </div>
+                {/*<div className="mb-4 flex space-x-4">*/}
+                {/*    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (*/}
+                {/*        <PrimaryButton*/}
+                {/*            key={status}*/}
+                {/*            onClick={() => setSelectedStatus(status)}*/}
+                {/*            className={`px-4 py-2 rounded-full border transition-all ${*/}
+                {/*                selectedStatus === status*/}
+                {/*                    ? 'bg-blue-600 text-white'*/}
+                {/*                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'*/}
+                {/*            }`}*/}
+                {/*        >*/}
+                {/*            {status.charAt(0).toUpperCase() + status.slice(1)}*/}
+                {/*        </PrimaryButton>*/}
+                {/*    ))}*/}
+                {/*</div>*/}
 
                 {filteredApplicants.length > 0 ? (
                     <div className="overflow-x-auto">
