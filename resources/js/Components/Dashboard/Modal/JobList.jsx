@@ -16,6 +16,15 @@ function JobDetails({ job, applicants, onClose }) {
         applications = "N/A",
     } = job;
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableJob, setEditableJob] = useState({
+        job_title,
+        company,
+        job_location,
+        job_type,
+        job_description,
+    });
+
 
 
     const [selectedStatus, setSelectedStatus] = useState("all");

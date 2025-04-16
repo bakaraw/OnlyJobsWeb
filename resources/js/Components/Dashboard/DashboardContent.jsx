@@ -120,7 +120,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                         <ApplicantPipelineCard
                             applications={applicants}
                             onStatusClick={(status) => setSelectedStatus(status)}
-                            className="h-[404px]"
+                            className="h-[423px]"
 
                         />
 
@@ -132,7 +132,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     responsive: true,
                                     maintainAspectRatio: false,
                                 }}
-                                style={{ width: '300px', height: '372px' }}
+                                style={{ width: '300px', height: '391px' }}
                             />
                         </div>
                     </DashboardCard>
@@ -162,24 +162,26 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                         <DashboardCard>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h2 className="text-sm text-gray-500">Applications</h2>
-                                    <p className="text-2xl font-semibold text-gray-800">
-                                        {applicants.filter(app => app.status === 'pending').length}
-                                    </p>
-                                </div>
-                                <div className="text-yellow-500 text-3xl">⏳</div>
-                            </div>
-                        </DashboardCard>
-
-                        <DashboardCard>
-                            <div className="flex items-center justify-between">
-                                <div>
                                     <h2 className="text-sm text-gray-500">Total Views</h2>
                                     <p className="text-2xl font-semibold text-gray-800">{totalViews}</p>
                                 </div>
                                 <div className="text-orange-500 text-3xl">👀</div>
                             </div>
                         </DashboardCard>
+
+                        <DashboardCard>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-500">Hired</h2>
+                                    <p className="text-2xl font-semibold text-gray-800">
+                                        {applicants.filter(app => app.status === 'accepted').length}
+                                    </p>
+                                </div>
+                                <div className="text-yellow-500 text-3xl">⏳</div>
+                            </div>
+                        </DashboardCard>
+
+
                     </div>
                 </div>
 
