@@ -3,12 +3,16 @@ import { useState } from "react";
 import Modal from "@/Components/Modal";
 import TextInput from "@/Components/TextInput";
 import InputLabel from "@/Components/InputLabel";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import InputError from "@/Components/InputError";
 import FileInput from "@/Components/FileInput";
 import PrimaryButton from "@/Components/PrimaryButton";
+import CertificationCard from "./CertificationCard";
 
 export default function UpdateCertification({ className }) {
+    const { props } = usePage();
+    const certifications = props.certifications || [];
+
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
@@ -53,22 +57,33 @@ export default function UpdateCertification({ className }) {
                 <hr className="mt-5 block w-full items-center justify-center" />
             </header>
             <div className='grid grid-cols-12 gap-3 mt-3'>
-                <div className='col-span-2'>
+                <div className='col-span-4'>
                     <p className='font-medium'>Title</p>
                 </div>
-                <div className='col-span-3'>
+                <div className='col-span-4'>
                     <p className='font-medium'>Description</p>
                 </div>
-                <div className='col-span-3'>
-                    <p className='font-medium'>Year</p>
-                </div>
                 <div className='col-span-2'>
-                    <p className='font-medium'>Attached file</p>
+                    <p className='font-medium'>Year</p>
                 </div>
                 <div className='col-span-2'>
                 </div>
             </div>
             <hr className='w-full mt-3' />
+            {
+                certifications.length != 0 ?
+                    certifications.map((cert) => (
+                        <CertificationCard
+                            key={cert.id}
+                            id={cert.id}
+                            title={cert.title}
+                            description={cert.description}
+                            year={cert.year}
+                            file_url={cert.file_url}
+                        />
+                    )) : <div className='flex items-center justify-center my-6'> no education specified </div>
+
+            }
 
             <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} maxWidth='2xl'>
                 <div className='font-semibold text-xl flex justify-between'>

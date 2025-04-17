@@ -9,10 +9,7 @@ import { useForm } from "@inertiajs/inertia-react";
 import { router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
-export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attachedFile, years }) {
-    let eduLevel = '';
-
-
+export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attachedFile, attached_file_url, years }) {
     const { data, setData, put, processing, errors, reset } = useForm({
         education_level: educationLevel,
         school: school,
@@ -203,7 +200,10 @@ export default function EducationCard({ className, id, educationLevel, school, d
                     }
                     <div className="w-full mt-3">
                         <InputLabel htmlFor="wow" value="Attach File" />
-                        <FileInput onFileSelect={handleFileUpload} />
+                        <FileInput
+                            onFileSelect={handleFileUpload}
+                            url={attached_file_url}
+                        />
                         {selectedFile && (
                             <p className="mt-2 text-green-600">File uploaded: {selectedFile.name}</p>
                         )}
