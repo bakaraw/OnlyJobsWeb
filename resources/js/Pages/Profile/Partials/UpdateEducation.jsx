@@ -64,7 +64,7 @@ export default function UpdateEducation({ className }) {
             preserveScroll: true, // Keeps the page from jumping to the top
             onSuccess: () => {
                 setIsAddModalOpen(false);
-                reset('school', 'degree', 'end_year', 'start_year', 'attached_file', 'education_level');
+                reset('title', 'degree', 'end_year', 'start_year', 'attached_file', 'education_level');
             },
         });
     };

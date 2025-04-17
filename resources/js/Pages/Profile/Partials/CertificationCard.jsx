@@ -8,6 +8,7 @@ import { useForm } from "@inertiajs/react";
 import InputError from "@/Components/InputError";
 import FileInput from "@/Components/FileInput";
 import PrimaryButton from "@/Components/PrimaryButton";
+import { router } from "@inertiajs/react";
 
 export default function CertificationCard({
     className,
@@ -20,22 +21,41 @@ export default function CertificationCard({
     const { data, setData, post, processing, errors, reset } = useForm({
         title: title,
         description: description,
-        year: year
+        year: year,
+        attached_file: ''
     });
-
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
 
     const handleFileUpload = (file) => {
         setSelectedFile(file);
+        setData('attached_file', file);
         console.log("Selected file:", file);
     };
 
-    const submit = () => {
+    const submit = (e) => {
+        e.preventDefault();
 
+        post(route('certification.update', id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsModalOpen(false);
+                reset('title', 'description', 'year', 'attached_file');
+            },
+        });
+    };
+
+    const deleteCertification = () => {
+        router.delete(route('certification.destroy', id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log("deleted successfully");
+            },
+            onError: (error) => {
+                console.log("An error occur: ", error);
+            }
+        });
     };
 
     return (
@@ -54,6 +74,7 @@ export default function CertificationCard({
                         <TextInput
                             value={data.title}
                             className="mt-1 block w-full"
+                            onChange={(e) => setData('title', e.target.value)}
                         />
                         <InputError message={errors.title} className="mt-2" />
                     </div>
@@ -62,6 +83,7 @@ export default function CertificationCard({
                         <textarea
                             value={data.description}
                             className="resize-y rounded-md border border-gray-300 p-2 w-full min-h-[100px]"
+                            onChange={(e) => setData('description', e.target.value)}
                         />
                         <InputError message={errors.description} className="mt-2" />
                     </div>
@@ -78,7 +100,7 @@ export default function CertificationCard({
                         }
                     </div>
                     <div className="flex items-center justify-center">
-                        <PrimaryButton> Save </PrimaryButton>
+                        <PrimaryButton type="submit" disabled={processing}> Save </PrimaryButton>
                     </div>
                 </form>
             </Modal >
@@ -95,7 +117,7 @@ export default function CertificationCard({
                 <div className="col-span-2">
                     <div className="flex items-center justify-center">
                         <SecondaryButton onClick={() => setIsModalOpen(true)} className="mr-3">Edit</SecondaryButton>
-                        <DangerButton>Delete</DangerButton>
+                        <DangerButton onClick={() => deleteCertification()}>Delete</DangerButton>
                     </div>
                 </div>
                 <div className="col-span-12">

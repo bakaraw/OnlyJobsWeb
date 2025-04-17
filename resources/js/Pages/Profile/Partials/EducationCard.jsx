@@ -8,15 +8,16 @@ import FileInput from "@/Components/FileInput";
 import { useForm } from "@inertiajs/inertia-react";
 import { router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attachedFile, attached_file_url, years }) {
-    const { data, setData, put, processing, errors, reset } = useForm({
+export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attached_file_url, years }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
         education_level: educationLevel,
         school: school,
         degree: degree,
         start_year: startYear,
         end_year: endYear,
-        attached_file: attachedFile
+        attached_file: '',
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -36,17 +37,6 @@ export default function EducationCard({ className, id, educationLevel, school, d
         }
     }, [data.school]);
 
-    //useEffect(() => {
-    //    setData({
-    //        education_level: educationLevel,
-    //        school: school,
-    //        degree: degree,
-    //        start_year: startYear,
-    //        end_year: endYear,
-    //        attached_file: attachedFile
-    //    })
-    //}, [isModalOpen])
-
     const handleSelect = (university) => {
         //form.setData("university", university);
         setData('school', university);
@@ -55,24 +45,19 @@ export default function EducationCard({ className, id, educationLevel, school, d
 
     const handleFileUpload = (file) => {
         setSelectedFile(file);
+        setData('attached_file', file);
         console.log("Selected file:", file);
     };
-
-    //const submit = (e) => {
-    //    e.preventDefault();
-    //
-    //    put(route('education.update', id), {
-    //        preserveScroll: true, // Keeps the page from jumping to the top
-    //    });
-    //};
 
     const submit = (e) => {
         e.preventDefault();
 
         const scrollPosition = window.scrollY; // Save the scroll position
-
-        put(route('education.update', id), {
-            preserveScroll: true, // Keeps the page from jumping to the top
+        post(route('education.update', id), {
+            _method: 'put',
+            ...data,
+        }, {
+            preserveScroll: true,
             onSuccess: () => {
                 window.scrollTo(0, scrollPosition);
             }
@@ -90,7 +75,6 @@ export default function EducationCard({ className, id, educationLevel, school, d
             }
         });
     };
-
 
     return (
         <>
@@ -210,9 +194,9 @@ export default function EducationCard({ className, id, educationLevel, school, d
 
                     </div>
                     <div className="mt-4 flex items-center justify-center">
-                        <SecondaryButton type="submit">
+                        <PrimaryButton type="submit" disabled={processing}>
                             Save
-                        </SecondaryButton>
+                        </PrimaryButton>
                     </div>
                 </form>
             </Modal>

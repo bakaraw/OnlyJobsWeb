@@ -62,6 +62,7 @@ class EducationController extends Controller
             'start_year' => 'nullable|integer',
             'end_year' => 'nullable|integer|gte:start_year',
             'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,pdf|max:10240',
+            'attached_file' => 'nullable|file|max:2048', // Accepts file input
         ]);
 
         // Ensure the education record belongs to the authenticated user

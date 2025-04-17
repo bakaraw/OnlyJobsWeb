@@ -15,6 +15,7 @@ use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\ViewsController;
 use App\Http\Controllers\WorkHistoryController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Models\Certification;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -110,7 +111,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
 
-    Route::put('/education/{education}', [EducationController::class, 'update'])
+    Route::post('/education/{education}', [EducationController::class, 'update'])
         ->name('education.update');
 
     Route::delete('/education/{education}', [EducationController::class, 'destroy'])
@@ -130,6 +131,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/certification', [CertificationController::class, 'store'])
         ->name('certification.store');
+
+    Route::post('/certification/{certification}', [CertificationController::class, 'update'])
+        ->name('certification.update');
+
+    Route::delete('/certification/{certification}', [CertificationController::class, 'destroy'])
+        ->name('certification.destroy');
 
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');

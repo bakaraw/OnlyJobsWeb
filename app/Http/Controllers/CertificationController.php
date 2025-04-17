@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -42,5 +43,53 @@ class CertificationController extends Controller
         Auth::user()->certifications()->create($validated);
 
         return Redirect::back();
+    }
+
+    public function update(Request $request, Certification $certification): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,pdf|max:10240',
+        ]);
+
+        if ($certification->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($request->hasFile('attached_file')) {
+            if ($certification->file_public_id) {
+                Storage::disk('cloudinary')->delete($certification->file_public_id);
+            }
+
+            $file = $request->file('attached_file');
+
+            // Upload to Cloudinary
+            $uploadedPath = Storage::disk('cloudinary')->putFile('/certifications/documents', $file);
+
+            $validated['file_url'] = Storage::disk('cloudinary')->url($uploadedPath);
+            $validated['file_public_id'] = $uploadedPath;
+        }
+
+        $certification->update($validated);
+
+        return Redirect::back();
+    }
+
+    public function destroy(Certification $certification): RedirectResponse
+    {
+        if ($certification->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($certification->file_public_id) {
+            // Call Cloudinary to delete the file using the public ID
+            Storage::disk('cloudinary')->delete($certification->file_public_id);
+        }
+
+        $certification->delete();
+
+        return Redirect::back()->with('success', 'Certification record deleted successfully');
     }
 }
