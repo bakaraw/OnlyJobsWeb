@@ -110,7 +110,8 @@ export default function ApplicantCard({ users }) {
                                         <ul className="list-disc list-inside text-sm">
                                             {user.work_histories.map((work) => (
                                                 <li key={work.id}>
-                                                    {work.position} at {work.company}{' '}
+                                                    {work.job_title}
+                                                    {work.position} at {work.employer}{' '}
                                                     ({work.start_date ? new Date(work.start_date).toLocaleDateString() : '?'} -
                                                     {work.end_date ? new Date(work.end_date).toLocaleDateString() : 'Present'})
                                                 </li>

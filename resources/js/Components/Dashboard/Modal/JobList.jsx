@@ -16,14 +16,14 @@ function JobDetails({ job, applicants, onClose }) {
         applications = "N/A",
     } = job;
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editableJob, setEditableJob] = useState({
-        job_title,
-        company,
-        job_location,
-        job_type,
-        job_description,
-    });
+    // const [isEditing, setIsEditing] = useState(false);
+    // const [editableJob, setEditableJob] = useState({
+    //     job_title,
+    //     company,
+    //     job_location,
+    //     job_type,
+    //     job_description,
+    // });
 
 
 
@@ -37,11 +37,11 @@ function JobDetails({ job, applicants, onClose }) {
             let endpoint;
             let newStatus;
             switch (application.status) {
-                case 'pending':
+                case 'Pending':
                     endpoint = '/applicants/qualified';
                     newStatus = 'Qualified';
                     break;
-                case 'qualified':
+                case 'Qualified':
                     endpoint = '/applicants/accepted';
                     newStatus = 'Accepted';
                     break;
@@ -129,7 +129,7 @@ function JobDetails({ job, applicants, onClose }) {
             <DashboardCard title="Job Applicant Overview">
                 {/* Filter Buttons */}
                 <div className="flex space-x-2 mb-4">
-                    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
+                    {['all', 'pending', 'Qualified', 'Accepted', 'Rejected'].map(status => (
                         <PrimaryButton
                             key={status}
                             onClick={() => setSelectedStatus(status)}

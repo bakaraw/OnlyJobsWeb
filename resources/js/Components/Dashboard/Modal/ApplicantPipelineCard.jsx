@@ -10,32 +10,32 @@ const ApplicantPipelineCard = ({
                                    onStatusClick = null
                                }) => {
     const [statusCounts, setStatusCounts] = useState({
-        pending: 0,
-        qualified: 0,
-        accepted: 0,
-        rejected: 0
+        Pending: 0,
+        Qualified: 0,
+        Accepted: 0,
+        Rejected: 0
     });
 
     const statusConfig = {
-        pending: {
+        Pending: {
             label: "Pending",
             color: 'rgba(255, 159, 64, 0.7)',
             border: 'rgb(255, 159, 64)',
             bgClass: 'bg-orange-100 hover:bg-orange-200'
         },
-        qualified: {
+        Qualified: {
             label: "Qualified",
             color: 'rgba(54, 162, 235, 0.7)',
             border: 'rgb(54, 162, 235)',
             bgClass: 'bg-blue-100 hover:bg-blue-200'
         },
-        accepted: {
+        Accepted: {
             label: "Accepted",
             color: 'rgba(75, 192, 192, 0.7)',
             border: 'rgb(75, 192, 192)',
             bgClass: 'bg-green-100 hover:bg-green-200'
         },
-        rejected: {
+        Rejected: {
             label: "Rejected",
             color: 'rgba(255, 99, 132, 0.7)',
             border: 'rgb(255, 99, 132)',
@@ -45,10 +45,10 @@ const ApplicantPipelineCard = ({
 
     useEffect(() => {
         const counts = {
-            pending: applications.filter(app => app.status?.toLowerCase() === 'pending').length,
-            qualified: applications.filter(app => app.status?.toLowerCase() === 'qualified').length,
-            accepted: applications.filter(app => app.status?.toLowerCase() === 'accepted').length,
-            rejected: applications.filter(app => app.status?.toLowerCase() === 'rejected').length
+            Pending: applications.filter(app => app.status?.trim() === 'Pending').length,
+            Qualified: applications.filter(app => app.status?.trim() === 'Qualified').length,
+            Accepted: applications.filter(app => app.status?.trim() === 'Accepted').length,
+            Rejected: applications.filter(app => app.status?.trim() === 'Rejected').length
         };
         setStatusCounts(counts);
     }, [applications]);
@@ -58,22 +58,22 @@ const ApplicantPipelineCard = ({
         datasets: [{
             label: 'Applicant Pipeline',
             data: [
-                statusCounts.pending,
-                statusCounts.qualified,
-                statusCounts.accepted,
-                statusCounts.rejected
+                statusCounts.Pending,
+                statusCounts.Qualified,
+                statusCounts.Accepted,
+                statusCounts.Rejected
             ],
             backgroundColor: [
-                statusConfig.pending.color,
-                statusConfig.qualified.color,
-                statusConfig.accepted.color,
-                statusConfig.rejected.color
+                statusConfig.Pending.color,
+                statusConfig.Qualified.color,
+                statusConfig.Accepted.color,
+                statusConfig.Rejected.color
             ],
             borderColor: [
-                statusConfig.pending.border,
-                statusConfig.qualified.border,
-                statusConfig.accepted.border,
-                statusConfig.rejected.border
+                statusConfig.Pending.border,
+                statusConfig.Qualified.border,
+                statusConfig.Accepted.border,
+                statusConfig.Rejected.border
             ],
             borderWidth: 1
         }]
@@ -111,7 +111,7 @@ const ApplicantPipelineCard = ({
 
     const handleStatusClick = (status) => {
         if (onStatusClick) {
-            onStatusClick(status.toLowerCase());
+            onStatusClick(status); // Keep the status in its original case
         }
     };
 

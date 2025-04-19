@@ -53,8 +53,8 @@ class ApplicantController extends Controller
 
         $applicant = Application::findOrFail($validated['application_id']);
 
-        if ($applicant->status == 'pending') {
-            $applicant->status = 'qualified';
+        if ($applicant->status == 'Pending') {
+            $applicant->status = 'Qualified';
             $applicant->save();
             return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
         }
@@ -70,8 +70,8 @@ class ApplicantController extends Controller
 
             $applicant = Application::findOrFail($validated['application_id']);
 
-            if ($applicant->status == 'qualified') {
-                $applicant->status = 'accepted';
+            if ($applicant->status == 'Qualified') {
+                $applicant->status = 'Accepted';
                 $applicant->save();
                 return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
             }
