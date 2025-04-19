@@ -12,7 +12,6 @@ import Modal from '@/Components/Modal';
 export default function UpdateEducation({ className }) {
 
     const { props } = usePage();
-    const user = props.auth.user;
     const educations = props.educations || [];
 
     const { data, setData, post, processing, errors, reset } = useForm({

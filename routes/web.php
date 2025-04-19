@@ -19,6 +19,8 @@ use App\Models\Certification;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LightcastController;
+use App\Http\Controllers\UserSkillsController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -55,7 +57,6 @@ Route::get('/requirements', [RequirementController::class, 'index'])->name('requ
 Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
 Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
 Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
-
 
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');
@@ -103,13 +104,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/education', [EducationController::class, 'edit'])
         ->name('education.edit');
 
-    Route::post('/education', [EducationController::class, 'store'])
-        ->name('education.store');
-
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
     Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
+
+    Route::post('/education', [EducationController::class, 'store'])
+        ->name('education.store');
 
     Route::post('/education/{education}', [EducationController::class, 'update'])
         ->name('education.update');
@@ -138,6 +139,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/certification/{certification}', [CertificationController::class, 'destroy'])
         ->name('certification.destroy');
 
+    Route::post('/user-skills', [UserSkillsController::class, 'store'])
+        ->name('user-skills.store');
+
+    Route::delete('/user-skills/{userSkill}', [UserSkillsController::class, 'destroy'])
+        ->name('user-skills.destroy');
+
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
 
@@ -154,5 +161,8 @@ Route::middleware('auth')->group(function () {
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// Third Party API
+Route::get('/skills', [LightcastController::class, 'fetchSkills']);
 
 require __DIR__ . '/auth.php';

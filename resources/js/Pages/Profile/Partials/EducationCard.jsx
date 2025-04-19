@@ -12,12 +12,12 @@ import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attached_file_url, years }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        education_level: educationLevel,
-        school: school,
-        degree: degree,
-        start_year: startYear,
-        end_year: endYear,
-        attached_file: '',
+        education_level: educationLevel ?? '',
+        school: school ?? '',
+        degree: degree ?? '',
+        start_year: startYear ?? '',
+        end_year: endYear ?? '',
+        attached_file: null,
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -52,15 +52,16 @@ export default function EducationCard({ className, id, educationLevel, school, d
     const submit = (e) => {
         e.preventDefault();
 
-        const scrollPosition = window.scrollY; // Save the scroll position
+        setData('_method', 'put'); // Override method the correct way
+
         post(route('education.update', id), {
-            _method: 'put',
-            ...data,
-        }, {
             preserveScroll: true,
             onSuccess: () => {
-                window.scrollTo(0, scrollPosition);
-            }
+                setIsModalOpen(false);
+            },
+            onError: (errors) => {
+                console.log("Errors:", errors);
+            },
         });
     };
 
@@ -175,7 +176,7 @@ export default function EducationCard({ className, id, educationLevel, school, d
                                 <InputLabel htmlFor="wow" value="Course/Program" />
                                 <TextInput
                                     className="mt-1 block w-full"
-                                    value={data.degree}
+                                    value={data.degree ?? ''}
                                     onChange={(e) => setData('degree', e.target.value)}
                                 ></TextInput>
                                 <InputError message={errors.degree} className="mt-2" />

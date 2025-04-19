@@ -11,6 +11,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Educations;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 
@@ -62,7 +63,6 @@ class EducationController extends Controller
             'start_year' => 'nullable|integer',
             'end_year' => 'nullable|integer|gte:start_year',
             'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,pdf|max:10240',
-            'attached_file' => 'nullable|file|max:2048', // Accepts file input
         ]);
 
         // Ensure the education record belongs to the authenticated user
@@ -84,11 +84,10 @@ class EducationController extends Controller
             $validated['attached_file_url'] = Storage::disk('cloudinary')->url($uploadedPath);
             $validated['attached_file_public_id'] = $uploadedPath;
         }
-
         // Update the education record using validated data
         $education->update($validated);
 
-        return Redirect::back()->with('success', 'Education updated.');
+        return Redirect::back();
     }
 
     public function destroy(Educations $education): RedirectResponse

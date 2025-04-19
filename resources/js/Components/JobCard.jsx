@@ -2,7 +2,7 @@ import Chip from "./Chip";
 import SecondaryButton from "./SecondaryButton";
 import { Inertia } from '@inertiajs/inertia';
 
-export default function JobCard({ job , children }) {
+export default function JobCard({ job, children }) {
     if (!job) return <p>Error: Job data is missing.</p>;
 
     const { id, job_title = "N/A", job_type = "N/A",
@@ -13,10 +13,7 @@ export default function JobCard({ job , children }) {
 
 
     return (
-
         <a>
-
-
             <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-5">
                     <div className="flex flex-col px-4 py-2">

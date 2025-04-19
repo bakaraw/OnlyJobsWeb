@@ -27,7 +27,8 @@ class ProfileController extends Controller
             'status' => session('status'),
             'educations' => $user->educations,
             'work_histories' => $user->workHistories,
-            'certifications' => $user->certifications
+            'certifications' => $user->certifications,
+            'user_skills' => $user->userSkills
         ]);
     }
 
