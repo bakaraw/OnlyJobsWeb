@@ -11,6 +11,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewsController;
 use App\Http\Controllers\WorkHistoryController;
 use App\Http\Middleware\RoleMiddleware;
@@ -48,11 +49,11 @@ Route::post('/documents', [JobSeekerDocumentController::class, 'store'])->name('
 Route::get('/documents/{document}', [JobSeekerDocumentController::class, 'show'])->name('documents.show');
 Route::delete('/documents/{document}', [JobSeekerDocumentController::class, 'destroy'])->name('documents.destroy');
 
-// Requirements
-Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
-Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
-Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
-Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
+//// Requirements
+//Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
+//Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
+//Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
+//Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
 
 
 //Route::get('/dashboard', function () {
@@ -135,6 +136,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/applicants/accepted', [ApplicantController::class, 'finalApplicant'])->name('applicant.accept');
     Route::patch('/applications/update-remark', [ApplicantController::class, 'updateRemark']);
     Route::get('/dashboard/pipeline', [ApplicantController::class, 'pipeLineData'])->name('pipelineData');
+    Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
+
+
 
 
 });

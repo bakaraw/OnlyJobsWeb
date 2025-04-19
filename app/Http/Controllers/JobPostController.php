@@ -223,9 +223,13 @@ class JobPostController extends Controller
             ->get();
 
 
+        $users = $this->getUsersData();
+
+
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
             'applicants' => $applicants,
+            'users' => $users,
             'auth' => [
                 'user' => auth()->user(),
             ],
@@ -236,7 +240,50 @@ class JobPostController extends Controller
         ]);
     }
 
+    public function getUsersData()
+    {
+        $users = User::select(
+            'id',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'suffix',
+            'email',
+            'contact_number',
+            'birthdate',
+            'gender',
+            'address_id',
+            'created_at'
+        )
+            ->with([
+                'address',
+                'applications' => function ($query) {
+                    $query->select(
+                        'id',
+                        'user_id',
+                        'job_post_id',
+                        'status',
+                        'remarks',
+                        'created_at'
+                    );
+                },
+                'applications.jobPost' => function ($query) {
+                    $query->select(
+                        'id',
+                        'job_title',
+                        'job_type',
+                        'company'
+                    );
+                },
+                'applications.jobPost.requirements', // Get job post requirements
+                'requirements',   // Load user's own requirements
+                'educations',     // Load user education history
+                'workHistories'   // Load user work history
+            ])
+            ->get();
 
+        return $users;
+    }
 }
 
 

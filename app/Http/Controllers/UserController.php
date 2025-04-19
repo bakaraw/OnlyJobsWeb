@@ -20,4 +20,5 @@ class UserController extends Controller
             'user' => $user->load('address') // Load user with their address
         ]);
     }
+
 }
