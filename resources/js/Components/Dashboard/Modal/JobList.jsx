@@ -56,8 +56,8 @@ function JobDetails({ job, applicants, onClose }) {
 
             if (response.data.success) {
                 application.status = newStatus;
-                // Force a re-render by updating the state that contains applicants
-                window.location.reload(); // Temporary solution - consider using state management
+                window.location.reload();
+
             }
 
         } catch (error) {
@@ -74,11 +74,10 @@ function JobDetails({ job, applicants, onClose }) {
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
 
-    // Save updated remark to the backend using the new updateRemark endpoint.
     const saveRemark = async (application) => {
         try {
             const response = await axios.patch("/applications/update-remark", {
-                application_id: application.id, // use the unique id for the application record
+                application_id: application.id,
                 remarks: remarkInput.trim(),
             });
 
