@@ -24,7 +24,10 @@ export default function ApplicantCard({ users }) {
                         {/* Basic User Info */}
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold">
-                                {user.first_name} {user.middle_name ? user.middle_name[0] + ". " : ""}{user.last_name}{user.suffix ? ", " + user.suffix : ""}
+                                {user.first_name}
+                                {user.middle_name ? user.middle_name[0] + ". " : ""}
+                                {user.last_name}
+                                {user.suffix ? ", " + user.suffix : ""}
                             </h3>
                             <button
                                 onClick={() => toggleUserDetails(user.id)}
@@ -37,7 +40,6 @@ export default function ApplicantCard({ users }) {
                         <p className="text-sm text-gray-600">Email: {user.email}</p>
                         <p className="text-sm text-gray-600">Contact: {user.contact_number}</p>
 
-                        {/* Always show applied jobs even when collapsed */}
                         <div className="mt-3">
                             <h4 className="font-semibold text-gray-700">Applied Jobs:</h4>
                             {user.applications && user.applications.length > 0 ? (
@@ -93,8 +95,8 @@ export default function ApplicantCard({ users }) {
                                         <ul className="list-disc list-inside text-sm">
                                             {user.educations.map((edu) => (
                                                 <li key={edu.id}>
-                                                    {edu.degree || edu.course} - {edu.institution}{' '}
-                                                    ({edu.year_start}{edu.year_end ? ` - ${edu.year_end}` : ' - Present'})
+                                                    {edu.degree || edu.degree} - {edu.school}{' '}
+                                                    ({edu.start_year}{edu.end_year ? ` - ${edu.end_year}` : ' - Present'})
                                                 </li>
                                             ))}
                                         </ul>
