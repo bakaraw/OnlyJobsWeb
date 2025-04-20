@@ -38,15 +38,10 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         : applicants.filter((app) => app.status === selectedStatus
         );
 
-    const [expandedUser, setExpandedUser] = useState(null);
 
-    const toggleUserDetails = (userId) => {
-        if (expandedUser === userId) {
-            setExpandedUser(null);
-        } else {
-            setExpandedUser(userId);
-        }
-    };
+
+
+
 
     useEffect(() => {
         if (!auth.user) {
@@ -230,14 +225,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
-                                    <td className="py-3 px-4 text-center">
-                                        <PrimaryButton
-                                            onClick={() => toggleUserDetails(application.id)}
-                                            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-                                        >
-                                            {expandedUser === application.id ? "Hide Details" : "View Details"}
-                                        </PrimaryButton>
-                                    </td>
+
                                 </tr>
                             ))}
                             </tbody>
@@ -246,15 +234,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                 ) : (
                     <p className="text-gray-500">No applicants found.</p>
                 )}
-                {expandedUser && (() => {
-                    const application = filteredApplicants.find(app => app.id === expandedUser);
-                    return application ? (
-                        <ApplicantDetails
-                            user={application.user}
-                            onClose={() => setExpandedUser(null)}
-                        />
-                    ) : null;
-                })()}
+
             </DashboardCard>
 
         </div>
