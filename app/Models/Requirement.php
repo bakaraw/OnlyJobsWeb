@@ -17,6 +17,12 @@ class Requirement extends Model
     {
         return $this->belongsToMany(JobPost::class, 'job_post_requirement', 'requirement_id', 'job_post_id');
     }
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
 
 

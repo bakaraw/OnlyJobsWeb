@@ -4,12 +4,15 @@ import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card comp
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import NavBar from "@/Components/NavBar.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
-export default function dashboard({ jobs, placements, auth, totalApplicants, totalViews, totalUsers, totalJob, applicants}) {
+import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
+export default function dashboard({ jobs, placements, auth, totalApplicants
+                                      , users, totalViews, totalUsers, totalJob, applicants}) {
 
     const [activeView, setActiveView] = useState("dashboard");
 
     console.log("placements", placements);
     console.log("jobs", jobs);
+    console.log("users", users);
 
     return (
 
@@ -22,7 +25,10 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, tot
                 {activeView === "dashboard" ? (
                     <DashboardContent jobs={jobs} placements={placements}  totalViews={totalViews} totalUsers={totalUsers}
                                       totalJob={totalJob} applicants={applicants}  auth={auth}/>
+                ) : activeView === "applicants" ? (
+                    <ApplicantCard users={users} auth={auth} />
                 ) : (
+
                     <div >
                         {/* Left: Job Listings (Only Show if Authenticated) */}
                         {auth?.user ? (

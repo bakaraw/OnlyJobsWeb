@@ -102,10 +102,13 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Doctorate'],
             ['name' => 'Professional Degree'],
             ['name' => 'Certificate'],
-            ['name' => 'Diploma'],
+            ['name' => 'High School Diploma'],
             ['name' => 'Postgraduate Diploma'],
             ['name' => 'Postdoctoral Degree'],
             ['name' => 'Honorary Degree'],
+            ['name' => 'TESDA Certificate'],
+            ['name' => 'Technical Certificate'],
+            ['name' => 'Vocational Certificate'],
         ]);
 
 

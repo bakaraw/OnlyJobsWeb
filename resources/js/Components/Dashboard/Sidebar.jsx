@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { Package } from "lucide-react";
+import DangerButton from "@/Components/DangerButton.jsx";
 
 export default function Sidebar({ auth, setActiveView }) {
 
@@ -29,7 +30,7 @@ export default function Sidebar({ auth, setActiveView }) {
                             onClick={() => setActiveView("dashboard")}
                             className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
                         >
-                            Dashboard
+                            📊 Dashboard
                         </button>
                     </li>
 
@@ -38,8 +39,16 @@ export default function Sidebar({ auth, setActiveView }) {
                             onClick={() => setActiveView("joblist")}
                             className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
                         >
-                            <Package className="w-5 h-5 mr-3" />
-                            Job Posting
+                            💼 Job Posting
+                        </button>
+                    </li>
+
+                    <li>
+                        <button
+                            onClick={() => setActiveView("applicants")}
+                            className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
+                        >
+                            🤵🏻 Applicants
                         </button>
                     </li>
 
@@ -52,12 +61,11 @@ export default function Sidebar({ auth, setActiveView }) {
             <div className="mt-auto mb-4 px-6">
                 <form action={route('logout')} method="POST" style={{ display: 'inline' }}>
                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                    <button
+                    <DangerButton
                         type="submit"
-                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 w-full"
                     >
                         Log Out
-                    </button>
+                    </DangerButton>
                 </form>
             </div>
         </div>

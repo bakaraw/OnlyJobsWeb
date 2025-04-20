@@ -49,20 +49,22 @@ class User extends Authenticatable
         return $this->belongsTo(Address::class);
     }
 
-    public function documents()
+
+
+
+    public function appliedJobs()
     {
-        return $this->hasMany(JobSeekerDocument::class);
+        return $this->belongsToMany(JobPost::class, 'applications', 'user_id', 'job_post_id')
+            ->withTimestamps();
     }
 
-    // A user can have multiple placement (jobs applied/placed)
-    public function placements()
-    {
-        return $this->hasMany(Placement::class);
+    public function applications() {
+        return $this->hasMany(Application::class);
     }
 
-    public function appliedJobs() {
-        return $this->belongsToMany(JobPost::class, 'applications')
-            ->withTimestamps()->withPivot('status');
+    public function requirements()
+    {
+        return $this->hasMany(Requirement::class, 'user_id'); // Specify 'user_id' as foreign key
     }
 
     public function educations()
