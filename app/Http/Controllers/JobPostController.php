@@ -63,7 +63,7 @@ class JobPostController extends Controller
             'custom_skills'        => 'nullable|array',
             'custom_skills.*'      => 'string|max:255',
 
-             'custom_requirements'        => 'nullable|array',
+            'custom_requirements'        => 'nullable|array',
             'custom_requirements.*'      => 'string|max:255'
         ]);
 
@@ -72,7 +72,6 @@ class JobPostController extends Controller
         $skillIds = $validatedData['skills'] ?? [];
         $customSkills = $validatedData['custom_skills'] ?? [];
         $customRequirements = $validatedData['custom_requirements'] ?? [];
-
 
         // Remove these fields from the validated data
         unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);
@@ -108,8 +107,6 @@ class JobPostController extends Controller
         return redirect()->route('dashboard')->with('success', 'Job post created successfully.');
     }
 
-
-
     public function update(Request $request, $id)
     {
         $jobPost = JobPost::findOrFail($id);
@@ -117,6 +114,7 @@ class JobPostController extends Controller
         if ($jobPost->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
+
         $validatedData = $request->validate([
             'job_title'            => 'required|string|max:255',
             'job_description'      => 'required|string',
@@ -148,8 +146,6 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
-
-
     public function destroy($id)
     {
         $jobPost = JobPost::findOrFail($id);
@@ -160,12 +156,6 @@ class JobPostController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Job post deleted successfully.');
     }
-
-
-
-
-
-
 
     public function showDashboard()
     {
@@ -204,7 +194,7 @@ class JobPostController extends Controller
                 'applications' => function ($query) {
                     $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
                 }
-                ])
+            ])
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {
@@ -225,7 +215,6 @@ class JobPostController extends Controller
 
         $users = $this->getUsersData();
 
-
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
             'applicants' => $applicants,
@@ -234,9 +223,14 @@ class JobPostController extends Controller
                 'user' => auth()->user(),
             ],
             'totalViews' => $totalViews,
-            'totalApplicants' =>$totalApplicants,
+            'totalApplicants' => $totalApplicants,
             'totalUsers' => $totalUsers,
             'totalJob' => $totalJob,
+
+            'statuses' => JobStatus::all(),
+            'degrees' => Degree::all(),
+            'requirements' => Requirement::all(),
+            'skills' => Skill::all(),
         ]);
     }
 
@@ -285,5 +279,3 @@ class JobPostController extends Controller
         return $users;
     }
 }
-
-

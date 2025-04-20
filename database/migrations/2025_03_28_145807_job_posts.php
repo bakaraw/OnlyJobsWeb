@@ -18,16 +18,9 @@ return new class extends Migration
             $table->decimal('max_salary', 10, 2);
             $table->integer('min_experience_years');
             $table->string('company');
-
-            $table->unsignedBigInteger('status_id')->nullable();
-            $table->unsignedBigInteger('degree_id')->nullable();
-
             $table->unsignedBigInteger('views')->default(0);
-
-
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
             $table->foreign('status_id')->references('id')->on('job_statuses')->onDelete('set null');
             $table->foreign('degree_id')->references('id')->on('degrees')->onDelete('set null');
         });

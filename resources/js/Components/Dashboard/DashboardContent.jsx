@@ -7,6 +7,8 @@ import DashboardCard from "./Modal/DashboardCard.jsx";
 import { Link } from '@inertiajs/react';
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import Modal from "../Modal.jsx";
+
 import {
     Chart as ChartJS,
     ArcElement,
@@ -20,17 +22,29 @@ import {
     Legend as ChartLegend
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
+import CreateJobPost from "@/Pages/CreateJobPost.jsx";
+import CreateJobPostModal from "./Modal/CreateJobPostModal.jsx";
 
 ChartJS.register(
     ArcElement, Tooltip, Legend,
     CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
     ChartDataLabels
 );
-export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
+export default function DashboardContent({
+    auth,
+    jobs,
+    applicants,
+    totalViews,
+    totalUsers,
+    totalJob,
+}) {
 
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState("all");
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const filteredApplicants = selectedStatus === "all"
         ? applicants
         : applicants.filter((app) => app.status === selectedStatus
@@ -41,7 +55,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
             router.visit('/login');
         }
     }, [auth]);
-
 
     const doughnutData = {
         labels: ['Jobs', 'Users', 'Views'],
@@ -81,20 +94,25 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         ],
     };
 
-
-
-
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
-                <Link href={route('job_posts.create')}>
-                    <PrimaryButton>
-                        Create Job
-                    </PrimaryButton>
-                </Link>
+                {
+                    //<Link href={route('job_posts.create')}>
+                    //    <PrimaryButton>
+                    //        Create Job1
+                    //    </PrimaryButton>
+                    //</Link>
+                }
+                <PrimaryButton onClick={() => setIsModalOpen(true)}>
+                    Create Job2
+                </PrimaryButton>
+                <CreateJobPostModal
+                    show={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                />
             </div>
-
 
             <div className="space-y-6">
                 <DashboardCard>
@@ -107,23 +125,14 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                             }}
                         />
                     </div>
-
-
                 </DashboardCard>
-
-
-
-
-
                 <div className="flex flex-row items-start mb-4 space-x-4">
+                    <ApplicantPipelineCard
+                        applications={applicants}
+                        onStatusClick={(status) => setSelectedStatus(status)}
+                        className="h-[423px]"
 
-                        <ApplicantPipelineCard
-                            applications={applicants}
-                            onStatusClick={(status) => setSelectedStatus(status)}
-                            className="h-[423px]"
-
-                        />
-
+                    />
                     <DashboardCard className="flex-1 h-50 w-1/2">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
@@ -136,8 +145,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                             />
                         </div>
                     </DashboardCard>
-
-
                     <div className="flex flex-col flex-1 space-y-4">
                         <DashboardCard>
                             <div className="flex items-center justify-between">
@@ -148,7 +155,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <div className="text-blue-500 text-3xl">📄</div>
                             </div>
                         </DashboardCard>
-
                         <DashboardCard>
                             <div className="flex items-center justify-between">
                                 <div>
@@ -158,7 +164,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <div className="text-green-500 text-3xl">🧑‍💼</div>
                             </div>
                         </DashboardCard>
-
                         <DashboardCard>
                             <div className="flex items-center justify-between">
                                 <div>
@@ -168,7 +173,6 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <div className="text-orange-500 text-3xl">👀</div>
                             </div>
                         </DashboardCard>
-
                         <DashboardCard>
                             <div className="flex items-center justify-between">
                                 <div>
@@ -180,44 +184,37 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <div className="text-yellow-500 text-3xl">⏳</div>
                             </div>
                         </DashboardCard>
-
-
                     </div>
                 </div>
-
             </div>
-
-
             <DashboardCard>
-
-
                 {filteredApplicants.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border-collapse">
                             <thead>
-                            <tr className="bg-gray-100">
-                                <th className="py-2 px-4 text-left">Applicant</th>
-                                <th className="py-2 px-4 text-left">Job Title</th>
-                                <th className="py-2 px-4 text-left">Date Placed</th>
-                                <th className="py-2 px-4 text-left">Status</th>
-                                <th className="py-2 px-4 text-left">Remarks</th>
-                            </tr>
+                                <tr className="bg-gray-100">
+                                    <th className="py-2 px-4 text-left">Applicant</th>
+                                    <th className="py-2 px-4 text-left">Job Title</th>
+                                    <th className="py-2 px-4 text-left">Date Placed</th>
+                                    <th className="py-2 px-4 text-left">Status</th>
+                                    <th className="py-2 px-4 text-left">Remarks</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {filteredApplicants.map((application) => (
-                                <tr key={application.id} className="border-t hover:bg-gray-50">
-                                    <td className="py-2 px-4">
-                                        <div className="flex items-center">
-                                            <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
-                                            {application.user.first_name} {application.user.last_name}
-                                        </div>
-                                    </td>
-                                    <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
-                                    <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
-                                    <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
-                                    <td className="py-2 px-4 capitalize">{application.remarks}</td>
-                                </tr>
-                            ))}
+                                {filteredApplicants.map((application) => (
+                                    <tr key={application.id} className="border-t hover:bg-gray-50">
+                                        <td className="py-2 px-4">
+                                            <div className="flex items-center">
+                                                <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
+                                                {application.user.first_name} {application.user.last_name}
+                                            </div>
+                                        </td>
+                                        <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
+                                        <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
+                                        <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
+                                        <td className="py-2 px-4 capitalize">{application.remarks}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
