@@ -8,18 +8,16 @@ import FileInput from "@/Components/FileInput";
 import { useForm } from "@inertiajs/inertia-react";
 import { router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attachedFile, years }) {
-    let eduLevel = '';
-
-
-    const { data, setData, put, processing, errors, reset } = useForm({
-        education_level: educationLevel,
-        school: school,
-        degree: degree,
-        start_year: startYear,
-        end_year: endYear,
-        attached_file: attachedFile
+export default function EducationCard({ className, id, educationLevel, school, degree, startYear, endYear, attached_file_url, years }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        education_level: educationLevel ?? '',
+        school: school ?? '',
+        degree: degree ?? '',
+        start_year: startYear ?? '',
+        end_year: endYear ?? '',
+        attached_file: null,
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -39,17 +37,6 @@ export default function EducationCard({ className, id, educationLevel, school, d
         }
     }, [data.school]);
 
-    //useEffect(() => {
-    //    setData({
-    //        education_level: educationLevel,
-    //        school: school,
-    //        degree: degree,
-    //        start_year: startYear,
-    //        end_year: endYear,
-    //        attached_file: attachedFile
-    //    })
-    //}, [isModalOpen])
-
     const handleSelect = (university) => {
         //form.setData("university", university);
         setData('school', university);
@@ -58,27 +45,23 @@ export default function EducationCard({ className, id, educationLevel, school, d
 
     const handleFileUpload = (file) => {
         setSelectedFile(file);
+        setData('attached_file', file);
         console.log("Selected file:", file);
     };
-
-    //const submit = (e) => {
-    //    e.preventDefault();
-    //
-    //    put(route('education.update', id), {
-    //        preserveScroll: true, // Keeps the page from jumping to the top
-    //    });
-    //};
 
     const submit = (e) => {
         e.preventDefault();
 
-        const scrollPosition = window.scrollY; // Save the scroll position
+        setData('_method', 'put'); // Override method the correct way
 
-        put(route('education.update', id), {
-            preserveScroll: true, // Keeps the page from jumping to the top
+        post(route('education.update', id), {
+            preserveScroll: true,
             onSuccess: () => {
-                window.scrollTo(0, scrollPosition);
-            }
+                setIsModalOpen(false);
+            },
+            onError: (errors) => {
+                console.log("Errors:", errors);
+            },
         });
     };
 
@@ -93,7 +76,6 @@ export default function EducationCard({ className, id, educationLevel, school, d
             }
         });
     };
-
 
     return (
         <>
@@ -194,7 +176,7 @@ export default function EducationCard({ className, id, educationLevel, school, d
                                 <InputLabel htmlFor="wow" value="Course/Program" />
                                 <TextInput
                                     className="mt-1 block w-full"
-                                    value={data.degree}
+                                    value={data.degree ?? ''}
                                     onChange={(e) => setData('degree', e.target.value)}
                                 ></TextInput>
                                 <InputError message={errors.degree} className="mt-2" />
@@ -203,16 +185,19 @@ export default function EducationCard({ className, id, educationLevel, school, d
                     }
                     <div className="w-full mt-3">
                         <InputLabel htmlFor="wow" value="Attach File" />
-                        <FileInput onFileSelect={handleFileUpload} />
+                        <FileInput
+                            onFileSelect={handleFileUpload}
+                            url={attached_file_url}
+                        />
                         {selectedFile && (
                             <p className="mt-2 text-green-600">File uploaded: {selectedFile.name}</p>
                         )}
 
                     </div>
                     <div className="mt-4 flex items-center justify-center">
-                        <SecondaryButton type="submit">
+                        <PrimaryButton type="submit" disabled={processing}>
                             Save
-                        </SecondaryButton>
+                        </PrimaryButton>
                     </div>
                 </form>
             </Modal>
