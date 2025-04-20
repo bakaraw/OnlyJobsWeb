@@ -255,6 +255,7 @@ class JobPostController extends Controller
             'address_id',
             'created_at'
         )
+            ->where('id', '!=', 1)
             ->with([
                 'address',
                 'applications' => function ($query) {

@@ -20,6 +20,7 @@ import {
     Legend as ChartLegend
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
+import ApplicantDetails from "@/Components/Dashboard/Modal/ApplicantDetails";
 
 ChartJS.register(
     ArcElement, Tooltip, Legend,
@@ -36,11 +37,22 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         : applicants.filter((app) => app.status === selectedStatus
         );
 
+    const [expandedUser, setExpandedUser] = useState(null);
+
+    const toggleUserDetails = (userId) => {
+        if (expandedUser === userId) {
+            setExpandedUser(null);
+        } else {
+            setExpandedUser(userId);
+        }
+    };
+
     useEffect(() => {
         if (!auth.user) {
             router.visit('/login');
         }
     }, [auth]);
+
 
 
     const doughnutData = {
@@ -201,6 +213,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <th className="py-2 px-4 text-left">Date Placed</th>
                                 <th className="py-2 px-4 text-left">Status</th>
                                 <th className="py-2 px-4 text-left">Remarks</th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -216,6 +229,14 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
+                                    <td className="py-2 px-4">
+                                        <PrimaryButton
+                                            onClick={() => toggleUserDetails(application.user.id)}
+                                            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                                        >
+                                            {expandedUser === application.user.id ? "Hide Profile" : "Profile"}
+                                        </PrimaryButton>
+                                    </td>
                                 </tr>
                             ))}
                             </tbody>
@@ -224,11 +245,19 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                 ) : (
                     <p className="text-gray-500">No applicants found.</p>
                 )}
+                {expandedUser && (() => {
+                    const user = filteredApplicants.find(app => app.user.id === expandedUser)?.user;
+                    return user ? (
+                        <div className="mt-4 border-t pt-4">
+                            <ApplicantDetails
+                                user={user}
+                                onClose={() => setExpandedUser(null)}
+                            />
+                        </div>
+                    ) : null;
+                })()}
             </DashboardCard>
 
-            {showDetails && (
-                <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
-            )}
         </div>
     );
 }
