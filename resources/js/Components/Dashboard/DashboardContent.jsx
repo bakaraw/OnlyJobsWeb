@@ -20,7 +20,8 @@ import {
     Legend as ChartLegend
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
-import ApplicantDetails from "@/Components/Dashboard/Modal/ApplicantDetails";
+import ApplicantDetails from "@/Components/Dashboard/Modal/ApplicantDetails.jsx";
+
 
 ChartJS.register(
     ArcElement, Tooltip, Legend,
@@ -229,12 +230,12 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
-                                    <td className="py-2 px-4">
+                                    <td className="py-3 px-4 text-center">
                                         <PrimaryButton
-                                            onClick={() => toggleUserDetails(application.user.id)}
+                                            onClick={() => toggleUserDetails(application.id)}
                                             className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
                                         >
-                                            {expandedUser === application.user.id ? "Hide Profile" : "Profile"}
+                                            {expandedUser === application.id ? "Hide Details" : "View Details"}
                                         </PrimaryButton>
                                     </td>
                                 </tr>
@@ -246,14 +247,12 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     <p className="text-gray-500">No applicants found.</p>
                 )}
                 {expandedUser && (() => {
-                    const user = filteredApplicants.find(app => app.user.id === expandedUser)?.user;
-                    return user ? (
-                        <div className="mt-4 border-t pt-4">
-                            <ApplicantDetails
-                                user={user}
-                                onClose={() => setExpandedUser(null)}
-                            />
-                        </div>
+                    const application = filteredApplicants.find(app => app.id === expandedUser);
+                    return application ? (
+                        <ApplicantDetails
+                            user={application.user}
+                            onClose={() => setExpandedUser(null)}
+                        />
                     ) : null;
                 })()}
             </DashboardCard>
