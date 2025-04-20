@@ -7,61 +7,22 @@ use Illuminate\Http\Request;
 
 class RequirementController extends Controller
 {
-    public function index()
-    {
-        $requirements = Requirement::latest()->get();
-        return view('requirements.index', compact('requirements'));
-    }
 
-    public function create()
-    {
-        return view('requirements.create');
-    }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'requirement_name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'validity_period' => 'required|date',
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
-        Requirement::create($validated);
+        $requirement = new Requirement();
+        $requirement->user_id = auth()->id();
+        $requirement->title = $request->title;
+        $requirement->description = $request->description;
+        $requirement->save();
 
-        return redirect()->route('requirements.index');
+        return redirect()->back()->with('success', 'Requirement added!');
     }
 
-    public function show($id)
-    {
-        $requirement = Requirement::findOrFail($id);
-        return view('requirement.show', compact('requirement'));
-    }
-
-    public function edit($id)
-    {
-        $requirement = Requirement::findOrFail($id);
-        return view('requirement.edit', compact('requirement'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $requirement = Requirement::findOrFail($id);
-        $validated = $request->validate([
-            'requirement_name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'validity_period' => 'required|date',
-        ]);
-
-        $requirement->update($validated);
-
-        return redirect()->route('requirement.index')->with('success', 'Requirement updated successfully.');
-    }
-
-    public function destroy($id)
-    {
-        $requirement = Requirement::findOrFail($id);
-        $requirement->delete();
-
-        return redirect()->route('requirements.index');
-    }
 }

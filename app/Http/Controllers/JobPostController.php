@@ -61,16 +61,21 @@ class JobPostController extends Controller
             'skills'               => 'nullable|array',
             'skills.*'             => 'exists:skills,skill_id',
             'custom_skills'        => 'nullable|array',
-            'custom_skills.*'      => 'string|max:255'
+            'custom_skills.*'      => 'string|max:255',
+
+             'custom_requirements'        => 'nullable|array',
+            'custom_requirements.*'      => 'string|max:255'
         ]);
 
         // Separate the arrays from validated data
         $requirementIds = $validatedData['requirements'] ?? [];
         $skillIds = $validatedData['skills'] ?? [];
         $customSkills = $validatedData['custom_skills'] ?? [];
+        $customRequirements = $validatedData['custom_requirements'] ?? [];
+
 
         // Remove these fields from the validated data
-        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills']);
+        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);
 
         // Add the user_id to the validated data
         $validatedData['user_id'] = auth()->id();
@@ -92,6 +97,11 @@ class JobPostController extends Controller
         foreach ($customSkills as $customSkillName) {
             $newSkill = Skill::create(['skill_name' => $customSkillName]);
             $jobPost->skills()->attach($newSkill->skill_id);
+        }
+
+        foreach ($customRequirements as $customRequirementName) {
+            $newRequirement = Requirement::create(['requirement_name' => $customRequirementName]);
+            $jobPost->requirements()->attach($newRequirement->requirement_id);
         }
 
         // Redirect or return success message
@@ -171,6 +181,7 @@ class JobPostController extends Controller
             'user_id',
             'job_post_id',
             'status',
+            'remarks',
             'created_at',
         )
             ->with([
@@ -189,6 +200,11 @@ class JobPostController extends Controller
             'company',
             'views',
         )
+            ->with([
+                'applications' => function ($query) {
+                    $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
+                }
+                ])
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {
@@ -207,9 +223,13 @@ class JobPostController extends Controller
             ->get();
 
 
+        $users = $this->getUsersData();
+
+
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
             'applicants' => $applicants,
+            'users' => $users,
             'auth' => [
                 'user' => auth()->user(),
             ],
@@ -220,7 +240,50 @@ class JobPostController extends Controller
         ]);
     }
 
+    public function getUsersData()
+    {
+        $users = User::select(
+            'id',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'suffix',
+            'email',
+            'contact_number',
+            'birthdate',
+            'gender',
+            'address_id',
+            'created_at'
+        )
+            ->with([
+                'address',
+                'applications' => function ($query) {
+                    $query->select(
+                        'id',
+                        'user_id',
+                        'job_post_id',
+                        'status',
+                        'remarks',
+                        'created_at'
+                    );
+                },
+                'applications.jobPost' => function ($query) {
+                    $query->select(
+                        'id',
+                        'job_title',
+                        'job_type',
+                        'company'
+                    );
+                },
+                'applications.jobPost.requirements', // Get job post requirements
+                'requirements',   // Load user's own requirements
+                'educations',     // Load user education history
+                'workHistories'   // Load user work history
+            ])
+            ->get();
 
+        return $users;
+    }
 }
 
 

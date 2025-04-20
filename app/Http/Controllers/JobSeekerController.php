@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -32,7 +33,6 @@ class JobSeekerController extends Controller
 
     public function incrementViews($id)
     {
-
 
         $jobPost = JobPost::findOrFail($id);
         $jobPost->increment('views');
@@ -75,6 +75,8 @@ class JobSeekerController extends Controller
             'jobview' => $jobview,
             'authUser' => $authUser,
         ]);
+
+
     }
 
 
@@ -116,6 +118,7 @@ class JobSeekerController extends Controller
         ]);
 
     }
+
 
 
 

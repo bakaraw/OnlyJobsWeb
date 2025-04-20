@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { router } from "@inertiajs/react";
 import JobList from "./Modal/JobList.jsx";
-import SecondaryButton from "@/Components/SecondaryButton.jsx";
-import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from "recharts";
+import { Doughnut } from 'react-chartjs-2';
 import DashboardCard from "./Modal/DashboardCard.jsx";
 import { Link } from '@inertiajs/react';
-
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
     Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
     CategoryScale,
     LinearScale,
     BarElement,
@@ -16,16 +19,22 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend
 } from "chart.js";
-import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
-
+ChartJS.register(
+    ArcElement, Tooltip, Legend,
+    CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
+    ChartDataLabels
+);
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
+
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
-
-    console.log("view", totalViews);
+    const [selectedStatus, setSelectedStatus] = useState("all");
+    const filteredApplicants = selectedStatus === "all"
+        ? applicants
+        : applicants.filter((app) => app.status === selectedStatus
+        );
 
     useEffect(() => {
         if (!auth.user) {
@@ -33,12 +42,31 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         }
     }, [auth]);
 
-    const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
-    const pieData = [
-        { name: 'Jobs', value: totalJob },
-        { name: 'Users', value: totalUsers },
-        { name: 'Views', value: totalViews },
-    ];
+
+    const doughnutData = {
+        labels: ['Jobs', 'Users', 'Views'],
+        datasets: [
+            {
+                data: [totalJob, totalUsers, totalViews],
+                backgroundColor: ['#8884d8', '#82ca9d', '#ffc658'],
+                borderWidth: 1,
+            },
+        ],
+        options: {
+            plugins: {
+                datalabels: {
+                    color: '#000000',
+                    formatter: (value, context) => {
+                        return `${context.chart.data.labels[context.dataIndex]}: ${value}`;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                }
+            }
+        }
+    };
 
     const chartData = {
         labels: jobs.map((job) => job.job_title),
@@ -53,6 +81,9 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         ],
     };
 
+
+
+
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -63,10 +94,9 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                     </PrimaryButton>
                 </Link>
             </div>
-            <div className="grid grid-cols-1 gap-4">
 
 
-                {/* Job Views Chart */}
+            <div className="space-y-6">
                 <DashboardCard>
                     <div className="flex-grow flex items-end">
                         <Bar
@@ -77,131 +107,124 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                             }}
                         />
                     </div>
+
+
                 </DashboardCard>
+
+
+
+
+
+                <div className="flex flex-row items-start mb-4 space-x-4">
+
+                        <ApplicantPipelineCard
+                            applications={applicants}
+                            onStatusClick={(status) => setSelectedStatus(status)}
+                            className="h-[423px]"
+
+                        />
+
+                    <DashboardCard className="flex-1 h-50 w-1/2">
+                        <div className="w-full h-full flex items-center justify-center">
+                            <Doughnut
+                                data={doughnutData}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                }}
+                                style={{ width: '300px', height: '391px' }}
+                            />
+                        </div>
+                    </DashboardCard>
+
+
+                    <div className="flex flex-col flex-1 space-y-4">
+                        <DashboardCard>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-500">Total Jobs</h2>
+                                    <p className="text-2xl font-semibold text-gray-800">{jobs.length}</p>
+                                </div>
+                                <div className="text-blue-500 text-3xl">📄</div>
+                            </div>
+                        </DashboardCard>
+
+                        <DashboardCard>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-500">Total Applicants</h2>
+                                    <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
+                                </div>
+                                <div className="text-green-500 text-3xl">🧑‍💼</div>
+                            </div>
+                        </DashboardCard>
+
+                        <DashboardCard>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-500">Total Views</h2>
+                                    <p className="text-2xl font-semibold text-gray-800">{totalViews}</p>
+                                </div>
+                                <div className="text-orange-500 text-3xl">👀</div>
+                            </div>
+                        </DashboardCard>
+
+                        <DashboardCard>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-500">Hired</h2>
+                                    <p className="text-2xl font-semibold text-gray-800">
+                                        {applicants.filter(app => app.status === 'accepted').length}
+                                    </p>
+                                </div>
+                                <div className="text-yellow-500 text-3xl">⏳</div>
+                            </div>
+                        </DashboardCard>
+
+
+                    </div>
+                </div>
+
             </div>
 
-            {/* Overall Views Pie Chart */}
-            <div className="flex flex-col items-center mb-4">
-                <DashboardCard title="Overall Views">
-                    <PieChart width={400} height={300}>
-                        <Pie
-                            dataKey="value"
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            fill="#8884d8"
-                            label
-                        >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+
+            <DashboardCard>
+
+
+                {filteredApplicants.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="table-auto w-full border-collapse">
+                            <thead>
+                            <tr className="bg-gray-100">
+                                <th className="py-2 px-4 text-left">Applicant</th>
+                                <th className="py-2 px-4 text-left">Job Title</th>
+                                <th className="py-2 px-4 text-left">Date Placed</th>
+                                <th className="py-2 px-4 text-left">Status</th>
+                                <th className="py-2 px-4 text-left">Remarks</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {filteredApplicants.map((application) => (
+                                <tr key={application.id} className="border-t hover:bg-gray-50">
+                                    <td className="py-2 px-4">
+                                        <div className="flex items-center">
+                                            <span className="mr-2 text-gray-500">{filteredApplicants.indexOf(application) + 1}.</span>
+                                            {application.user.first_name} {application.user.last_name}
+                                        </div>
+                                    </td>
+                                    <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
+                                    <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
+                                    <td className="py-2 px-4 capitalize">{application.remarks}</td>
+                                </tr>
                             ))}
-                        </Pie>
-                        <PieTooltip />
-                        <PieLegend />
-                    </PieChart>
-                </DashboardCard>
-            </div>
-
-            {/* Quick Stats Summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <DashboardCard>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-500">Total Jobs</h2>
-                            <p className="text-2xl font-semibold text-gray-800">{jobs.length}</p>
-                        </div>
-                        <div className="text-blue-500 text-3xl">📄</div>
+                            </tbody>
+                        </table>
                     </div>
-                </DashboardCard>
-
-                <DashboardCard>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-500">Total Applicants</h2>
-                            <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
-                        </div>
-                        <div className="text-green-500 text-3xl">👤</div>
-                    </div>
-                </DashboardCard>
-
-                <DashboardCard>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-500">Pending Applications</h2>
-                            <p className="text-2xl font-semibold text-gray-800">
-                                {applicants.filter(app => app.status === 'pending').length}
-                            </p>
-                        </div>
-                        <div className="text-yellow-500 text-3xl">⏳</div>
-                    </div>
-                </DashboardCard>
-
-                <DashboardCard>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-500">Total Views</h2>
-                            <p className="text-2xl font-semibold text-gray-800">{totalViews}</p>
-                        </div>
-                        <div className="text-orange-500 text-3xl">👀</div>
-                    </div>
-                </DashboardCard>
-            </div>
-
-            {/*/!* Job Applicant Overview *!/*/}
-            {/*<DashboardCard title="Job Applicant Overview">*/}
-            {/*    {applicants.length > 0 ? (*/}
-            {/*        <div className="overflow-x-auto">*/}
-            {/*            <table className="table-auto w-full border-collapse">*/}
-            {/*                <thead>*/}
-            {/*                <tr>*/}
-            {/*                    <th>Applicant</th>*/}
-            {/*                    <th>Job Title</th>*/}
-            {/*                    <th>Status</th>*/}
-            {/*                    <th>Date Placed</th>*/}
-            {/*                </tr>*/}
-            {/*                </thead>*/}
-            {/*                <tbody>*/}
-            {/*                {applicants.map((application) => {*/}
-            {/*                    const job = jobs.find(j => j.id === application.job_id);*/}
-            {/*                    return (*/}
-            {/*                        <tr key={application.id} className="border-t cursor-pointer hover:bg-gray-100">*/}
-            {/*                            <td className="py-2 px-4">*/}
-            {/*                                {application.user.first_name} {application.user.last_name}*/}
-            {/*                            </td>*/}
-            {/*                            <td className="py-2 px-4">*/}
-            {/*                                {application.job_post?.job_title || 'Unknown Job'}*/}
-            {/*                            </td>*/}
-
-
-            {/*                            <td className="py-2 px-4">{application.status}</td>*/}
-            {/*                            <td className="py-2 px-4">*/}
-            {/*                                {new Date(application.created_at).toLocaleDateString()}*/}
-            {/*                            </td>*/}
-            {/*                            <td className="py-2 px-4 flex space-x-2">*/}
-            {/*                                <PrimaryButton*/}
-            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
-            {/*                                    onClick={() => handleAccept(application)}*/}
-            {/*                                >*/}
-            {/*                                    Accept*/}
-            {/*                                </PrimaryButton>*/}
-            {/*                                <SecondaryButton*/}
-            {/*                                    className="px-4 py-2 flex items-center justify-center"*/}
-            {/*                                    onClick={() => handleReject(application)}*/}
-            {/*                                >*/}
-            {/*                                    Reject*/}
-            {/*                                </SecondaryButton>*/}
-            {/*                            </td>*/}
-            {/*                        </tr>*/}
-            {/*                    );*/}
-            {/*                })}*/}
-            {/*                </tbody>*/}
-            {/*            </table>*/}
-            {/*        </div>*/}
-            {/*    ) : (*/}
-            {/*        <p className="text-gray-500">No applicants available.</p>*/}
-            {/*    )}*/}
-            {/*</DashboardCard>*/}
+                ) : (
+                    <p className="text-gray-500">No applicants found.</p>
+                )}
+            </DashboardCard>
 
             {showDetails && (
                 <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />

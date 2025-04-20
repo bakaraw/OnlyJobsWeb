@@ -53,8 +53,7 @@ class JobPost extends Model
     {
         return $this->hasMany(Placement::class);
     }
-    public function applications()
-    {
+    public function applications() {
         return $this->hasMany(Application::class);
     }
 
