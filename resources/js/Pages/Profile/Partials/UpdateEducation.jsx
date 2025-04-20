@@ -12,7 +12,6 @@ import Modal from '@/Components/Modal';
 export default function UpdateEducation({ className }) {
 
     const { props } = usePage();
-    const user = props.auth.user;
     const educations = props.educations || [];
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -64,7 +63,7 @@ export default function UpdateEducation({ className }) {
             preserveScroll: true, // Keeps the page from jumping to the top
             onSuccess: () => {
                 setIsAddModalOpen(false);
-                reset('school', 'degree', 'end_year', 'start_year', 'attached_file', 'education_level');
+                reset('title', 'degree', 'end_year', 'start_year', 'attached_file', 'education_level');
             },
         });
     };
@@ -105,7 +104,7 @@ export default function UpdateEducation({ className }) {
                 <div className='col-span-2'>
                 </div>
             </div>
-            <hr className='w-full mt-3' />
+            <hr className='w-full mt-3 mb-6' />
             {
                 educations.length != 0 ?
                     educations.map((edu, index) => (
@@ -119,6 +118,7 @@ export default function UpdateEducation({ className }) {
                             degree={edu.degree}
                             startYear={edu.start_year}
                             endYear={edu.end_year}
+                            attached_file_url={edu.attached_file_url}
                             years={years}
                         />
                     )) : <div className='flex items-center justify-center my-6'> no education specified </div>

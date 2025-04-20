@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
@@ -15,9 +16,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewsController;
 use App\Http\Controllers\WorkHistoryController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Models\Certification;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LightcastController;
+use App\Http\Controllers\UserSkillsController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -49,6 +53,11 @@ Route::post('/documents', [JobSeekerDocumentController::class, 'store'])->name('
 Route::get('/documents/{document}', [JobSeekerDocumentController::class, 'show'])->name('documents.show');
 Route::delete('/documents/{document}', [JobSeekerDocumentController::class, 'destroy'])->name('documents.destroy');
 
+//// Requirements
+//Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
+//Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
+//Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
+//Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
 //// Requirements
 //Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
 //Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
@@ -102,15 +111,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/education', [EducationController::class, 'edit'])
         ->name('education.edit');
 
-    Route::post('/education', [EducationController::class, 'store'])
-        ->name('education.store');
-
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
 
     Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
 
-    Route::put('/education/{education}', [EducationController::class, 'update'])
+    Route::post('/education', [EducationController::class, 'store'])
+        ->name('education.store');
+
+    Route::post('/education/{education}', [EducationController::class, 'update'])
         ->name('education.update');
 
     Route::delete('/education/{education}', [EducationController::class, 'destroy'])
@@ -127,6 +136,21 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/work_history/{work_history}', [WorkHistoryController::class, 'destroy'])
         ->name('work_history.destroy');
+
+    Route::post('/certification', [CertificationController::class, 'store'])
+        ->name('certification.store');
+
+    Route::post('/certification/{certification}', [CertificationController::class, 'update'])
+        ->name('certification.update');
+
+    Route::delete('/certification/{certification}', [CertificationController::class, 'destroy'])
+        ->name('certification.destroy');
+
+    Route::post('/user-skills', [UserSkillsController::class, 'store'])
+        ->name('user-skills.store');
+
+    Route::delete('/user-skills/{userSkill}', [UserSkillsController::class, 'destroy'])
+        ->name('user-skills.destroy');
 
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
@@ -151,5 +175,8 @@ Route::middleware('auth')->group(function () {
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// Third Party API
+Route::get('/skills', [LightcastController::class, 'fetchSkills']);
 
 require __DIR__ . '/auth.php';
