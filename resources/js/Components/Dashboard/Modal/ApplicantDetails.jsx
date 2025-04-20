@@ -119,6 +119,35 @@ export default function ApplicantDetails({ user, onClose }) {
                 </div>
             )}
 
+            {/* Certification */}
+            {user.certificates && user.certificates.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Certificates</h3>
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">title</th>
+                            <th className="py-2 px-4">description</th>
+                            <th className="py-2 px-4">year</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {user.certificates.map((certificate, index) => (
+                            <tr key={certificate.id || index} className="border-b">
+                                <td className="py-2 px-4">
+                                    {certificate.title || certificate.description || "N/A"}
+                                </td>
+                                <td className="py-2 px-4">
+                                    {certificate.year}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+
             {/* Work Experience */}
             {user.work_histories && user.work_histories.length > 0 && (
                 <div className="mb-6">

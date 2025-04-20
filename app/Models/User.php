@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Educations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Educations;
 
 class User extends Authenticatable
 {
@@ -70,6 +71,11 @@ class User extends Authenticatable
     public function educations()
     {
         return $this->hasMany(Educations::class);
+    }
+
+    public function certifications(): HasMany
+    {
+        return $this->hasMany(Certification::class);
     }
 
     public function workHistories()
