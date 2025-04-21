@@ -24,11 +24,10 @@ return new class extends Migration
         Schema::create('job_post_skill', function (Blueprint $table) {
             $table->id();
             $table->foreignId('job_post_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('skill_id');
-            $table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');
-
+            $table->string('skill_id');
+            $table->string('skill_name');
+            /*$table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');*/
             $table->timestamps();
-
             $table->unique(['job_post_id', 'skill_id']);
         });
     }

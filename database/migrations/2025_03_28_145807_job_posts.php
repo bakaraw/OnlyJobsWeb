@@ -15,9 +15,13 @@ return new class extends Migration
             $table->string('job_location');
             $table->string('job_type');
             $table->decimal('min_salary', 10, 2);
-            $table->decimal('max_salary', 10, 2);
+            $table->decimal('max_salary', 10, 2)->nullable();
             $table->integer('min_experience_years');
             $table->string('company');
+
+            $table->unsignedBigInteger('status_id')->nullable();
+            $table->unsignedBigInteger('degree_id')->nullable();
+
             $table->unsignedBigInteger('views')->default(0);
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');

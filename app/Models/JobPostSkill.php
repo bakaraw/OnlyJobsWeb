@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 
-class JobPostSkill extends Pivot
+class JobPostSkill extends Model
 {
+    protected $table = 'job_post_skill';
+
     protected $fillable = [
         'job_post_id',
         'skill_id',
