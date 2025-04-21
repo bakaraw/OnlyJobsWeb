@@ -41,6 +41,12 @@ function CreateJobPostModal({ className, show, onClose }) {
     const [error, setError] = useState(null);
     const [adding, setAdding] = useState(false);
 
+    const [searchRequirement, setSearchRequirement] = useState('');
+    const [customRequirements, setCustomRequirements] = useState([]);
+    const filteredRequirements = (requirements || []).filter((requirement) =>
+        requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
+    );
+
     const fetchSkills = useCallback(
         debounce(async (search) => {
             if (!search) {
@@ -72,34 +78,32 @@ function CreateJobPostModal({ className, show, onClose }) {
         }, 300),
         []
     );
+
     useEffect(() => {
         fetchSkills(query);
         return fetchSkills.cancel;
     }, [query, fetchSkills]);
 
     const handleSkillSelect = (skill) => {
-        setAdding(true);
-        setError(null);
 
-        router.post(route('user-skills.store'), {
-            skill_id: skill.id,
-            skill_name: skill.name,
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                console.log("Skill added:", skill.name);
-                setQuery('');
-                setSuggestions([]);
-            },
-            onError: (err) => {
-                console.error("Error adding skill:", err);
-                setError("Could not add skill. Please try again.");
-            },
-            onFinish: () => {
-                setAdding(false);
-            }
-        });
+        if (!data.skills.includes(skill.id)) {
+            setData("skills", [...data.skills, skill.id])
+        }
+
+        setQuery("");
+        setSuggestions([]);
     };
+
+    const handleSelectRequirement = (requirement) => {
+        if (!data.requirements.includes(requirement.requirement_id)) {
+            setData("requirements", [...data.requirements, requirement.requirement_id]);
+        }
+        setSearchRequirement("");
+    };
+
+    const submit = () => {
+
+    }
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
@@ -183,7 +187,6 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 }
                             </select>
                             <InputError />
-
                         </div>
                         <div className="col-span-1">
                             <InputLabel value="Required Experience" />
@@ -244,7 +247,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 className="mt-1 block w-full"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-
+                                placeholder="Search skill"
                             />
 
                             {loading && (
@@ -269,12 +272,49 @@ function CreateJobPostModal({ className, show, onClose }) {
                         )}
 
                     </div>
-                    <div className="mt-4">
+                    <div className="mt-4 relative">
                         <InputLabel value="Requirements" />
-                        <TextInput
-                            className="mt-1 block w-full"
+                        <input
+                            type="text"
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                            value={searchRequirement}
+                            onChange={(e) => setSearchRequirement(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    const requirementName = searchRequirement.trim();
+                                    const exists = requirements.some(
+                                        (r) => r.requirement_name.toLowerCase() === requirementName.toLowerCase()
+                                    );
+                                    const alreadySelected =
+                                        data.requirements.some(id =>
+                                            requirements.find(r => r.requirement_id === id)?.requirement_name.toLowerCase() === requirementName.toLowerCase()
+                                        ) ||
+                                        customRequirements.includes(requirementName);
+
+                                    if (requirementName && !exists && !alreadySelected) {
+                                        setCustomRequirements(prev => [...prev, requirementName]);
+                                        setSearchRequirement('');
+                                    }
+                                }
+                            }}
+                            placeholder="Search or add new requirement"
                         />
+                        {searchRequirement && (
+                            <div className="absolute top-full left-0 bg-white border border-gray-300 rounded-md shadow-lg w-full max-h-60 overflow-y-auto z-50">
+                                {filteredRequirements.slice(0, 5).map((requirement) => (
+                                    <div
+                                        key={requirement.requirement_id}
+                                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => handleSelectRequirement(requirement)}
+                                    >
+                                        {requirement.requirement_name}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
+
 
                     <div className="flex items-center justify-center mt-4">
                         <PrimaryButton>

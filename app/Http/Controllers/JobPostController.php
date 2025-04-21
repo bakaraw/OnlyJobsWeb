@@ -57,53 +57,53 @@ class JobPostController extends Controller
             'degree_id'            => 'nullable|exists:degrees,id',
             'views'                => 'nullable|integer',
             'requirements'         => 'nullable|array',
-            'requirements.*'       => 'exists:requirements,requirement_id',
+            /*'requirements.*'       => 'exists:requirements,requirement_id',*/
             'skills'               => 'nullable|array',
-            'skills.*'             => 'exists:skills,skill_id',
-            'custom_skills'        => 'nullable|array',
-            'custom_skills.*'      => 'string|max:255',
-
-            'custom_requirements'        => 'nullable|array',
-            'custom_requirements.*'      => 'string|max:255'
+            /*'skills.*'             => 'exists:skills,skill_id',*/
+            /*'custom_skills'        => 'nullable|array',*/
+            /*'custom_skills.*'      => 'string|max:255',*/
+            /**/
+            /*'custom_requirements'        => 'nullable|array',*/
+            /*'custom_requirements.*'      => 'string|max:255'*/
         ]);
 
-        // Separate the arrays from validated data
-        $requirementIds = $validatedData['requirements'] ?? [];
-        $skillIds = $validatedData['skills'] ?? [];
-        $customSkills = $validatedData['custom_skills'] ?? [];
-        $customRequirements = $validatedData['custom_requirements'] ?? [];
-
-        // Remove these fields from the validated data
-        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);
-
-        // Add the user_id to the validated data
-        $validatedData['user_id'] = auth()->id();
-
-        // Create the job post
-        $jobPost = JobPost::create($validatedData);
-
-        // Attach skills to the job post
-        if (!empty($skillIds)) {
-            $jobPost->skills()->attach($skillIds);
-        }
-
-        // Attach requirements to the job post
-        if (!empty($requirementIds)) {
-            $jobPost->requirements()->attach($requirementIds);
-        }
-
-        // Create and attach custom skills
-        foreach ($customSkills as $customSkillName) {
-            $newSkill = Skill::create(['skill_name' => $customSkillName]);
-            $jobPost->skills()->attach($newSkill->skill_id);
-        }
-
-        foreach ($customRequirements as $customRequirementName) {
-            $newRequirement = Requirement::create(['requirement_name' => $customRequirementName]);
-            $jobPost->requirements()->attach($newRequirement->requirement_id);
-        }
-
-        // Redirect or return success message
+        /*// Separate the arrays from validated data*/
+        /*$requirementIds = $validatedData['requirements'] ?? [];*/
+        /*$skillIds = $validatedData['skills'] ?? [];*/
+        /*$customSkills = $validatedData['custom_skills'] ?? [];*/
+        /*$customRequirements = $validatedData['custom_requirements'] ?? [];*/
+        /**/
+        /*// Remove these fields from the validated data*/
+        /*unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);*/
+        /**/
+        /*// Add the user_id to the validated data*/
+        /*$validatedData['user_id'] = auth()->id();*/
+        /**/
+        /*// Create the job post*/
+        /*$jobPost = JobPost::create($validatedData);*/
+        /**/
+        /*// Attach skills to the job post*/
+        /*if (!empty($skillIds)) {*/
+        /*    $jobPost->skills()->attach($skillIds);*/
+        /*}*/
+        /**/
+        /*// Attach requirements to the job post*/
+        /*if (!empty($requirementIds)) {*/
+        /*    $jobPost->requirements()->attach($requirementIds);*/
+        /*}*/
+        /**/
+        /*// Create and attach custom skills*/
+        /*foreach ($customSkills as $customSkillName) {*/
+        /*    $newSkill = Skill::create(['skill_name' => $customSkillName]);*/
+        /*    $jobPost->skills()->attach($newSkill->skill_id);*/
+        /*}*/
+        /**/
+        /*foreach ($customRequirements as $customRequirementName) {*/
+        /*    $newRequirement = Requirement::create(['requirement_name' => $customRequirementName]);*/
+        /*    $jobPost->requirements()->attach($newRequirement->requirement_id);*/
+        /*}*/
+        /**/
+        /*// Redirect or return success message*/
         return redirect()->route('dashboard')->with('success', 'Job post created successfully.');
     }
 
