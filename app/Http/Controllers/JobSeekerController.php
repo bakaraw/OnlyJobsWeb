@@ -108,30 +108,72 @@ class JobSeekerController extends Controller
     /*        'jobs' => $jobs,*/
     /*    ]);*/
     /*}*/
+
+    /*public function show()*/
+    /*{*/
+    /*    $jobs = JobPost::select(*/
+    /*        'id',*/
+    /*        'job_title',*/
+    /*        'user_id',*/
+    /*        'job_description',*/
+    /*        'job_location',*/
+    /*        'job_type',*/
+    /*        'created_at',*/
+    /*        'min_experience_years',*/
+    /*        'degree_id',*/
+    /*        'company'*/
+    /*    )*/
+    /*        ->with([*/
+    /*            'skills' => function ($query) {*/
+    /*                $query->select('job_post_skill.job_post_id', 'job_post_skill.skill_id', 'job_post_skill.skill_name');*/
+    /*            },*/
+    /*            'requirements' => function ($query) {*/
+    /*                $query->select('requirements.requirement_id', 'requirements.requirement_name');*/
+    /*            }*/
+    /*        ])*/
+    /*        ->get()*/
+    /*        ->toArray();*/
+    /**/
+    /*    return Inertia::render('FindWork', [*/
+    /*        'jobs' => $jobs,*/
+    /*    ]);*/
+    /*}*/
+
     public function show()
     {
-        $jobs = JobPost::select(
-            'id',
-            'job_title',
-            'user_id',
-            'job_description',
-            'job_location',
-            'job_type',
-            'created_at',
-            'min_experience_years',
-            'degree_id',
-            'company'
-        )
-            ->with([
-                'skills' => function ($query) {
-                    $query->select('job_post_skill.job_post_id', 'job_post_skill.skill_id', 'job_post_skill.skill_name');
-                },
-                'requirements' => function ($query) {
-                    $query->select('requirements.requirement_id', 'requirements.requirement_name');
-                }
-            ])
-            ->get()
-            ->toArray();
+        $user = Auth::user();
+
+        // Get top 10 recommended jobs
+        $recommendedJobs = app('App\Services\JobMatcher')->matchJobs($user);
+
+        // Format for frontend (no pivot; direct attributes from JobPostSkill)
+        $jobs = $recommendedJobs->map(function ($job) {
+            return [
+                'id' => $job->id,
+                'job_title' => $job->job_title,
+                'user_id' => $job->user_id,
+                'job_description' => $job->job_description,
+                'job_location' => $job->job_location,
+                'job_type' => $job->job_type,
+                'created_at' => $job->created_at,
+                'min_experience_years' => $job->min_experience_years,
+                'degree_id' => $job->degree_id,
+                'company' => $job->company,
+                'match_score' => $job->match_score,
+                'skills' => $job->skills->map(function ($skill) {
+                    return [
+                        'skill_id' => $skill->skill_id,
+                        'skill_name' => $skill->skill_name,
+                    ];
+                }),
+                'requirements' => $job->requirements->map(function ($req) {
+                    return [
+                        'requirement_id' => $req->requirement_id,
+                        'requirement_name' => $req->requirement_name,
+                    ];
+                }),
+            ];
+        });
 
         return Inertia::render('FindWork', [
             'jobs' => $jobs,
