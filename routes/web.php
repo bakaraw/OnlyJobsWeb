@@ -155,10 +155,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/applications/update-remark', [ApplicantController::class, 'updateRemark']);
     Route::get('/dashboard/pipeline', [ApplicantController::class, 'pipeLineData'])->name('pipelineData');
     Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
-
-
-
-
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

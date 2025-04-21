@@ -28,7 +28,6 @@ return new class extends Migration
             $table->string('skill_name');
             /*$table->foreign('skill_id')->references('skill_id')->on('skills')->onDelete('cascade');*/
             $table->timestamps();
-            $table->unique(['job_post_id', 'skill_id']);
         });
     }
 

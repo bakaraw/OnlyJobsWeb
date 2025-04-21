@@ -11,13 +11,13 @@ class JobSeekerController extends Controller
 {
 
 
-    public function apply($jobPostId) {
+    public function apply($jobPostId)
+    {
 
         $user = Auth::user();
 
-        if($user->appliedJobs()->where('job_post_id', $jobPostId)->exists()) {
+        if ($user->appliedJobs()->where('job_post_id', $jobPostId)->exists()) {
             return redirect()->route('find_work')->with('You have already applied for this job');
-
         }
 
         $user->appliedJobs()->attach($jobPostId, [
@@ -26,8 +26,6 @@ class JobSeekerController extends Controller
             'updated_at' => now(),
         ]);
         return redirect()->route('find_work')->with('success');
-
-
     }
 
 
@@ -47,7 +45,7 @@ class JobSeekerController extends Controller
             return  redirect()->route('login');
         }
         $jobview = JobPost::with([
-            'skills:skill_id,skill_name',
+            'skills',
             'requirements:requirement_id,requirement_name',
             'degree',
             'status',
@@ -75,15 +73,41 @@ class JobSeekerController extends Controller
             'jobview' => $jobview,
             'authUser' => $authUser,
         ]);
-
-
     }
-
-
-
-
-
-
+    /**/
+    /*public function show()*/
+    /*{*/
+    /*    $jobs = JobPost::select(*/
+    /*        'id',*/
+    /*        'job_title',*/
+    /*        'user_id',*/
+    /*        'job_description',*/
+    /*        'job_location',*/
+    /*        'job_type',*/
+    /*        'created_at',*/
+    /*        'min_experience_years',*/
+    /*        'degree_id',*/
+    /*        'company',*/
+    /**/
+    /**/
+    /*    )*/
+    /*        ->with([*/
+    /*            'skills' => function ($query) {*/
+    /*                $query->select('skills.skill_id', 'skills.skill_name');*/
+    /*            },*/
+    /*            'requirements' => function ($query) {*/
+    /*                $query->select('requirements.requirement_id', 'requirements.requirement_name');*/
+    /*            }*/
+    /*        ])*/
+    /*        ->get()*/
+    /**/
+    /*        ->toArray();*/
+    /**/
+    /**/
+    /*    return Inertia::render('FindWork', [*/
+    /*        'jobs' => $jobs,*/
+    /*    ]);*/
+    /*}*/
     public function show()
     {
         $jobs = JobPost::select(
@@ -96,33 +120,21 @@ class JobSeekerController extends Controller
             'created_at',
             'min_experience_years',
             'degree_id',
-            'company',
-
-
+            'company'
         )
             ->with([
                 'skills' => function ($query) {
-                    $query->select('skills.skill_id', 'skills.skill_name');
+                    $query->select('job_post_skill.job_post_id', 'job_post_skill.skill_id', 'job_post_skill.skill_name');
                 },
                 'requirements' => function ($query) {
                     $query->select('requirements.requirement_id', 'requirements.requirement_name');
                 }
             ])
             ->get()
-
             ->toArray();
-
 
         return Inertia::render('FindWork', [
             'jobs' => $jobs,
         ]);
-
     }
-
-
-
-
-
 }
-
-

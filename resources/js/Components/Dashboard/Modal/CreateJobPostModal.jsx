@@ -10,6 +10,7 @@ import { useCallback } from "react";
 import debounce from "lodash.debounce";
 import { router } from "@inertiajs/react";
 import { Input } from "postcss";
+import Chip from "@/Components/Chip";
 
 function CreateJobPostModal({ className, show, onClose }) {
     const { props } = usePage();
@@ -86,14 +87,16 @@ function CreateJobPostModal({ className, show, onClose }) {
     }, [query, fetchSkills]);
 
     const handleSkillSelect = (skill) => {
+        const skillAlreadySelected = data.skills.some(s => s.id === skill.id);
 
-        if (!data.skills.includes(skill.id)) {
-            setData("skills", [...data.skills, { 'id': skill.id, 'name': skill.name }])
+        if (!skillAlreadySelected) {
+            setData("skills", [...data.skills, { id: skill.id, name: skill.name }]);
         }
 
         setQuery("");
         setSuggestions([]);
     };
+
 
     const handleSelectRequirement = (requirement) => {
         if (!data.requirements.includes(requirement.requirement_id)) {
@@ -101,6 +104,9 @@ function CreateJobPostModal({ className, show, onClose }) {
         }
         setSearchRequirement("");
     };
+
+    const handleRemoveRequirement = (requirementId) =>
+        setData("requirements", data.requirements.filter((id) => id !== requirementId));
 
     const submit = (e) => {
         e.preventDefault();
@@ -284,7 +290,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                             />
 
                             {loading && (
-                                <div className="absolute right-3 inset-y-0 flex items-center">
+                                <div className="mt-4 absolute right-3 inset-y-0 flex items-center">
                                     <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
                                 </div>
                             )}
@@ -303,7 +309,24 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 ))}
                             </ul>
                         )}
-
+                    </div>
+                    <div className="flex items-center mt-4 gap-3">
+                        {
+                            data.skills.map((skill) => (
+                                <Chip id={skill.id} className="min-w-32">
+                                    <div className="flex items-center justify-between w-full gap-2">
+                                        <span>{skill.name}</span>
+                                        <button
+                                            onClick={() =>
+                                                setData("skills", data.skills.filter((s) => s.id !== skill.id))
+                                            }
+                                        >
+                                            <i className="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                </Chip>
+                            ))
+                        }
                     </div>
                     <div className="mt-4 relative">
                         <InputLabel value="Requirements" />
@@ -348,14 +371,38 @@ function CreateJobPostModal({ className, show, onClose }) {
                             </div>
                         )}
                     </div>
+                    <div className="flex items-center mt-4 gap-3 w-full">
+                        {(data?.requirements ?? []).map((reqId) => {
+                            const req = (requirements ?? []).find((r) => r.requirement_id === reqId);
+                            return req ? (
+                                <Chip
+                                    key={req.requirement_id}
+                                    className="min-w-32"
+                                >
+                                    <div className="flex items-center justify-between w-full gap-2">
+                                        <div>
+                                            {req.requirement_name}
+                                        </div>
+                                        <button
+                                            onClick={() => handleRemoveRequirement(req.requirement_id)}
+                                        >
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+
+                                </Chip>
+                            ) : null;
+                        })}
+
+                    </div>
                     <div className="flex items-center justify-center mt-4">
                         <PrimaryButton>
                             Save
                         </PrimaryButton>
                     </div>
                 </form>
-            </div>
-        </Modal>
+            </div >
+        </Modal >
     );
 }
 
