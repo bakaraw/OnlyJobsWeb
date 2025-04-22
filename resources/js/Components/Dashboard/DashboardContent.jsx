@@ -20,7 +20,6 @@ import {
     Legend as ChartLegend
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
-import ApplicantDetails from "@/Components/Dashboard/Modal/ApplicantDetails.jsx";
 
 
 ChartJS.register(
@@ -28,6 +27,17 @@ ChartJS.register(
     CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
     ChartDataLabels
 );
+
+// function toggleUserDetails(id) {
+//
+//     if (expandedUser === userId) {
+//         setExpandedUser(null);
+//     } else {
+//         setExpandedUser(userId);
+//     }
+//
+// }
+
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
 
     const [showDetails, setShowDetails] = useState(false);
@@ -52,11 +62,11 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
     const doughnutData = {
-        labels: ['Jobs', 'Users', 'Views'],
+        labels: ['Jobs', 'Users'],
         datasets: [
             {
-                data: [totalJob, totalUsers, totalViews],
-                backgroundColor: ['#8884d8', '#82ca9d', '#ffc658'],
+                data: [totalJob, totalUsers],
+                backgroundColor: ['#8884d8', '#82ca9d', ],
                 borderWidth: 1,
             },
         ],
@@ -225,7 +235,14 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
-
+                                    {/*<td className="py-3 px-4 text-center">*/}
+                                    {/*    <PrimaryButton*/}
+                                    {/*        onClick={() => toggleUserDetails(user.id)}*/}
+                                    {/*        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"*/}
+                                    {/*    >*/}
+                                    {/*        {expandedUser === user.id ? "Hide Details" : "View Details"}*/}
+                                    {/*    </PrimaryButton>*/}
+                                    {/*</td>*/}
                                 </tr>
                             ))}
                             </tbody>

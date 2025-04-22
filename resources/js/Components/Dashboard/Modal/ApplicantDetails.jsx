@@ -18,6 +18,8 @@ export default function ApplicantDetails({ user, onClose }) {
         );
     }
 
+    console.log("certi", user.certifications);
+
     const statusClasses = {
         accepted: "text-green-600",
         rejected: "text-red-600",
@@ -119,26 +121,28 @@ export default function ApplicantDetails({ user, onClose }) {
                 </div>
             )}
 
-            {/* Certification */}
-            {user.certificates && user.certificates.length > 0 && (
+
+            {user.certifications && user.certifications.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Certificates</h3>
                     <table className="table-auto w-full border-collapse">
                         <thead className="bg-gray-100 text-left">
                         <tr>
-                            <th className="py-2 px-4">title</th>
-                            <th className="py-2 px-4">description</th>
-                            <th className="py-2 px-4">year</th>
+                            <th className="py-2 px-4">Title</th>
+                            <th className="py-2 px-4">Description</th>
+                            <th className="py-2 px-4">Year</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {user.certificates.map((certificate, index) => (
+                        {user.certifications.map((certificate, index) => (
                             <tr key={certificate.id || index} className="border-b">
                                 <td className="py-2 px-4">
-                                    {certificate.title || certificate.description || "N/A"}
+                                    {certificate.title }
                                 </td>
+                                <td className="py-2 px-4">{certificate.description || "N/A"}</td>
                                 <td className="py-2 px-4">
-                                    {certificate.year}
+                                    {certificate.year
+                                    }
                                 </td>
                             </tr>
                         ))}
