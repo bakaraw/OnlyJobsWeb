@@ -14,6 +14,7 @@ return new class extends Migration
             $table->text('job_description');
             $table->string('job_location');
             $table->string('job_type');
+            $table->enum('salary_type', ['Fixed', 'Range']);
             $table->decimal('min_salary', 10, 2);
             $table->decimal('max_salary', 10, 2)->nullable();
             $table->integer('min_experience_years');

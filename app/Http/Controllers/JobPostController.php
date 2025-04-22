@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Models\Application;
 use App\Models\JobPost;
 use App\Models\JobStatus;
@@ -47,6 +48,7 @@ class JobPostController extends Controller
             'job_description'      => 'required|string',
             'job_location'         => 'required|string|max:255',
             'job_type'             => 'required|string|max:255',
+            'salary_type'          => ['required', Rule::in(['Fixed', 'Range'])],
             'min_salary'           => 'required|numeric',
             'max_salary'           => 'nullable|numeric',
             'min_experience_years' => 'required|integer',

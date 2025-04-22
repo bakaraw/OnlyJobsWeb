@@ -21,11 +21,14 @@ class JobMatcher
             return $job;
         });
 
-        /*return $scoredJobs->sortByDesc('match_score')->take(10)->values();*/
-        return $scoredJobs
-            ->filter(fn($job) => $job->match_score > 0)
-            ->sortByDesc('match_score')
-            ->take(10)
-            ->values();
+        // this one sorts the jobs based on the score.
+        return $scoredJobs->sortByDesc('match_score')->take(10)->values();
+
+        // this neglects all jobs with a score of 0
+        /*return $scoredJobs*/
+        /*    ->filter(fn($job) => $job->match_score > 0)*/
+        /*    ->sortByDesc('match_score')*/
+        /*    ->take(10)*/
+        /*    ->values();*/
     }
 }

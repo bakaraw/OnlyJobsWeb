@@ -24,6 +24,7 @@ function CreateJobPostModal({ className, show, onClose }) {
         job_description: "",
         job_location: "",
         job_type: "Full Time",
+        salary_type: "Range",
         min_salary: "",
         max_salary: "",
         min_experience_years: "1",
@@ -245,13 +246,13 @@ function CreateJobPostModal({ className, show, onClose }) {
                             <div className="col-span-1">
                                 <select
                                     className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
-                                    value={isSalaryFixed}
-                                    onChange={(e) => setIsSalaryFixed(!isSalaryFixed)}
+                                    value={data.salary_type}
+                                    onChange={(e) => setData('salary_type', e.target.value)}
                                 >
-                                    <option value={true}>
+                                    <option value="Fixed">
                                         Fixed
                                     </option>
-                                    <option value={false}>
+                                    <option value="Range">
                                         Range
                                     </option>
                                 </select>
@@ -267,7 +268,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 <InputError message={errors.min_salary} />
                             </div>
                             {
-                                !isSalaryFixed && (<div className="col-span-2 mt-1">
+                                data.salary_type !== "Fixed" && (<div className="col-span-2 mt-1">
                                     <TextInput
                                         className="mt-1 block w-full"
                                         placeholder="maximum"

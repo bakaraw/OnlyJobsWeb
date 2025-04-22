@@ -106,7 +106,7 @@ export default function DashboardContent({
                     //</Link>
                 }
                 <PrimaryButton onClick={() => setIsModalOpen(true)}>
-                    Create Job2
+                    Create Job
                 </PrimaryButton>
                 <CreateJobPostModal
                     show={isModalOpen}
