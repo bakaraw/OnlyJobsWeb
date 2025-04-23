@@ -20,9 +20,7 @@ return new class extends Migration
             $table->foreignId('job_post_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('requirement_id');
             $table->foreign('requirement_id')->references('requirement_id')->on('requirements')->onDelete('cascade');
-
             $table->timestamps();
-
             $table->unique(['job_post_id', 'requirement_id']);
         });
     }
@@ -35,4 +33,3 @@ return new class extends Migration
         Schema::dropIfExists('job_post_requirement');
     }
 };
-
