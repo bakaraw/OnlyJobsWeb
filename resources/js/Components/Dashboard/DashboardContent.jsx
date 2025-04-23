@@ -86,19 +86,19 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         }
     };
 
-    const chartData = {
-        labels: jobs.map((job) => job.job_title),
-        datasets: [
-            {
-                label: "Job Views",
-                data: jobs.map((job) => job.views),
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-            },
-        ],
-    };
-
+    // const chartData = {
+    //     labels: jobs.map((job) => job.job_title),
+    //     datasets: [
+    //         {
+    //             label: "Job Views",
+    //             data: jobs.map((job) => job.views),
+    //             backgroundColor: "rgba(75, 192, 192, 0.2)",
+    //             borderColor: "rgba(75, 192, 192, 1)",
+    //             borderWidth: 1,
+    //         },
+    //     ],
+    // };
+    //
 
 
 
@@ -115,19 +115,19 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
 
 
             <div className="space-y-6">
-                <DashboardCard>
-                    <div className="flex-grow flex items-end">
-                        <Bar
-                            data={chartData}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                            }}
-                        />
-                    </div>
+                {/*<DashboardCard>*/}
+                {/*    <div className="flex-grow flex items-end">*/}
+                {/*        <Bar*/}
+                {/*            data={chartData}*/}
+                {/*            options={{*/}
+                {/*                responsive: true,*/}
+                {/*                maintainAspectRatio: false,*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*    </div>*/}
 
 
-                </DashboardCard>
+                {/*</DashboardCard>*/}
 
 
 
