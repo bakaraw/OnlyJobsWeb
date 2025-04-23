@@ -1,7 +1,13 @@
 import React, { useState } from "react";
+import DashboardCard from "./DashboardCard.jsx";
+import DangerButton from "@/Components/DangerButton.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import ApplicantDetails from "./ApplicantDetails.jsx";
+
 
 export default function ApplicantCard({ users }) {
     const [expandedUser, setExpandedUser] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState("all");
 
     if (!users || users.length === 0) {
         return <div className="p-6 bg-white rounded-lg shadow">No applicants found.</div>;
@@ -15,166 +21,113 @@ export default function ApplicantCard({ users }) {
         }
     };
 
+    // Filter applicants based on selected status
+    const filteredUsers = users.filter(user => {
+        if (selectedStatus === "all") return true;
+        return user.applications && user.applications.some(app =>
+            app.status.toLowerCase() === selectedStatus.toLowerCase()
+        );
+    });
+
+    const statusClasses = {
+        accepted: 'text-green-600',
+        rejected: 'text-red-600',
+        qualified: 'text-blue-600',
+        pending: 'text-yellow-600'
+    };
+
     return (
-        <div>
-            <h2 className="text-2xl font-bold mb-4">Applicants</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {users.map((user) => (
-                    <div key={user.id} className="border p-4 rounded-lg shadow-md bg-white">
-                        {/* Basic User Info */}
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold">
-                                {user.first_name}
-                                {user.middle_name ? user.middle_name[0] + ". " : ""}
-                                {user.last_name}
-                                {user.suffix ? ", " + user.suffix : ""}
-                            </h3>
-                            <button
-                                onClick={() => toggleUserDetails(user.id)}
-                                className="text-blue-500 hover:text-blue-700"
-                            >
-                                {expandedUser === user.id ? "Hide Details" : "View Details"}
-                            </button>
-                        </div>
+        <div className="w-full px-4">
+            <h3 className="text-xl font-semibold mb-4">Applicants</h3>
 
-                        <p className="text-sm text-gray-600">Email: {user.email}</p>
-                        <p className="text-sm text-gray-600">Contact: {user.contact_number}</p>
-
-                        <div className="mt-3">
-                            <h4 className="font-semibold text-gray-700">Applied Jobs:</h4>
-                            {user.applications && user.applications.length > 0 ? (
-                                <ul className="list-disc list-inside text-sm">
-                                    {user.applications.map((application) => (
-                                        <li key={application.id}>
-                                            {application.job_post?.job_title || "Unknown Job"} -
-                                            <span className={`ml-1 ${
-                                                application.status === 'accepted' ? 'text-green-600' :
-                                                    application.status === 'rejected' ? 'text-red-600' :
-                                                        application.status === 'qualified' ? 'text-blue-600' :
-                                                            'text-yellow-600'
-                                            }`}>
-                                                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-sm text-gray-500">No jobs applied</p>
-                            )}
-                        </div>
-
-                        {/* Expandable Details */}
-                        {expandedUser === user.id && (
-                            <div className="mt-4 border-t pt-3">
-                                {/* Personal Details */}
-                                <div className="mb-3">
-                                    <h4 className="font-semibold text-gray-700">Personal Details:</h4>
-                                    <p className="text-sm">Gender: {user.gender || 'Not specified'}</p>
-                                    <p className="text-sm">Birthdate: {user.birthdate ? new Date(user.birthdate).toLocaleDateString() : 'Not specified'}</p>
-
-                                    {/* Address */}
-                                    {user.address && (
-                                        <div className="mt-1">
-                                            <p className="text-sm">
-                                                Address: {[
-                                                user.address.street_address,
-                                                user.address.barangay,
-                                                user.address.city,
-                                                user.address.province,
-                                                user.address.postal_code
-                                            ].filter(Boolean).join(', ')}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Education */}
-                                {user.educations && user.educations.length > 0 && (
-                                    <div className="mb-3">
-                                        <h4 className="font-semibold text-gray-700">Education:</h4>
-                                        <ul className="list-disc list-inside text-sm">
-                                            {user.educations.map((edu) => (
-                                                <li key={edu.id}>
-                                                    {edu.degree || edu.degree} - {edu.school}{' '}
-                                                    ({edu.start_year}{edu.end_year ? ` - ${edu.end_year}` : ' - Present'})
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {/* Work History */}
-                                {user.work_histories && user.work_histories.length > 0 && (
-                                    <div className="mb-3">
-                                        <h4 className="font-semibold text-gray-700">Work Experience:</h4>
-                                        <ul className="list-disc list-inside text-sm">
-                                            {user.work_histories.map((work) => (
-                                                <li key={work.id}>
-                                                    {work.job_title}
-                                                    {work.position} at {work.employer}{' '}
-                                                    ({work.start_date ? new Date(work.start_date).toLocaleDateString() : '?'} -
-                                                    {work.end_date ? new Date(work.end_date).toLocaleDateString() : 'Present'})
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {/* Requirements/Documents */}
-                                {user.requirements && user.requirements.length > 0 && (
-                                    <div className="mb-3">
-                                        <h4 className="font-semibold text-gray-700">Requirements/Documents:</h4>
-                                        <ul className="list-disc list-inside text-sm">
-                                            {user.requirements.map((req) => (
-                                                <li key={req.id}>
-                                                    {req.name} - {req.status || 'Submitted'}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {/* Applied Jobs (Detailed) */}
-                                {user.applications && user.applications.length > 0 && (
-                                    <div className="mb-3">
-                                        <h4 className="font-semibold text-gray-700">Job Applications (Detailed):</h4>
-                                        <ul className="list-disc list-inside text-sm">
-                                            {user.applications.map((application) => (
-                                                <li key={application.id}>
-                                                    <span className="font-medium">{application.job_post?.job_title || "Unknown Job"}</span>
-                                                    <p className="text-xs text-gray-500 ml-5">
-                                                        Status: <span className={`${
-                                                        application.status === 'accepted' ? 'text-green-600' :
-                                                            application.status === 'rejected' ? 'text-red-600' :
-                                                                application.status === 'qualified' ? 'text-blue-600' :
-                                                                    'text-yellow-600'
-                                                    }`}>
-                                                            {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                                                        </span>
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 ml-5">
-                                                        Applied on: {new Date(application.created_at).toLocaleDateString()}
-                                                    </p>
-                                                    {application.remarks && (
-                                                        <p className="text-xs text-gray-500 ml-5">
-                                                            Remarks: {application.remarks}
-                                                        </p>
-                                                    )}
-                                                    {application.job_post?.job_requirements && (
-                                                        <p className="text-xs text-gray-500 ml-5">
-                                                            Requirements: {application.job_post.job_requirements}
-                                                        </p>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+            {/* Filter Buttons */}
+            <div className="flex space-x-2 mb-4">
+                {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
+                    <button
+                        key={status}
+                        onClick={() => setSelectedStatus(status)}
+                        className={`px-4 py-2 rounded-full border transition-all ${
+                            selectedStatus === status
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </button>
                 ))}
             </div>
+
+            <DashboardCard title="Applicant Overview">
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-3 px-4">Name</th>
+                            <th className="py-3 px-4">Email</th>
+                            <th className="py-3 px-4">Contact</th>
+                            <th className="py-3 px-4">Applied Jobs</th>
+                            <th className="py-3 px-4">Visited Jobs</th>
+                            <th className="py-3 px-4 text-center">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {filteredUsers.map((user, index) => (
+                            <tr key={user.id} className="border-b hover:bg-gray-50 cursor-pointer">
+                                <td className="py-3 px-4">
+                                    <div className="flex items-center">
+                                        <span className="mr-2 text-gray-500">{index + 1}.</span>
+                                        {user.first_name}
+                                        {user.middle_name ? ` ${user.middle_name[0]}. ` : " "}
+                                        {user.last_name}
+                                        {user.suffix ? `, ${user.suffix}` : ""}
+                                    </div>
+                                </td>
+                                <td className="py-3 px-4">{user.email}</td>
+                                <td className="py-3 px-4">{user.contact_number}</td>
+                                <td className="py-3 px-4">
+                                    {user.applications && user.applications.length > 0 ? (
+                                        <span>{user.applications.length} job(s)</span>
+                                    ) : (
+                                        <span className="text-gray-500">No jobs applied</span>
+                                    )}
+                                </td>
+                                <td className="py-3 px-4">sample</td>
+
+                                <td className="py-3 px-4 text-center">
+                                    {user.applications && user.applications.length > 0 ? (
+                                        <div className="flex flex-col space-y-1">
+                                            {user.applications.map(app => (
+                                                <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>
+                                                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                                    </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-500">-</span>
+                                    )}
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                    <PrimaryButton
+                                        onClick={() => toggleUserDetails(user.id)}
+                                        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                                    >
+                                        {expandedUser === user.id ? "Hide Details" : "View Details"}
+                                    </PrimaryButton>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+            </DashboardCard>
+
+             {expandedUser && (() => {
+                const user = users.find(u => u.id === expandedUser);
+                return user ? (
+                      <ApplicantDetails
+                user={user}
+                   onClose={() => setExpandedUser(null)}
+                  />
+                ) : null;
+              })()}
         </div>
     );
 }

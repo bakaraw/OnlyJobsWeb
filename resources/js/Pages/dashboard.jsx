@@ -25,7 +25,7 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
                     <DashboardContent jobs={jobs} placements={placements} totalViews={totalViews} totalUsers={totalUsers}
                         totalJob={totalJob} applicants={applicants} auth={auth} />
                 ) : activeView === "applicants" ? (
-                    <ApplicantCard users={users} auth={auth} />
+                    <ApplicantCard users={users} applicants={applicants} auth={auth} />
                 ) : (
 
                     <div >

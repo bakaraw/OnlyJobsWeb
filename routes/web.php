@@ -58,6 +58,12 @@ Route::delete('/documents/{document}', [JobSeekerDocumentController::class, 'des
 //Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
 //Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
 //Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
+//// Requirements
+//Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
+//Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
+//Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
+//Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
+
 
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');

@@ -258,6 +258,7 @@ class JobPostController extends Controller
             'address_id',
             'created_at'
         )
+            ->where('id', '!=', 1)
             ->with([
                 'address',
                 'applications' => function ($query) {
@@ -281,7 +282,8 @@ class JobPostController extends Controller
                 'applications.jobPost.requirements', // Get job post requirements
                 'requirements',   // Load user's own requirements
                 'educations',     // Load user education history
-                'workHistories'   // Load user work history
+                'workHistories',   // Load user work history
+                'certifications'
             ])
             ->get();
 

@@ -25,6 +25,7 @@ import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelin
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 import CreateJobPostModal from "./Modal/CreateJobPostModal.jsx";
 
+
 ChartJS.register(
     ArcElement, Tooltip, Legend,
     CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
@@ -38,6 +39,16 @@ export default function DashboardContent({
     totalUsers,
     totalJob,
 }) {
+
+    // function toggleUserDetails(id) {
+    //
+    //     if (expandedUser === userId) {
+    //         setExpandedUser(null);
+    //     } else {
+    //         setExpandedUser(userId);
+    //     }
+    //
+    // }
 
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
@@ -57,11 +68,11 @@ export default function DashboardContent({
     }, [auth]);
 
     const doughnutData = {
-        labels: ['Jobs', 'Users', 'Views'],
+        labels: ['Jobs', 'Users'],
         datasets: [
             {
-                data: [totalJob, totalUsers, totalViews],
-                backgroundColor: ['#8884d8', '#82ca9d', '#ffc658'],
+                data: [totalJob, totalUsers],
+                backgroundColor: ['#8884d8', '#82ca9d',],
                 borderWidth: 1,
             },
         ],
@@ -199,7 +210,7 @@ export default function DashboardContent({
                                     <th className="py-2 px-4 text-left">Status</th>
                                     <th className="py-2 px-4 text-left">Remarks</th>
                                 </tr>
-                            </thead>
+                            </thead >
                             <tbody>
                                 {filteredApplicants.map((application) => (
                                     <tr key={application.id} className="border-t hover:bg-gray-50">
@@ -216,16 +227,15 @@ export default function DashboardContent({
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
-                    </div>
+                        </table >
+                    </div >
                 ) : (
                     <p className="text-gray-500">No applicants found.</p>
-                )}
-            </DashboardCard>
+                )
+                }
 
-            {showDetails && (
-                <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
-            )}
-        </div>
+            </DashboardCard >
+
+        </div >
     );
 }
