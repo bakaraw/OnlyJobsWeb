@@ -20,9 +20,6 @@ export default function MainPageLayout({ header, children }) {
         case 'contact_us':
             pageName = 'Contact Us';
             break;
-        default:
-            pageName = 'Page not found';
-            break;
     }
 
     return (

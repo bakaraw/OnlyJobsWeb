@@ -23,8 +23,8 @@ class JobPost extends Model
         'skills',
         'company',
         'user_id',
-        'views'
-
+        'views',
+        'salary_type'
     ];
 
     public function status()
@@ -42,18 +42,24 @@ class JobPost extends Model
         return $this->belongsToMany(Requirement::class, 'job_post_requirement', 'job_post_id', 'requirement_id')
             ->select('requirements.requirement_id', 'requirements.requirement_name');
     }
+
+    /*public function skills()*/
+    /*{*/
+    /*    return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')*/
+    /*        ->select('skills.skill_id', 'skills.skill_name');*/
+    /*}*/
+
     public function skills()
     {
-        return $this->belongsToMany(Skill::class, 'job_post_skill', 'job_post_id', 'skill_id')
-            ->select('skills.skill_id', 'skills.skill_name');
+        return $this->hasMany(JobPostSkill::class);
     }
-
 
     public function placements()
     {
         return $this->hasMany(Placement::class);
     }
-    public function applications() {
+    public function applications()
+    {
         return $this->hasMany(Application::class);
     }
 

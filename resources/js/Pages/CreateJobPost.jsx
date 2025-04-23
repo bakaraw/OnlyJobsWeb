@@ -101,14 +101,15 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
     };
 
     return (
-        <GuestLayout width="sm:max-w-2xl">
+        <div>
             <Head title="Create Job Post" />
             <div className="mt-6 text-primary text-4xl font-bold mb-6">Create Job</div>
             <form onSubmit={handleSubmit}>
                 {/* Job Title Field */}
-                <InputLabel htmlFor="job_title"/>
+                <InputLabel htmlFor="job_title" />
                 <div className="grid grid-cols-6 gap-3">
                     <div className="col-span-6 flex flex-col mb-4">
+                        <InputLabel htmlFor="job_type" value="Job Title" />
                         <TextInput
                             id="job_title"
                             name="job_title"
@@ -123,6 +124,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                     </div>
                     {/* Company Field */}
                     <div className="col-span-2 flex flex-col">
+                        <InputLabel htmlFor="job_type" value="Company" />
                         <TextInput
                             id="company"
                             name="company"
@@ -137,6 +139,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
 
                     {/* Job Location Field */}
                     <div className="col-span-2 flex flex-col">
+                        <InputLabel htmlFor="job_type" value="Location" />
                         <TextInput
                             id="job_location"
                             name="job_location"
@@ -150,15 +153,14 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                     </div>
 
                     <div className="col-span-2 flex flex-col">
-                        <InputLabel htmlFor="job_type"  />
+                        <InputLabel htmlFor="job_type" value="Job type" />
                         <select
                             id="job_type"
                             name="job_type"
                             value={data.job_type}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                            className="block w-full border-gray-300 rounded-md shadow-sm"
                             onChange={(e) => setData("job_type", e.target.value)}
                         >
-                            <option value="">Job Type</option>
                             <option value="Full Time">Full Time</option>
                             <option value="Part Time">Part Time</option>
                             <option value="Contract">Contract</option>
@@ -172,7 +174,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
 
                     {/* Job Description Field */}
                     <div className="col-span-6">
-                        <InputLabel htmlFor="job_description"  />
+                        <InputLabel htmlFor="job_description" />
                         <textarea
                             id="job_description"
                             name="job_description"
@@ -193,7 +195,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
 
                     {/* Degree Required */}
                     <div className="col-span-3">
-                        <InputLabel htmlFor="degree_id"  />
+                        <InputLabel htmlFor="degree_id" />
                         <select
                             id="degree_id"
                             name="degree_id"
@@ -214,7 +216,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                     </div>
 
                     <div className="col-span-3">
-                        <InputLabel htmlFor="min_experience_years"  />
+                        <InputLabel htmlFor="min_experience_years" />
                         <select
                             id="Minimum Experience"
                             name="Minimum Experience"
@@ -240,30 +242,30 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                 <div className="mt-3 grid grid-cols-9 gap-3">
 
 
-                <div className="col-span-3">
-                    <InputLabel htmlFor="min_salary" value="Minimum Salary" />
-                    <TextInput
-                        id="min_salary"
-                        name="min_salary"
-                        placeholder="₱ 20,000"
-                        value={data.min_salary}
-                        className="mt-1 block w-full"
-                        onChange={(e) => setData("min_salary", e.target.value)}
-                    />
-                    <InputError message={errors.min_salary} className="mt-2" />
-                </div>
-                <div className="col-span-3">
-                    <InputLabel htmlFor="max_salary" value="Maximum Salary" />
-                    <TextInput
-                        id="max_salary"
-                        name="max_salary"
-                        placeholder="₱ 50,000"
-                        value={data.max_salary}
-                        className="mt-1 block w-full"
-                        onChange={(e) => setData("max_salary", e.target.value)}
-                    />
-                    <InputError message={errors.max_salary} className="mt-2" />
-                </div>
+                    <div className="col-span-3">
+                        <InputLabel htmlFor="min_salary" value="Minimum Salary" />
+                        <TextInput
+                            id="min_salary"
+                            name="min_salary"
+                            placeholder="₱ 20,000"
+                            value={data.min_salary}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData("min_salary", e.target.value)}
+                        />
+                        <InputError message={errors.min_salary} className="mt-2" />
+                    </div>
+                    <div className="col-span-3">
+                        <InputLabel htmlFor="max_salary" value="Maximum Salary" />
+                        <TextInput
+                            id="max_salary"
+                            name="max_salary"
+                            placeholder="₱ 50,000"
+                            value={data.max_salary}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData("max_salary", e.target.value)}
+                        />
+                        <InputError message={errors.max_salary} className="mt-2" />
+                    </div>
 
                 </div>
 
@@ -321,8 +323,8 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                         className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
                                         onClick={() => handleRemoveSkill(skill.skill_id)}
                                     >
-                                {skill.skill_name} &times;
-                              </span>
+                                        {skill.skill_name} &times;
+                                    </span>
                                 ) : null;
                             })}
 
@@ -335,8 +337,8 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                         setCustomSkills((prev) => prev.filter((_, i) => i !== index))
                                     }
                                 >
-                              {skill} &times;
-                            </span>
+                                    {skill} &times;
+                                </span>
                             ))}
                         </div>
                     </div>
@@ -393,8 +395,8 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                         className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
                                         onClick={() => handleRemoveRequirement(req.requirement_id)}
                                     >
-                                    {req.requirement_name} &times;
-                                  </span>
+                                        {req.requirement_name} &times;
+                                    </span>
                                 ) : null;
                             })}
 
@@ -406,13 +408,12 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                                         setCustomRequirements((prev) => prev.filter((_, i) => i !== index))
                                     }
                                 >
-                              {requirement} &times;
-                            </span>
+                                    {requirement} &times;
+                                </span>
                             ))}
                         </div>
                     </div>
                 </div>
-
 
                 {/* Submit Button */}
                 <div className="flex justify-center w-full">
@@ -425,6 +426,6 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                 </div>
 
             </form>
-        </GuestLayout>
+        </div>
     );
 }

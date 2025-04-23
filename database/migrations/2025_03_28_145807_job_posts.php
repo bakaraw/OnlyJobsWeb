@@ -14,8 +14,9 @@ return new class extends Migration
             $table->text('job_description');
             $table->string('job_location');
             $table->string('job_type');
+            $table->enum('salary_type', ['Fixed', 'Range']);
             $table->decimal('min_salary', 10, 2);
-            $table->decimal('max_salary', 10, 2);
+            $table->decimal('max_salary', 10, 2)->nullable();
             $table->integer('min_experience_years');
             $table->string('company');
 
@@ -23,11 +24,8 @@ return new class extends Migration
             $table->unsignedBigInteger('degree_id')->nullable();
 
             $table->unsignedBigInteger('views')->default(0);
-
-
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
             $table->foreign('status_id')->references('id')->on('job_statuses')->onDelete('set null');
             $table->foreign('degree_id')->references('id')->on('degrees')->onDelete('set null');
         });

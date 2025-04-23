@@ -50,16 +50,14 @@ class User extends Authenticatable
         return $this->belongsTo(Address::class);
     }
 
-
-
-
     public function appliedJobs()
     {
         return $this->belongsToMany(JobPost::class, 'applications', 'user_id', 'job_post_id')
             ->withTimestamps();
     }
 
-    public function applications() {
+    public function applications()
+    {
         return $this->hasMany(Application::class);
     }
 
@@ -81,5 +79,10 @@ class User extends Authenticatable
     public function workHistories()
     {
         return $this->hasMany(WorkHistory::class);
+    }
+
+    public function userSkills()
+    {
+        return $this->hasMany(UserSkill::class);
     }
 }

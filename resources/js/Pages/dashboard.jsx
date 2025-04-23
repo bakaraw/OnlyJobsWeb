@@ -5,8 +5,7 @@ import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import NavBar from "@/Components/NavBar.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
-export default function dashboard({ jobs, placements, auth, totalApplicants
-                                      , users, totalViews, totalUsers, totalJob, applicants}) {
+export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
 
     const [activeView, setActiveView] = useState("dashboard");
 
@@ -23,8 +22,8 @@ export default function dashboard({ jobs, placements, auth, totalApplicants
 
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
-                    <DashboardContent jobs={jobs} placements={placements}  totalViews={totalViews} totalUsers={totalUsers}
-                                      totalJob={totalJob} applicants={applicants}  auth={auth}/>
+                    <DashboardContent jobs={jobs} placements={placements} totalViews={totalViews} totalUsers={totalUsers}
+                        totalJob={totalJob} applicants={applicants} auth={auth} />
                 ) : activeView === "applicants" ? (
                     <ApplicantCard users={users} applicants={applicants} auth={auth} />
                 ) : (
@@ -34,7 +33,7 @@ export default function dashboard({ jobs, placements, auth, totalApplicants
                         {auth?.user ? (
                             <div className="w-full">
                                 {jobs && jobs.length > 0 ? (
-                                    <JobList jobs={jobs} applicants={applicants} totalApplicants={totalApplicants}/>
+                                    <JobList jobs={jobs} applicants={applicants} totalApplicants={totalApplicants} />
                                 ) : (
                                     <p className="text-gray-500">No job postings available.</p>
                                 )}
