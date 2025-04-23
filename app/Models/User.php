@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Educations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Educations;
 
 class User extends Authenticatable
 {
@@ -49,14 +50,16 @@ class User extends Authenticatable
         return $this->belongsTo(Address::class);
     }
 
+
+
+
     public function appliedJobs()
     {
         return $this->belongsToMany(JobPost::class, 'applications', 'user_id', 'job_post_id')
             ->withTimestamps();
     }
 
-    public function applications()
-    {
+    public function applications() {
         return $this->hasMany(Application::class);
     }
 
@@ -70,18 +73,13 @@ class User extends Authenticatable
         return $this->hasMany(Educations::class);
     }
 
-    public function workHistories()
-    {
-        return $this->hasMany(WorkHistory::class);
-    }
-
-    public function certifications()
+    public function certifications(): HasMany
     {
         return $this->hasMany(Certification::class);
     }
 
-    public function userSkills()
+    public function workHistories()
     {
-        return $this->hasMany(UserSkill::class);
+        return $this->hasMany(WorkHistory::class);
     }
 }

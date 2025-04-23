@@ -21,11 +21,23 @@ import {
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 
+
 ChartJS.register(
     ArcElement, Tooltip, Legend,
     CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
     ChartDataLabels
 );
+
+// function toggleUserDetails(id) {
+//
+//     if (expandedUser === userId) {
+//         setExpandedUser(null);
+//     } else {
+//         setExpandedUser(userId);
+//     }
+//
+// }
+
 export default function DashboardContent({ auth, jobs, applicants, totalViews, totalUsers, totalJob }) {
 
     const [showDetails, setShowDetails] = useState(false);
@@ -36,6 +48,11 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
         : applicants.filter((app) => app.status === selectedStatus
         );
 
+
+
+
+
+
     useEffect(() => {
         if (!auth.user) {
             router.visit('/login');
@@ -43,12 +60,13 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
     }, [auth]);
 
 
+
     const doughnutData = {
-        labels: ['Jobs', 'Users', 'Views'],
+        labels: ['Jobs', 'Users'],
         datasets: [
             {
-                data: [totalJob, totalUsers, totalViews],
-                backgroundColor: ['#8884d8', '#82ca9d', '#ffc658'],
+                data: [totalJob, totalUsers],
+                backgroundColor: ['#8884d8', '#82ca9d', ],
                 borderWidth: 1,
             },
         ],
@@ -201,6 +219,7 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                 <th className="py-2 px-4 text-left">Date Placed</th>
                                 <th className="py-2 px-4 text-left">Status</th>
                                 <th className="py-2 px-4 text-left">Remarks</th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -216,6 +235,14 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                                     <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
                                     <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                     <td className="py-2 px-4 capitalize">{application.remarks}</td>
+                                    {/*<td className="py-3 px-4 text-center">*/}
+                                    {/*    <PrimaryButton*/}
+                                    {/*        onClick={() => toggleUserDetails(user.id)}*/}
+                                    {/*        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"*/}
+                                    {/*    >*/}
+                                    {/*        {expandedUser === user.id ? "Hide Details" : "View Details"}*/}
+                                    {/*    </PrimaryButton>*/}
+                                    {/*</td>*/}
                                 </tr>
                             ))}
                             </tbody>
@@ -224,11 +251,9 @@ export default function DashboardContent({ auth, jobs, applicants, totalViews, t
                 ) : (
                     <p className="text-gray-500">No applicants found.</p>
                 )}
+
             </DashboardCard>
 
-            {showDetails && (
-                <JobList job={selectedJob} placements={selectedJob.placements || []} onClose={() => setShowDetails(false)} />
-            )}
         </div>
     );
 }
