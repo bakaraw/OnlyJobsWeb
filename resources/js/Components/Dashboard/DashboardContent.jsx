@@ -126,17 +126,6 @@ export default function DashboardContent({
             </div>
 
             <div className="space-y-6">
-                <DashboardCard>
-                    <div className="flex-grow flex items-end">
-                        <Bar
-                            data={chartData}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                            }}
-                        />
-                    </div>
-                </DashboardCard>
                 <div className="flex flex-row items-start mb-4 space-x-4">
                     <ApplicantPipelineCard
                         applications={applicants}

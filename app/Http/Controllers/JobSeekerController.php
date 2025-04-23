@@ -6,6 +6,8 @@ use App\Models\JobPost;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class JobSeekerController extends Controller
 {
@@ -70,19 +72,39 @@ class JobSeekerController extends Controller
         ]);
     }
 
-    public function show()
+    public function show(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+
         if (Auth::check()) {
             $user = Auth::user();
-            $jobs = app('App\Services\JobMatcher')->matchJobs($user);
+            // If your JobMatcher returns a query or paginated collection, modify here accordingly
+            $jobQuery = app('App\Services\JobMatcher')->getQuery($user);
         } else {
-            $jobs = JobPost::with(['skills', 'requirements'])
-                ->latest()
-                ->take(10)
-                ->get();
+            $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
         }
 
-        $formattedJobs = $jobs->map(function ($job) {
+        // Apply filters server-side
+        if ($request->filled('experience')) {
+            $expFilters = $request->input('experience');
+            if (!is_array($expFilters)) {
+                $expFilters = [$expFilters];
+            }
+            $jobQuery = $jobQuery->whereIn('min_experience_years', $expFilters);
+        }
+
+        if ($request->filled('job_type')) {
+            $jobTypes = $request->input('job_type');
+            if (!is_array($jobTypes)) {
+                $jobTypes = [$jobTypes];
+            }
+            $jobQuery = $jobQuery->whereIn('job_type', $jobTypes);
+        }
+
+        $paginated = $jobQuery->paginate($perPage, ['*'], 'page', $page);
+
+        $formattedJobs = $paginated->getCollection()->map(function ($job) {
             return [
                 'id' => $job->id,
                 'job_title' => $job->job_title,
@@ -95,23 +117,25 @@ class JobSeekerController extends Controller
                 'degree_id' => $job->degree_id,
                 'company' => $job->company,
                 'match_score' => $job->match_score ?? null,
-                'skills' => $job->skills->map(function ($skill) {
-                    return [
-                        'skill_id' => $skill->skill_id ?? $skill->pivot->skill_id ?? null,
-                        'skill_name' => $skill->skill_name ?? $skill->pivot->skill_name ?? null,
-                    ];
-                }),
-                'requirements' => $job->requirements->map(function ($req) {
-                    return [
-                        'requirement_id' => $req->requirement_id,
-                        'requirement_name' => $req->requirement_name,
-                    ];
-                }),
+                'skills' => $job->skills->map(fn($skill) => [
+                    'skill_id' => $skill->skill_id ?? $skill->pivot->skill_id ?? null,
+                    'skill_name' => $skill->skill_name ?? $skill->pivot->skill_name ?? null,
+                ]),
+                'requirements' => $job->requirements->map(fn($req) => [
+                    'requirement_id' => $req->requirement_id,
+                    'requirement_name' => $req->requirement_name,
+                ]),
             ];
         });
 
         return Inertia::render('FindWork', [
             'jobs' => $formattedJobs,
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'next_page_url' => $paginated->nextPageUrl(),
+            ],
+            'filters' => $request->only(['experience', 'job_type']),
         ]);
     }
 }

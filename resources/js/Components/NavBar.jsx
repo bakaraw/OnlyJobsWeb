@@ -19,7 +19,8 @@ export default function NavBar() {
         <nav className="fixed top-0 left-0 w-full bg-dark shadow-md z-50">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div className="text-white">
-                    logo
+                    <img src="/images/logo.png" alt="logo" className="h-10">
+                    </img>
                 </div>
                 <div className="flex space-x-4">
                     {navItems.map((item) => (
