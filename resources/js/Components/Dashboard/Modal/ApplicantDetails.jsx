@@ -1,6 +1,7 @@
 // Modified ApplicantDetails.jsx
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
+import Chip from "@/Components/Chip.jsx";
 
 export default function ApplicantDetails({ user, onClose }) {
     // Add safeguards for possibly missing data
@@ -19,6 +20,8 @@ export default function ApplicantDetails({ user, onClose }) {
     }
 
     console.log("certi", user.certifications);
+    console.log("skills", user.user_skills);
+
 
     const statusClasses = {
         accepted: "text-green-600",
@@ -93,6 +96,32 @@ export default function ApplicantDetails({ user, onClose }) {
                 )}
             </div>
 
+
+
+
+            {user.user_skills && user.user_skills.length > 0 && (
+                <div className="mb-6">
+                    <table className="table-auto w-full ">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Skills</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {user.user_skills.map((skill, index) => (
+                            <tr key={skill.id || index} className="border-b">
+                                <td className="py-2 px-4">{skill.skill_name|| "N/A"}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+
+
             {/* Education */}
             {user.educations && user.educations.length > 0 && (
                 <div className="mb-6">
@@ -106,6 +135,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </tr>
                         </thead>
                         <tbody>
+
                         {user.educations.map((edu, index) => (
                             <tr key={edu.id || index} className="border-b">
                                 <td className="py-2 px-4">{edu.degree || "N/A"}</td>

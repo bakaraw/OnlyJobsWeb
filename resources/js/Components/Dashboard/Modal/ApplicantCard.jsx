@@ -97,8 +97,9 @@ export default function ApplicantCard({ users }) {
                                         <div className="flex flex-col space-y-1">
                                             {user.applications.map(app => (
                                                 <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>
-                                                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                                                    </span>
+                                                {app.job_post && app.job_post.job_title}:
+                                                    {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                                </span>
                                             ))}
                                         </div>
                                     ) : (
