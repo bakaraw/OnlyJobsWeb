@@ -198,7 +198,7 @@ export default function JobDetails({ job_details, applicants }) {
                 {/* Filter Buttons */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
-                        <button
+                        <PrimaryButton
                             key={status}
                             onClick={() => setSelectedStatus(status)}
                             className={`px-4 py-2 rounded-full border transition-all ${
@@ -208,7 +208,7 @@ export default function JobDetails({ job_details, applicants }) {
                             }`}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </button>
+                        </PrimaryButton>
                     ))}
                 </div>
 

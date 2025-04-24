@@ -4,6 +4,7 @@ import JobList from "@/Components/Dashboard/Modal/JobList.jsx";
 import JobDetails from "@/Pages/JobDetails.jsx"; // Import the JobDetails component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
 export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
@@ -51,15 +52,13 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
                 ) : activeView === "jobDetails" && selectedJob ? (
                     // Show job details when a job is selected
                     <div>
-                        <button
+                        <PrimaryButton
                             onClick={handleBackToJobs}
                             className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Back to Jobs
-                        </button>
+
+                            Back to Job List
+                        </PrimaryButton>
                         <JobDetails
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
