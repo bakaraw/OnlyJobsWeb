@@ -18,7 +18,7 @@ function CreateJobPostModal({ className, show, onClose }) {
 
     const [isSalaryFixed, setIsSalaryFixed] = useState(false);
 
-    const { data, setData, errors } = useForm({
+    const { data, setData, errors, reset } = useForm({
         job_title: "",
         company: "",
         job_description: "",
@@ -128,6 +128,7 @@ function CreateJobPostModal({ className, show, onClose }) {
             {
                 onSuccess: () => {
                     console.log("Job post created successfully");
+                    reset();
                     onClose(); // close modal if needed
                 },
                 onError: (errors) => {

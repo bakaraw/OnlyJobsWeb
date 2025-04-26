@@ -126,7 +126,6 @@ export default function DashboardContent({
             </div>
 
             <div className="space-y-6">
-                {/*<DashboardCard>*/}
                 {/*    <div className="flex-grow flex items-end">*/}
                 {/*        <Bar*/}
                 {/*            data={chartData}*/}

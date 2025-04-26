@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use PHPUnit\Util\PHP\Job;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Redirect;
 
 class JobPostController extends Controller
 {
@@ -155,16 +156,38 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
+    /*public function destroy($id)*/
+    /*{*/
+    /*    $jobPost = JobPost::findOrFail($id);*/
+    /**/
+    /**/
+    /*    $jobPost->delete();*/
+    /**/
+    /*    return redirect()->route('dashboard')*/
+    /*        ->with('success', 'Job post deleted successfully.');*/
+    /*}*/
+
+    /*public function destroy(JobPost $job)*/
+    /*{*/
+    /*    if (!$job) {*/
+    /*        return response()->json(['error' => 'Job not found'], 404);*/
+    /*    }*/
+    /*    $job->delete();*/
+    /*    return response()->json(['success' => 'Deleted Successfully']);*/
+    /*}*/
     public function destroy($id)
     {
-        $jobPost = JobPost::findOrFail($id);
+        $job = JobPost::find($id);
 
+        if (!$job) {
+            return response()->json(['error' => 'Job not found'], 404);
+        }
 
-        $jobPost->delete();
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Job post deleted successfully.');
+        $job->delete();
+        return response()->json(['success' => 'Deleted successfully']);
     }
+
+
 
     public function showDashboard()
     {
