@@ -1,39 +1,81 @@
 import React, { useState } from "react";
 import Sidebar from "../Components/Dashboard/Sidebar";
-import JobList from "@/Components/Dashboard/Modal/JobList.jsx"; // Job card component
+import JobList from "@/Components/Dashboard/Modal/JobList.jsx";
+import JobDetails from "@/Pages/JobDetails.jsx"; // Import the JobDetails component
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
-import NavBar from "@/Components/NavBar.jsx";
-import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
-export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
+export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
+    const [selectedJobId, setSelectedJobId] = useState(null);
+
+    // Find the selected job if a job ID is set
+    const selectedJob = selectedJobId ? jobs.find(job => job.id === selectedJobId) : null;
 
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);
 
-    return (
+    const handleJobSelect = (jobId) => {
+        setSelectedJobId(jobId);
+        setActiveView("jobDetails"); // Switch to job details view
+    };
 
+    const handleBackToJobs = () => {
+        setSelectedJobId(null);
+        setActiveView("jobs"); // Go back to jobs list
+    };
+
+    return (
         <div className="flex">
             {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
 
-
             <div className="flex-1 p-6">
                 {activeView === "dashboard" ? (
-                    <DashboardContent jobs={jobs} placements={placements} totalViews={totalViews} totalUsers={totalUsers}
-                        totalJob={totalJob} applicants={applicants} auth={auth} />
+                    <DashboardContent
+                        jobs={jobs}
+                        placements={placements}
+                        totalViews={totalViews}
+                        totalUsers={totalUsers}
+                        totalJob={totalJob}
+                        applicants={applicants}
+                        auth={auth}
+                    />
                 ) : activeView === "applicants" ? (
-                    <ApplicantCard users={users} applicants={applicants} auth={auth} />
-                ) : (
+                    <ApplicantCard
+                        users={users}
+                        applicants={applicants}
+                        auth={auth}
+                    />
+                ) : activeView === "jobDetails" && selectedJob ? (
+                    // Show job details when a job is selected
+                    <div>
+                        <PrimaryButton
+                            onClick={handleBackToJobs}
+                            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+                        >
 
-                    <div >
+                            Back to Job List
+                        </PrimaryButton>
+                        <JobDetails
+                            job_details={selectedJob}
+                            applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
+                        />
+                    </div>
+                ) : (
+                    <div>
                         {/* Left: Job Listings (Only Show if Authenticated) */}
                         {auth?.user ? (
                             <div className="w-full">
                                 {jobs && jobs.length > 0 ? (
-                                    <JobList jobs={jobs} applicants={applicants} totalApplicants={totalApplicants} />
+                                    <JobList
+                                        jobs={jobs}
+                                        applicants={applicants}
+                                        totalApplicants={totalApplicants}
+                                        onJobSelect={handleJobSelect}
+                                    />
                                 ) : (
                                     <p className="text-gray-500">No job postings available.</p>
                                 )}
@@ -47,6 +89,5 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
                 )}
             </div>
         </div>
-
     );
 }

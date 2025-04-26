@@ -302,14 +302,57 @@ class JobPostController extends Controller
                         'company'
                     );
                 },
+
                 'applications.jobPost.requirements', // Get job post requirements
                 'requirements',   // Load user's own requirements
                 'educations',     // Load user education history
                 'workHistories',   // Load user work history
-                'certifications'
+                'certifications',
+                'userSkills.skill'
             ])
             ->get();
 
         return $users;
+    }
+
+    public function viewJobPost($id)
+    {
+        $job = JobPost::with([
+            'skills',
+            'requirements:requirement_id,requirement_name',
+            'degree',
+            'status',
+            'applications.user:id,first_name,last_name',
+            'applications'
+        ])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'salary_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'user_id',
+                'status_id',
+                'degree_id',
+                'views',
+                'created_at',
+            )
+            ->findOrFail($id);
+
+        // Increment the view count
+        $job->increment('views');
+
+        // Pull out the applications as a top-level prop
+        $applicants = $job->applications;
+
+        return Inertia::render('JobDetails', [
+            'job_details' => $job,
+            'applicants'   => $applicants,
+        ]);
     }
 }

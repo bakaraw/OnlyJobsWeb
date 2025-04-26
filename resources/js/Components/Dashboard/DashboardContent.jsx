@@ -92,18 +92,18 @@ export default function DashboardContent({
         }
     };
 
-    const chartData = {
-        labels: jobs.map((job) => job.job_title),
-        datasets: [
-            {
-                label: "Job Views",
-                data: jobs.map((job) => job.views),
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-            },
-        ],
-    };
+    // const chartData = {
+    //     labels: jobs.map((job) => job.job_title),
+    //     datasets: [
+    //         {
+    //             label: "Job Views",
+    //             data: jobs.map((job) => job.views),
+    //             backgroundColor: "rgba(75, 192, 192, 0.2)",
+    //             borderColor: "rgba(75, 192, 192, 1)",
+    //             borderWidth: 1,
+    //         },
+    //     ],
+    // };
 
     return (
         <div className="p-6">
@@ -126,6 +126,16 @@ export default function DashboardContent({
             </div>
 
             <div className="space-y-6">
+                {/*    <div className="flex-grow flex items-end">*/}
+                {/*        <Bar*/}
+                {/*            data={chartData}*/}
+                {/*            options={{*/}
+                {/*                responsive: true,*/}
+                {/*                maintainAspectRatio: false,*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*</DashboardCard>*/}
                 <div className="flex flex-row items-start mb-4 space-x-4">
                     <ApplicantPipelineCard
                         applications={applicants}
