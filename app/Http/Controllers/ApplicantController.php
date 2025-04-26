@@ -62,24 +62,25 @@ class ApplicantController extends Controller
     }
 
 
-    public function finalApplicant(Request $request) {
+    public function finalApplicant(Request $request)
+    {
 
-            $validated = $request->validate([
-                'application_id' => 'required|integer',
-            ]);
+        $validated = $request->validate([
+            'application_id' => 'required|integer',
+        ]);
 
-            $applicant = Application::findOrFail($validated['application_id']);
+        $applicant = Application::findOrFail($validated['application_id']);
 
-            if ($applicant->status == 'Qualified') {
-                $applicant->status = 'Accepted';
-                $applicant->save();
-                return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
-            }
-            return response()->json(['success' => false, 'message' => 'Application already submitted']);
-
+        if ($applicant->status == 'Qualified') {
+            $applicant->status = 'Accepted';
+            $applicant->save();
+            return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Application already submitted']);
     }
 
-    public function rejectApplicant(Request $request) {
+    public function rejectApplicant(Request $request)
+    {
         $user = Auth::user();
 
         $user->appliedJobs()
@@ -88,7 +89,8 @@ class ApplicantController extends Controller
             ->update(['rejected' => true]);
     }
 
-    public function pipeLineData(Request $request) {
+    public function pipeLineData(Request $request)
+    {
 
         $pipeline = [
             'total' => Application::count(),
@@ -103,12 +105,10 @@ class ApplicantController extends Controller
             $pipeline['qualified_percentage'] = round(($pipeline['qualified'] / $pipeline['total']) * 100);
             $pipeline['accepted_percentage'] = round(($pipeline['accepted'] / $pipeline['total']) * 100);
             $pipeline['rejected_percentage'] = round(($pipeline['rejected'] / $pipeline['total']) * 100);
-
         }
         return response()->json(['pipeline' => $pipeline]);
     }
 
 
-//
+    //
 }
-
