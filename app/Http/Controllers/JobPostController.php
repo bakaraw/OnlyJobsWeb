@@ -246,6 +246,7 @@ class JobPostController extends Controller
 
 
         $users = $this->getUsersData();
+        $job_data = $this->getJobData();
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
@@ -263,6 +264,7 @@ class JobPostController extends Controller
             'degrees' => Degree::all(),
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
+            'job_data' => $job_data,
         ]);
     }
 
@@ -315,44 +317,99 @@ class JobPostController extends Controller
         return $users;
     }
 
+
+    public function getJobData()
+    {
+        $job_data = JobPost::select(
+            'job_title',
+            'job_description',
+            'job_location',
+            'job_type',
+            'min_salary',
+            'max_salary',
+            'min_experience_years',
+            'status_id',
+            'degree_id',
+            'company',
+            'user_id',
+            'views',
+            'salary_type'
+        )
+            ->with([
+                'applications' => function ($query) {
+                    $query->select(
+                        'id',
+                        'user_id',
+                        'job_post_id',
+                        'status',
+                        'remarks',
+                        'created_at'
+                    );
+                },
+                'applications.jobPost' => function ($query) {
+                    $query->select(
+                        'id',
+                        'job_title',
+                        'job_type',
+                        'company'
+                    );
+                },
+
+                'applications.jobPost.requirements',
+
+
+            ])
+            ->get();
+
+        return $job_data;
+    }
+
+
+
+
     public function viewJobPost($id)
     {
-        $job = JobPost::with([
-            'skills',
-            'requirements:requirement_id,requirement_name',
-            'degree',
-            'status',
-            'applications.user:id,first_name,last_name',
-            'applications'
+        // Pull back exactly the one JobPost you want (instead of ->get()),
+        // and still eager-load all of its connected tables:
+        $job = JobPost::select([
+            'id',
+            'job_title',
+            'job_description',
+            'job_location',
+            'job_type',
+            'salary_type',
+            'min_salary',
+            'max_salary',
+            'min_experience_years',
+            'company',
+            'user_id',
+            'degree_id',
+            'views',
         ])
-            ->select(
-                'id',
-                'job_title',
-                'job_description',
-                'job_location',
-                'job_type',
-                'salary_type',
-                'min_salary',
-                'max_salary',
-                'min_experience_years',
-                'company',
-                'user_id',
-                'status_id',
-                'degree_id',
-                'views',
-                'created_at',
-            )
-            ->findOrFail($id);
+            ->with([
+                // for your hasMany JobPostSkill relationship:
+                'skills' => function ($q) {
+                    // you must include the FK so Eloquent can match them:
+                    $q->select('job_post_id', 'skill_id', 'skill_name');
+                },
+                // for your pivot belongsToMany requirements:
+                'requirements' => function ($q) {
+                    $q->select('requirement_id', 'requirement_name');
+                },
+                'degree:id,degree_name',
+                'status:id,status_name',
+                'user:id,first_name,last_name',
+            ])
+            ->where('id', $id)      // filter to the one record
+            ->firstOrFail();        // fetch it (or 404)
 
-        // Increment the view count
+        // bump your view count
         $job->increment('views');
 
-        // Pull out the applications as a top-level prop
-        $applicants = $job->applications;
-
+        // now $job->skills, $job->requirements, $job->degree etc. are populated
         return Inertia::render('JobDetails', [
             'job_details' => $job,
-            'applicants'   => $applicants,
+            'applicants'  => $job->applications,
         ]);
     }
 }

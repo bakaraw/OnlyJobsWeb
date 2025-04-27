@@ -152,6 +152,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
+    Route::get('/job-posts/{id}/edit', [JobPostController::class, 'viewJobPost'])->name('job-posts.edit');
 
     Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
     Route::post('/applicants/qualified', [ApplicantController::class, 'qualifiedAccepted'])->name('qualified.accept');

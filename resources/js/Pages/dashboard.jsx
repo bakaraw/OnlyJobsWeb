@@ -19,7 +19,7 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
 
     const handleJobSelect = (jobId) => {
         setSelectedJobId(jobId);
-        setActiveView("jobDetails"); // Switch to job details view
+        setActiveView("jobDetails");
     };
 
     const handleBackToJobs = () => {
@@ -57,7 +57,7 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
                             className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                         >
 
-                            Back to Job List
+                            Back
                         </PrimaryButton>
                         <JobDetails
                             job_details={selectedJob}

@@ -16,6 +16,7 @@ const handleDeleteJob = async (jobId) => {
     }
 };
 
+
 export default function JobList({ jobs, onJobSelect }) {
     return (
         <div className="w-full px-4">
@@ -57,15 +58,15 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>
                                 <td className="py-3 px-4 text-center">
                                     <div className="flex flex-col space-y-2" onClick={(e) => e.stopPropagation()}>
-                                        <SecondaryButton
-                                            className="w-24"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                // Handle edit here
-                                            }}
-                                        >
-                                            Edit
-                                        </SecondaryButton>
+                                        {/*<SecondaryButton*/}
+                                        {/*    className="w-24"*/}
+                                        {/*    onClick={(e) => {*/}
+                                        {/*        e.stopPropagation();*/}
+                                        {/*        handleUpdateJob(job.id);*/}
+                                        {/*    }}*/}
+                                        {/*>*/}
+                                        {/*    Edit*/}
+                                        {/*</SecondaryButton>*/}
 
                                         <DangerButton
                                             className="w-24"
