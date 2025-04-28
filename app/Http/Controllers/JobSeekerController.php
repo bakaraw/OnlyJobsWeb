@@ -133,50 +133,43 @@ class JobSeekerController extends Controller
     /*        'filters' => $request->only(['experience', 'job_type']),*/
     /*    ]);*/
     /*}*/
-
     public function show(Request $request)
     {
+        $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
+        $searchTerm = $request->input('search');
+
+        // Apply filters to query before fetching data
+        if ($request->filled('experience')) {
+            $expFilters = (array) $request->input('experience');
+            $jobQuery->whereIn('min_experience_years', $expFilters);
+        }
+
+        if ($request->filled('job_type')) {
+            $jobTypes = (array) $request->input('job_type');
+            $jobQuery->whereIn('job_type', $jobTypes);
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+
+            $jobQuery->where(function ($query) use ($searchTerm) {
+                $query->where('job_title', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('skills', function ($skillQuery) use ($searchTerm) {
+                        $skillQuery->where('skill_name', 'like', "%{$searchTerm}%");
+                    });
+            });
+        }
+
+        // Fetch jobs
+        $jobs = $jobQuery->get();
+
         if (Auth::check()) {
             $user = Auth::user();
-
-            // Start query
-            $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
-
-            // Apply filters to query before fetching data
-            if ($request->filled('experience')) {
-                $expFilters = (array) $request->input('experience');
-                $jobQuery->whereIn('min_experience_years', $expFilters);
-            }
-
-            if ($request->filled('job_type')) {
-                $jobTypes = (array) $request->input('job_type');
-                $jobQuery->whereIn('job_type', $jobTypes);
-            }
-
-            // Fetch filtered jobs
-            $filteredJobs = $jobQuery->get();
-
             // Score the jobs
-            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs($user, $filteredJobs);
-
-            // Take top 10 based on score
+            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs($user, $jobs);
             $jobs = $scoredJobs->sortByDesc('match_score')->take(10)->values();
         } else {
-            // Guest users just get the latest jobs
-            $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
-
-            if ($request->filled('experience')) {
-                $expFilters = (array) $request->input('experience');
-                $jobQuery->whereIn('min_experience_years', $expFilters);
-            }
-
-            if ($request->filled('job_type')) {
-                $jobTypes = (array) $request->input('job_type');
-                $jobQuery->whereIn('job_type', $jobTypes);
-            }
-
-            // Fetch filtered jobs
-            $jobs = $jobQuery->get()->take(10)->values();
+            $jobs = $jobs->take(10)->values();
         }
 
         // Format for frontend
@@ -206,7 +199,8 @@ class JobSeekerController extends Controller
 
         return Inertia::render('FindWork', [
             'jobs' => $formattedJobs,
-            'filters' => $request->only(['experience', 'job_type']),
+            'filters' => $request->only(['experience', 'job_type', 'search']),
+            'search' => $searchTerm,
         ]);
     }
 }

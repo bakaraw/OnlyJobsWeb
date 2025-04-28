@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link, usePage } from "@inertiajs/react"; // Import Link for navigation
+import { Link, router, usePage } from "@inertiajs/react"; // Import Link for navigation
+import { useEffect } from "react";
 import NavBarAuthBtns from "@/Components/NavBarAuthBtns";
 
 export default function NavBar() {
     const { url } = usePage();
+    const { filters } = usePage().props;
 
     const [active, setActive] = useState(url);
     const [search, setSearch] = useState(""); // State for search input
@@ -14,6 +16,30 @@ export default function NavBar() {
         { name: "About Us", href: "/about_us" },
         { name: "Contact Us", href: "/contact_us" },
     ];
+
+    useEffect(() => {
+        setSearch(filters?.search || '');
+    }, [filters?.search]);
+
+    const handleSearch = (e) => {
+        console.log("Enter is pressed: ", search);
+        if (!search.trim()) return;
+
+        //router.get('/find_work', { search: search });
+        //router.get('/find_work', {
+        //    search,
+        //    experience,
+        //    job_type,
+        //});
+        router.get('/find_work', {
+            search,
+            experience: filters?.experience || [],
+            job_type: filters?.job_type || [],
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
 
     return (
         <nav className="fixed top-0 left-0 w-full bg-dark z-50">
@@ -46,6 +72,12 @@ export default function NavBar() {
                         placeholder="Search..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSearch();
+                            }
+                        }
+                        }
                         className="w-64 px-4 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mr-5"
                     />
 

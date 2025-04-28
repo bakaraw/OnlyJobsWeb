@@ -12,11 +12,11 @@ import { useEffect } from 'react';
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
     const { filters = {} } = usePage().props;
-    const { search } = usePage().props;
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
         job_type: filters?.job_type || [],
+        job_type: filters?.search,
     });
 
     const handleCheckboxChange = (type, value) => {
@@ -35,7 +35,6 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
             replace: true,
         });
     }, [data]);
-    console.log(("Search: " + search))
 
     return (
         <MainPageLayout
@@ -122,15 +121,6 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
 
                 {/* Job listing section - filling the rest of the width */}
                 <div className="flex-1 pl-4">
-                    {
-                        search && (
-                            <div className='pl-6'>
-                                <p className='text-xl'>Results for "{search}"</p>
-                            </div>
-
-                        )
-                    }
-
                     {jobs && jobs.map((job) => (
                         <div key={job.id} className="mb-4">
                             <JobCard job={job}>
