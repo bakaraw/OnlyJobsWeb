@@ -163,7 +163,20 @@ class JobSeekerController extends Controller
             $jobs = $scoredJobs->sortByDesc('match_score')->take(10)->values();
         } else {
             // Guest users just get the latest jobs
-            $jobs = JobPost::with(['skills', 'requirements'])->latest()->take(10)->get();
+            $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
+
+            if ($request->filled('experience')) {
+                $expFilters = (array) $request->input('experience');
+                $jobQuery->whereIn('min_experience_years', $expFilters);
+            }
+
+            if ($request->filled('job_type')) {
+                $jobTypes = (array) $request->input('job_type');
+                $jobQuery->whereIn('job_type', $jobTypes);
+            }
+
+            // Fetch filtered jobs
+            $jobs = $jobQuery->get()->take(10)->values();
         }
 
         // Format for frontend
