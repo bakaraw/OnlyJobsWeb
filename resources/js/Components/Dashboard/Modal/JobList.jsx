@@ -61,7 +61,6 @@ export default function JobList({ jobs, onJobSelect }) {
                                             className="w-24"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                // Handle edit here
                                             }}
                                         >
                                             Edit

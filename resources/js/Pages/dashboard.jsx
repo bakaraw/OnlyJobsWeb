@@ -6,7 +6,7 @@ import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 
-export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({  getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
 
@@ -16,6 +16,10 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);
+
+    console.log("detailss usesr", getJobPostData)
+
+
 
     const handleJobSelect = (jobId) => {
         setSelectedJobId(jobId);

@@ -246,6 +246,7 @@ class JobPostController extends Controller
 
 
         $users = $this->getUsersData();
+        $getJobPostData = $this->getJobPostData();
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
@@ -263,6 +264,7 @@ class JobPostController extends Controller
             'degrees' => Degree::all(),
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
+            'getJobPostData' => $getJobPostData,
         ]);
     }
 
@@ -315,6 +317,52 @@ class JobPostController extends Controller
         return $users;
     }
 
+    public function getJobPostData()
+    {
+        $jobpostData = JobPost::with([ 'skills','requirements'])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'views',
+                'salary_type',
+                'status_id',
+                'degree_id',
+            )
+            ->get();
+        return $jobpostData;
+    }
+//    public function getJobPostData()
+//    {
+//        $jobpostData = JobPost::with([
+//            'degree',
+//        ])
+//            ->select(
+//                'id',               // always include the PK
+//                'job_title',
+//                'job_description',
+//                'job_location',
+//                'job_type',
+//                'min_salary',
+//                'max_salary',
+//                'min_experience_years',
+//                'company',
+//                'views',
+//                'salary_type',
+//                'status_id',        // include FK for eager load
+//                'degree_id',
+//                'JobPostSkill.skill'
+//            )
+//            ->get();
+//
+//        return $jobpostData;
+//    }
     public function viewJobPost($id)
     {
         $job = JobPost::with([

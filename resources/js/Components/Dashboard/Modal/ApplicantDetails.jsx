@@ -23,6 +23,12 @@ export default function ApplicantDetails({ user, onClose }) {
     console.log("skills", user.user_skills);
 
 
+    console.log("skills", user.user_skills);
+
+
+
+
+
     const statusClasses = {
         accepted: "text-green-600",
         rejected: "text-red-600",
@@ -95,6 +101,31 @@ export default function ApplicantDetails({ user, onClose }) {
                     </div>
                 )}
             </div>
+
+            {user.userSkills && user.userSkills.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Certificates</h3>
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Title</th>
+                            <th className="py-2 px-4">Description</th>
+                            <th className="py-2 px-4">Year</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {user.userSkills.map((skill, index) => (
+                                <td className="py-2 px-4">
+                                    {skill.skill_name }
+                                </td>
+
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+
 
 
 
