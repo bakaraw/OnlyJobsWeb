@@ -8,11 +8,13 @@ import { router } from '@inertiajs/react';
 import axios from 'axios';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
+import { Link } from '@inertiajs/react';
 
-export default function FindWork({ auth, laravelVersion, phpVersion }) {
+export default function FindWork() {
     const { jobs } = usePage().props;
     const { filters = {} } = usePage().props;
     const { search } = usePage().props;
+    const { auth } = usePage().props;
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
@@ -35,7 +37,7 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
             replace: true,
         });
     }, [data]);
-    console.log(("Search: " + search))
+    console.log(("User: " + auth.user))
 
     return (
         <MainPageLayout
@@ -43,6 +45,18 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 <ContentLayout>
                     <p className="text-3xl">Find the best jobs for you</p>
                     <p className='mt-3'>Browse jobs posted on here or search the job you want</p>
+                    {
+                        auth.user && auth.user.user_skills.length == 0 ? (
+                            <div className='mt-10 bg-yellow-200 p-4 flex items-center justify-between border border-yellow-500 rounded-lg'>
+                                <p>Set-up your profile for personalized Job recommendations</p>
+                                <Link
+                                    className='bg-yellow-500 px-4 py-2 rounded-lg'
+                                    href={route("profile.edit")}
+                                >Set up profile</Link>
+                            </div>
+                        ) : <></>
+
+                    }
                 </ContentLayout>
             }
         >

@@ -162,6 +162,7 @@ class JobSeekerController extends Controller
 
         // Fetch jobs
         $jobs = $jobQuery->get();
+        $user = null;
 
         if (Auth::check()) {
             $user = Auth::user();
@@ -198,6 +199,7 @@ class JobSeekerController extends Controller
         });
 
         return Inertia::render('FindWork', [
+            'user' => $user,
             'jobs' => $formattedJobs,
             'filters' => $request->only(['experience', 'job_type', 'search']),
             'search' => $searchTerm,

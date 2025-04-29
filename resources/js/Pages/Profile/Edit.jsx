@@ -17,10 +17,17 @@ export default function Edit({ mustVerifyEmail, status }) {
         <MainPageLayout
             header={
                 <ContentLayout>
-                    <h2 className="text-3xl font-semibold leading-tight text-gray-800">
-                        {auth.user.first_name}'s Profile
-                    </h2>
-                    <p className='mt-2'>This serves as your resume</p>
+                    <div className='flex items-center justify-start gap-3'>
+                        <div>
+                            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-300 ring-2 ring-white"></div>
+                        </div>
+                        <div className='ml-4'>
+                            <h2 className="text-3xl font-semibold leading-tight text-gray-800">
+                                {auth.user.first_name}'s Profile
+                            </h2>
+                            <p className='mt-2'>This serves as your resume</p>
+                        </div>
+                    </div>
                 </ContentLayout>
             }
         >
