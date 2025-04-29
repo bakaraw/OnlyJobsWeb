@@ -11,8 +11,7 @@ export default function dashboard({  getJobPostData , jobs, placements, auth, to
     const [selectedJobId, setSelectedJobId] = useState(null);
 
     // Find the selected job if a job ID is set
-    const selectedJob = selectedJobId ? jobs.find(job => job.id === selectedJobId) : null;
-
+    const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);

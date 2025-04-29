@@ -12,6 +12,8 @@ export default function JobDetails({ job_details, applicants }) {
         job_type = "N/A",
         job_description = "N/A",
         job_location = "N/A",
+        job_degree = "N/A",
+
         company = "",
         views = 'N/A',
         salary_type = "",
@@ -20,9 +22,10 @@ export default function JobDetails({ job_details, applicants }) {
         min_experience_years = "",
         requirements = [],
         skills = [],
-        degree = null,
         status = null,
     } = job_details;
+
+    console.log('sd', job_degree.degree_name)
 
     const [selectedStatus, setSelectedStatus] = useState("all");
     const filteredApplicants = applicants
@@ -123,6 +126,8 @@ export default function JobDetails({ job_details, applicants }) {
                         <p className="text-gray-600">{job_type}</p>
                     </div>
 
+
+
                     <div className="mb-4">
                         <p className="font-semibold">Salary:</p>
                         <p className="text-gray-600">
@@ -140,12 +145,11 @@ export default function JobDetails({ job_details, applicants }) {
                         <p className="text-gray-600">{min_experience_years} years</p>
                     </div>
 
-                    {degree && (
-                        <div className="mb-4">
-                            <p className="font-semibold">Education:</p>
-                            <p className="text-gray-600">{degree.degree_name}</p>
-                        </div>
-                    )}
+                    <div className="mb-4">
+                        <p className="font-semibold">Education:</p>
+                        <p className="text-gray-600">{job_details.degree_id}</p>
+                    </div>
+
 
                     {status && (
                         <div className="mb-4">

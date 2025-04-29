@@ -336,6 +336,7 @@ class JobPostController extends Controller
                 'degree_id',
             )
             ->get();
+
         return $jobpostData;
     }
 //    public function getJobPostData()
