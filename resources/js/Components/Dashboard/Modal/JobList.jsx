@@ -32,7 +32,6 @@ export default function JobList({ jobs, onJobSelect }) {
                             <th className="py-3 px-4 text-center">Qualified</th>
                             <th className="py-3 px-4 text-center">Hired</th>
                             <th className="py-3 px-4 text-center">Rejected</th>
-                            <th className="py-3 px-4 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,24 +56,18 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>
                                 <td className="py-3 px-4 text-center">
                                     <div className="flex flex-col space-y-2" onClick={(e) => e.stopPropagation()}>
-                                        <SecondaryButton
-                                            className="w-24"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                            }}
-                                        >
-                                            Edit
-                                        </SecondaryButton>
 
-                                        <DangerButton
-                                            className="w-24"
+
+                                        <p
+                                            className={"text-red-600 text-sm cursor-pointer"}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleDeleteJob(job.id);
                                             }}
                                         >
+
                                             Delete
-                                        </DangerButton>
+                                        </p>
                                     </div>
                                 </td>
                             </tr>

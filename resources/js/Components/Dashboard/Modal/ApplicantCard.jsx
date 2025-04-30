@@ -3,6 +3,7 @@ import DashboardCard from "./DashboardCard.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import ApplicantDetails from "./ApplicantDetails.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
 export default function ApplicantCard({ users }) {
@@ -38,22 +39,21 @@ export default function ApplicantCard({ users }) {
 
     return (
         <div className="w-full px-4">
-            <h3 className="text-xl font-semibold mb-4">Applicants</h3>
 
             {/* Filter Buttons */}
             <div className="flex space-x-2 mb-4">
                 {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
-                    <button
+                    <SecondaryButton
                         key={status}
                         onClick={() => setSelectedStatus(status)}
                         className={`px-4 py-2 rounded-full border transition-all ${
                             selectedStatus === status
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-blue-600 text-black'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </button>
+                    </SecondaryButton>
                 ))}
             </div>
 
@@ -92,27 +92,27 @@ export default function ApplicantCard({ users }) {
                                 </td>
                                 <td className="py-3 px-4">sample</td>
 
+                                {/*<td className="py-3 px-4 text-center">*/}
+                                {/*    {user.applications && user.applications.length > 0 ? (*/}
+                                {/*        // <div className="flex flex-col space-y-1">*/}
+                                {/*        //     {user.applications.map(app => (*/}
+                                {/*        //         <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>*/}
+                                {/*        //         {app.job_post && app.job_post.job_title}:*/}
+                                {/*        //             {app.status.charAt(0).toUpperCase() + app.status.slice(1)}*/}
+                                {/*        //         </span>*/}
+                                {/*        //     ))}*/}
+                                {/*        // </div>*/}
+                                {/*    ) : (*/}
+                                {/*        <span className="text-gray-500">-</span>*/}
+                                {/*    )}*/}
+                                {/*</td>*/}
                                 <td className="py-3 px-4 text-center">
-                                    {user.applications && user.applications.length > 0 ? (
-                                        <div className="flex flex-col space-y-1">
-                                            {user.applications.map(app => (
-                                                <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>
-                                                {app.job_post && app.job_post.job_title}:
-                                                    {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <span className="text-gray-500">-</span>
-                                    )}
-                                </td>
-                                <td className="py-3 px-4 text-center">
-                                    <PrimaryButton
+                                    <SecondaryButton
                                         onClick={() => toggleUserDetails(user.id)}
                                         className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
                                     >
                                         {expandedUser === user.id ? "Hide Details" : "View Details"}
-                                    </PrimaryButton>
+                                    </SecondaryButton>
                                 </td>
                             </tr>
                         ))}

@@ -5,6 +5,7 @@ import JobDetails from "@/Pages/JobDetails.jsx"; // Import the JobDetails compon
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 export default function dashboard({  getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
@@ -54,13 +55,13 @@ export default function dashboard({  getJobPostData , jobs, placements, auth, to
                 ) : activeView === "jobDetails" && selectedJob ? (
                     // Show job details when a job is selected
                     <div>
-                        <PrimaryButton
+                        <SecondaryButton
                             onClick={handleBackToJobs}
                             className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                         >
 
-                            Back to Job List
-                        </PrimaryButton>
+                            Back
+                        </SecondaryButton>
                         <JobDetails
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}

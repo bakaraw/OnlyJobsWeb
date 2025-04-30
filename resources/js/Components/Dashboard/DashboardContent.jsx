@@ -136,14 +136,16 @@ export default function DashboardContent({
                 {/*        />*/}
                 {/*    </div>*/}
                 {/*</DashboardCard>*/}
+
                 <div className="flex flex-row items-start mb-4 space-x-4">
                     <ApplicantPipelineCard
                         applications={applicants}
                         onStatusClick={(status) => setSelectedStatus(status)}
-                        className="h-[423px]"
+                        className="h-[423px] border rounded-lg shadow p-4 bg-white "
+
 
                     />
-                    <DashboardCard className="flex-1 h-50 w-1/2">
+                    <DashboardCard className="flex-1 h-50 w-1/2 border rounded-lg shadow p-4 bg-white">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
                                 data={doughnutData}
@@ -155,8 +157,8 @@ export default function DashboardContent({
                             />
                         </div>
                     </DashboardCard>
-                    <div className="flex flex-col flex-1 space-y-4">
-                        <DashboardCard>
+                    <div className="flex flex-col flex-1 space-y-6">
+                        <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-500">Total Jobs</h2>
@@ -165,16 +167,16 @@ export default function DashboardContent({
                                 <div className="text-blue-500 text-3xl">📄</div>
                             </div>
                         </DashboardCard>
-                        <DashboardCard>
+                        <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-500">Total Applicants</h2>
                                     <p className="text-2xl font-semibold text-gray-800">{totalUsers}</p>
                                 </div>
-                                <div className="text-green-500 text-3xl">🧑‍💼</div>
+                                <div className="text-green-500 text-3xl">‍💼</div>
                             </div>
                         </DashboardCard>
-                        <DashboardCard>
+                        <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-500">Total Views</h2>
@@ -183,12 +185,12 @@ export default function DashboardContent({
                                 <div className="text-orange-500 text-3xl">👀</div>
                             </div>
                         </DashboardCard>
-                        <DashboardCard>
+                        <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-500">Hired</h2>
                                     <p className="text-2xl font-semibold text-gray-800">
-                                        {applicants.filter(app => app.status === 'accepted').length}
+                                        {applicants.filter(app => app.status === 'Accepted').length}
                                     </p>
                                 </div>
                                 <div className="text-yellow-500 text-3xl">⏳</div>
@@ -197,7 +199,7 @@ export default function DashboardContent({
                     </div>
                 </div>
             </div>
-            <DashboardCard>
+            <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                 {filteredApplicants.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border-collapse">

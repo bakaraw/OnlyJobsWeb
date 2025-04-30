@@ -37,14 +37,13 @@ export default function JobDetails({ job_details, applicants }) {
         .filter((app) => selectedStatus === "all" || app.status?.toLowerCase() === selectedStatus.toLowerCase());
 
 
-    const [activeView, setActiveView] = useState("dashboard");
 
     const handleAccept = async (application) => {
         try {
             let endpoint;
             let newStatus;
-            const qualifiedMsg = `Are you sure you want to Qualified  ${application.user.first_name}  ${application.user.last_name} ?`;
-            const acceptedMsg = `Are you sure you want to Accept ${application.user.first_name}  ${application.user.last_name} ?`;
+            const qualifiedMsg = `Are you sure you want to qualify  ${application.user.first_name}  ${application.user.last_name} ?`;
+            const acceptedMsg = `Are you sure you want to accept ${application.user.first_name}  ${application.user.last_name} ?`;
 
             switch (application.status) {
 
@@ -76,7 +75,7 @@ export default function JobDetails({ job_details, applicants }) {
             });
 
             if (response.data.success) {
-                // window.location.reload();
+                 window.location.reload();
             }
         } catch (error) {
             console.error("Error updating application status:", error);
@@ -122,10 +121,15 @@ export default function JobDetails({ job_details, applicants }) {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md w-full">
-
+        <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">{job_title}</h2>
+                <SecondaryButton
+                    className="px-4 py-2  black-white rounded "
+                    onClick={() => console.log("Edit button clicked")}
+                >
+                    Edit
+                </SecondaryButton>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -218,21 +222,21 @@ export default function JobDetails({ job_details, applicants }) {
                 )}
             </div>
 
-            <DashboardCard title="Job Applicant Overview">
+            <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                 {/* Filter Buttons */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
-                        <PrimaryButton
+                        <SecondaryButton
                             key={status}
                             onClick={() => setSelectedStatus(status)}
                             className={`px-4 py-2 rounded-full border transition-all ${
                                 selectedStatus === status
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-blue-600 text-black'
                                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </PrimaryButton>
+                        </SecondaryButton>
                     ))}
                 </div>
 
