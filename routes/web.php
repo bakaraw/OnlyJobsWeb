@@ -58,6 +58,12 @@ Route::delete('/documents/{document}', [JobSeekerDocumentController::class, 'des
 //Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
 //Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
 //Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
+//// Requirements
+//Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
+//Route::get('/requirements/create', [RequirementController::class, 'create'])->name('requirements.create');
+//Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
+//Route::delete('/requirements/{requirement}', [RequirementController::class, 'destroy'])->name('requirements.destroy');
+
 
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');
@@ -85,6 +91,8 @@ Route::get('/contact_us', function () {
 //Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
 
 Route::get('/find_work', [JobSeekerController::class, 'show'])->name('find_work');
+Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
+Route::post('/job_posts/{id}/increment_views', [JobSeekerController::class, 'incrementViews'])->name('job_posts.increment_views');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -97,8 +105,6 @@ Route::middleware('auth')->group(function () {
     Route::get('job_posts/create', [JobPostController::class, 'create'])
         ->name('job_posts.create');
 
-    Route::post('/job_posts/{id}/increment_views', [JobSeekerController::class, 'incrementViews'])->name('job_posts.increment_views');
-
     Route::post('job_posts', [JobPostController::class, 'store'])
         ->name('job_posts.store');
 
@@ -107,8 +113,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/dashboard', [JobPostController::class, 'showDashboard'])
         ->name('dashboard');
-
-    Route::get('/job/{id}', [JobSeekerController::class, 'JobView'])->name('job.view');
 
     Route::post('/education', [EducationController::class, 'store'])
         ->name('education.store');
@@ -155,11 +159,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/applications/update-remark', [ApplicantController::class, 'updateRemark']);
     Route::get('/dashboard/pipeline', [ApplicantController::class, 'pipeLineData'])->name('pipelineData');
     Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
-
-
-
-
-});
+    Route::get('/job-posts/{id}', [JobPostController::class, 'viewJobPost'])->name('job-posts.view');
+    Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
+    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');});
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
 //        'auth' => [

@@ -6,9 +6,34 @@ import MainPageLayout from '@/Layouts/MainPageLayout';
 import { usePage } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
+import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 export default function FindWork({ auth, laravelVersion, phpVersion }) {
     const { jobs } = usePage().props;
+    const { filters = {} } = usePage().props;
+
+    const { data, setData, get } = useForm({
+        experience: filters?.experience || [],
+        job_type: filters?.job_type || [],
+    });
+
+    const handleCheckboxChange = (type, value) => {
+        const selected = data[type] || [];
+        const updated = selected.includes(value)
+            ? selected.filter((v) => v !== value)
+            : [...selected, value];
+
+        setData(type, updated);
+    };
+
+    useEffect(() => {
+        get(route('find_work'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    }, [data]);
 
     return (
         <MainPageLayout
@@ -26,41 +51,68 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                         <div className="font-medium text-md">
                             <div className="flex flex-col space-y-1">
                                 <p>Experience Level</p>
-                                <Checkbox label="Entry Level" className="ml-4" />
-                                <Checkbox label="Intermediate Level" className="ml-4" />
-                                <Checkbox label="Expert Level" className="ml-4" />
-                                <div className="flex items-center">
-                                    <Checkbox className="ml-4 mt-1" />
-                                    <input
-                                        type="text"
-                                        placeholder="Years of Experience"
-                                        className="mt-1 border-secondary rounded px-2 py-1 focus:ring-secondary focus:border-secondary"
-                                    />
-                                </div>
+                                <Checkbox
+                                    label="Entry Level"
+                                    className="ml-4"
+                                    checked={data.experience.includes(1)}
+                                    onChange={() => handleCheckboxChange('experience', 1)}
+                                />
+                                <Checkbox
+                                    label="Intermediate Level"
+                                    className="ml-4"
+                                    checked={data.experience.includes(3)}
+                                    onChange={() => handleCheckboxChange('experience', 3)}
+
+                                />
+                                <Checkbox
+                                    label="Expert Level"
+                                    className="ml-4"
+                                    checked={data.experience.includes(5)}
+                                    onChange={() => handleCheckboxChange('experience', 5)}
+
+                                />
                                 <div>
                                     <p className="mt-4">Job Type</p>
                                 </div>
-                                <Checkbox label="Full time" className="ml-4" />
-                                <Checkbox label="Part time" className="ml-4" />
-                                <Checkbox label="Contractual" className="ml-4" />
 
-                                <div>
-                                    <p className="mt-4">Location</p>
-                                    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
-                                        <option value="option 1">Option 1</option>
-                                        <option value="option 2">Option 2</option>
-                                        <option value="option 3">Option 3</option>
-                                    </select>
-                                </div>
+                                <Checkbox
+                                    label="Full time"
+                                    className="ml-4"
+                                    checked={data.job_type.includes('Full Time')}
+                                    onChange={() => handleCheckboxChange('job_type', 'Full Time')}
+                                />
+                                <Checkbox
+                                    label="Part time"
+                                    className="ml-4"
+                                    checked={data.job_type.includes('Part Time')}
+                                    onChange={() => handleCheckboxChange('job_type', 'Part Time')}
+                                />
+                                <Checkbox
+                                    label="Contract"
+                                    className="ml-4"
+                                    checked={data.job_type.includes('Contract')}
+                                    onChange={() => handleCheckboxChange('job_type', 'Contract')}
+                                />
 
-                                <div>
-                                    <p className="mt-4">Skills</p>
-                                    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
-                                        <option value="option 1">Option 1</option>
-                                        <option value="option 2">Option 2</option>
-                                        <option value="option 3">Option 3</option>
-                                    </select>
-                                </div>
+                                {
+                                    //<div>
+                                    //    <p className="mt-4">Location</p>
+                                    //    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
+                                    //        <option value="option 1">Option 1</option>
+                                    //        <option value="option 2">Option 2</option>
+                                    //        <option value="option 3">Option 3</option>
+                                    //    </select>
+                                    //</div>
+                                    //
+                                    //<div>
+                                    //    <p className="mt-4">Skills</p>
+                                    //    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
+                                    //        <option value="option 1">Option 1</option>
+                                    //        <option value="option 2">Option 2</option>
+                                    //        <option value="option 3">Option 3</option>
+                                    //    </select>
+                                    //</div>
+                                }
                             </div>
                         </div>
                     </div>

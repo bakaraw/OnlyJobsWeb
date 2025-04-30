@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Models\Application;
 use App\Models\JobPost;
 use App\Models\JobStatus;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use PHPUnit\Util\PHP\Job;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Redirect;
 
 class JobPostController extends Controller
 {
@@ -47,11 +49,10 @@ class JobPostController extends Controller
             'job_description'      => 'required|string',
             'job_location'         => 'required|string|max:255',
             'job_type'             => 'required|string|max:255',
+            'salary_type'          => ['required', Rule::in(['Fixed', 'Range'])],
             'min_salary'           => 'required|numeric',
-            'max_salary'           => 'required|numeric',
-
+            'max_salary'           => 'nullable|numeric',
             'min_experience_years' => 'required|integer',
-
             'company'              => 'required|string|max:255',
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
@@ -59,55 +60,61 @@ class JobPostController extends Controller
             'requirements'         => 'nullable|array',
             'requirements.*'       => 'exists:requirements,requirement_id',
             'skills'               => 'nullable|array',
-            'skills.*'             => 'exists:skills,skill_id',
+            'skills.*.skill_id' => 'required',
+            'skills.*.skill_name' => 'required',
             'custom_skills'        => 'nullable|array',
             'custom_skills.*'      => 'string|max:255',
-
-             'custom_requirements'        => 'nullable|array',
-            'custom_requirements.*'      => 'string|max:255'
+            'custom_requirements'  => 'nullable|array',
+            'custom_requirements.*' => 'string|max:255',
         ]);
 
-        // Separate the arrays from validated data
-        $requirementIds = $validatedData['requirements'] ?? [];
-        $skillIds = $validatedData['skills'] ?? [];
-        $customSkills = $validatedData['custom_skills'] ?? [];
+        $requirementIds     = $validatedData['requirements'] ?? [];
+        $skills             = $validatedData['skills'] ?? [];
+        $customSkills       = $validatedData['custom_skills'] ?? [];
         $customRequirements = $validatedData['custom_requirements'] ?? [];
 
+        unset(
+            $validatedData['requirements'],
+            $validatedData['skills'],
+            $validatedData['custom_skills'],
+            $validatedData['custom_requirements']
+        );
 
-        // Remove these fields from the validated data
-        unset($validatedData['requirements'], $validatedData['skills'], $validatedData['custom_skills'], $validatedData['custom_requirements']);
-
-        // Add the user_id to the validated data
         $validatedData['user_id'] = auth()->id();
 
         // Create the job post
         $jobPost = JobPost::create($validatedData);
 
-        // Attach skills to the job post
-        if (!empty($skillIds)) {
-            $jobPost->skills()->attach($skillIds);
+        // Save existing skills using JobPostSkill
+        foreach ($skills as $skill) {
+            $jobPost->skills()->create([
+                'skill_id'   => $skill['skill_id'],
+                'skill_name' => $skill['skill_name']
+            ]);
         }
 
-        // Attach requirements to the job post
+        // Attach existing requirements
         if (!empty($requirementIds)) {
             $jobPost->requirements()->attach($requirementIds);
         }
 
-        // Create and attach custom skills
+        // Handle custom skills (create then attach via JobPostSkill)
         foreach ($customSkills as $customSkillName) {
             $newSkill = Skill::create(['skill_name' => $customSkillName]);
-            $jobPost->skills()->attach($newSkill->skill_id);
+            $jobPost->skills()->create([
+                'skill_id'   => $newSkill->skill_id,
+                'skill_name' => $newSkill->skill_name
+            ]);
         }
 
+        // Handle custom requirements (create then attach)
         foreach ($customRequirements as $customRequirementName) {
             $newRequirement = Requirement::create(['requirement_name' => $customRequirementName]);
             $jobPost->requirements()->attach($newRequirement->requirement_id);
         }
 
-        // Redirect or return success message
         return redirect()->route('dashboard')->with('success', 'Job post created successfully.');
     }
-
 
 
     public function update(Request $request, $id)
@@ -117,6 +124,7 @@ class JobPostController extends Controller
         if ($jobPost->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
+
         $validatedData = $request->validate([
             'job_title'            => 'required|string|max:255',
             'job_description'      => 'required|string',
@@ -148,22 +156,36 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
+    /*public function destroy($id)*/
+    /*{*/
+    /*    $jobPost = JobPost::findOrFail($id);*/
+    /**/
+    /**/
+    /*    $jobPost->delete();*/
+    /**/
+    /*    return redirect()->route('dashboard')*/
+    /*        ->with('success', 'Job post deleted successfully.');*/
+    /*}*/
 
-
+    /*public function destroy(JobPost $job)*/
+    /*{*/
+    /*    if (!$job) {*/
+    /*        return response()->json(['error' => 'Job not found'], 404);*/
+    /*    }*/
+    /*    $job->delete();*/
+    /*    return response()->json(['success' => 'Deleted Successfully']);*/
+    /*}*/
     public function destroy($id)
     {
-        $jobPost = JobPost::findOrFail($id);
+        $job = JobPost::find($id);
 
+        if (!$job) {
+            return response()->json(['error' => 'Job not found'], 404);
+        }
 
-        $jobPost->delete();
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Job post deleted successfully.');
+        $job->delete();
+        return response()->json(['success' => 'Deleted successfully']);
     }
-
-
-
-
 
 
 
@@ -204,7 +226,7 @@ class JobPostController extends Controller
                 'applications' => function ($query) {
                     $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
                 }
-                ])
+            ])
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {
@@ -225,7 +247,6 @@ class JobPostController extends Controller
 
         $users = $this->getUsersData();
 
-
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
             'applicants' => $applicants,
@@ -234,9 +255,14 @@ class JobPostController extends Controller
                 'user' => auth()->user(),
             ],
             'totalViews' => $totalViews,
-            'totalApplicants' =>$totalApplicants,
+            'totalApplicants' => $totalApplicants,
             'totalUsers' => $totalUsers,
             'totalJob' => $totalJob,
+
+            'statuses' => JobStatus::all(),
+            'degrees' => Degree::all(),
+            'requirements' => Requirement::all(),
+            'skills' => Skill::all(),
         ]);
     }
 
@@ -255,6 +281,7 @@ class JobPostController extends Controller
             'address_id',
             'created_at'
         )
+            ->where('id', '!=', 1)
             ->with([
                 'address',
                 'applications' => function ($query) {
@@ -275,15 +302,57 @@ class JobPostController extends Controller
                         'company'
                     );
                 },
+
                 'applications.jobPost.requirements', // Get job post requirements
                 'requirements',   // Load user's own requirements
                 'educations',     // Load user education history
-                'workHistories'   // Load user work history
+                'workHistories',   // Load user work history
+                'certifications',
+                'userSkills.skill'
             ])
             ->get();
 
         return $users;
     }
+
+    public function viewJobPost($id)
+    {
+        $job = JobPost::with([
+            'skills',
+            'requirements:requirement_id,requirement_name',
+            'degree',
+            'status',
+            'applications.user:id,first_name,last_name',
+            'applications'
+        ])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'salary_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'user_id',
+                'status_id',
+                'degree_id',
+                'views',
+                'created_at',
+            )
+            ->findOrFail($id);
+
+        // Increment the view count
+        $job->increment('views');
+
+        // Pull out the applications as a top-level prop
+        $applicants = $job->applications;
+
+        return Inertia::render('JobDetails', [
+            'job_details' => $job,
+            'applicants'   => $applicants,
+        ]);
+    }
 }
-
-

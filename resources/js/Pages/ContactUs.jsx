@@ -8,7 +8,6 @@ export default function ContactUs() {
             header={
                 <ContentLayout>
                     <p className="text-3xl">Contact Us</p>
-                    <p className='mt-3'>Yawards</p>
                 </ContentLayout>
             }
         >

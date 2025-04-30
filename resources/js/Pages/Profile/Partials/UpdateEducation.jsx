@@ -124,7 +124,6 @@ export default function UpdateEducation({ className }) {
                     )) : <div className='flex items-center justify-center my-6'> no education specified </div>
             }
 
-
             <Modal show={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} maxWidth="4xl">
                 <div className='font-semibold text-xl flex justify-between'>
                     <p>Add Education</p>

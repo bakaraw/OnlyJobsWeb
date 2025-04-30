@@ -16,10 +16,11 @@ export default function NavBar() {
     ];
 
     return (
-        <nav className="fixed top-0 left-0 w-full bg-dark shadow-md z-50">
+        <nav className="fixed top-0 left-0 w-full bg-dark z-50">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div className="text-white">
-                    logo
+                    <img src="/images/logo.png" alt="logo" className="h-10">
+                    </img>
                 </div>
                 <div className="flex space-x-4">
                     {navItems.map((item) => (
@@ -28,7 +29,7 @@ export default function NavBar() {
                             key={item.name}
                             className={`px-4 py-2 rounded-md text-lg font-medium
                                 ${active === item.href.toLowerCase()
-                                    ? "underline underline-offset-8 text-white shadow-md"
+                                    ? "underline underline-offset-8 text-white"
                                     : "text-white hover:bg-light hover:text-dark"}`}
                             onClick={() => setActive(item.href.toLowerCase())}
                         >
