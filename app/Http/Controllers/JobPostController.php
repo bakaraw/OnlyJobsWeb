@@ -319,7 +319,7 @@ class JobPostController extends Controller
 
     public function getJobPostData()
     {
-        $jobpostData = JobPost::with([ 'skills','requirements'])
+        $jobpostData = JobPost::with([ 'skills','requirements' ,'degree', 'status'])
             ->select(
                 'id',
                 'job_title',

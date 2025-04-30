@@ -12,7 +12,6 @@ export default function JobDetails({ job_details, applicants }) {
         job_type = "N/A",
         job_description = "N/A",
         job_location = "N/A",
-        job_degree = "N/A",
 
         company = "",
         views = 'N/A',
@@ -23,9 +22,15 @@ export default function JobDetails({ job_details, applicants }) {
         requirements = [],
         skills = [],
         status = null,
+        degree = null,
+
     } = job_details;
 
-    console.log('sd', job_degree.degree_name)
+    console.log('sd', job_details)
+    console.log('sd', job_details.degree)
+    console.log('sst', job_details.status)
+
+
 
     const [selectedStatus, setSelectedStatus] = useState("all");
     const filteredApplicants = applicants
@@ -38,15 +43,29 @@ export default function JobDetails({ job_details, applicants }) {
         try {
             let endpoint;
             let newStatus;
+            const qualifiedMsg = `Are you sure you want to Qualified  ${application.user.first_name}  ${application.user.last_name} ?`;
+            const acceptedMsg = `Are you sure you want to Accept ${application.user.first_name}  ${application.user.last_name} ?`;
+
             switch (application.status) {
+
                 case 'Pending':
-                    endpoint = '/applicants/qualified';
-                    newStatus = 'Qualified';
-                    break;
+                    if (confirm(qualifiedMsg)) {
+
+                        endpoint = '/applicants/qualified';
+                        newStatus = 'Qualified';
+                        break;
+                    } else
+                        return;
+
                 case 'Qualified':
-                    endpoint = '/applicants/accepted';
-                    newStatus = 'Accepted';
-                    break;
+                    if (confirm(acceptedMsg)) {
+
+                        endpoint = '/applicants/accepted';
+                        newStatus = 'Accepted';
+                        break;
+                    }
+                    else
+                        return;
                 default:
                     console.log('Invalid status for acceptance');
                     return;
@@ -147,14 +166,15 @@ export default function JobDetails({ job_details, applicants }) {
 
                     <div className="mb-4">
                         <p className="font-semibold">Education:</p>
-                        <p className="text-gray-600">{job_details.degree_id}</p>
+                        <p className="text-gray-600">{job_details.degree?.name || 'N/A'}</p>
+
                     </div>
 
 
                     {status && (
                         <div className="mb-4">
                             <p className="font-semibold">Status:</p>
-                            <p className="text-gray-600">{status.status_name}</p>
+                            <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>
                         </div>
                     )}
 

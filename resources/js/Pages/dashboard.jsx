@@ -16,7 +16,6 @@ export default function dashboard({  getJobPostData , jobs, placements, auth, to
     console.log("jobs", jobs);
     console.log("users", users);
 
-    console.log("detailss usesr", getJobPostData)
 
 
 
