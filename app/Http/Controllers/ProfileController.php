@@ -13,6 +13,7 @@ use Inertia\Response;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
 use App\Models\Address;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -88,5 +89,35 @@ class ProfileController extends Controller
         return response()->json([
             'user' => $request->user()->load('address'), // Load user with address
         ]);
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => ['required', 'image', 'max:2048'],
+        ]);
+
+
+        $user = $request->user();
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+
+            $uploadPath = Storage::disk('cloudinary')->putFile('/profile_pictures', $file);
+
+            if ($user->profile_pic_public_id) {
+                Storage::disk('cloudinary')->delete($user->profile_pic_public_id);
+            }
+
+            $url = Storage::disk('cloudinary')->url($uploadPath);
+            $user->profile_pic_url = $url;
+            $user->profile_pic_public_id = $uploadPath;
+
+            $user->save();
+        } else {
+            return response()->json(['error' => 'No file received.'], 400);
+        }
+
+        return back();
     }
 }

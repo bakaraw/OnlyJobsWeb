@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -204,5 +205,33 @@ class JobSeekerController extends Controller
             'filters' => $request->only(['experience', 'job_type', 'search']),
             'search' => $searchTerm,
         ]);
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => ['required', 'image', 'max:2048'],
+        ]);
+
+
+        $user = $request->user();
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+
+            $uploadPath = Storage::disk('cloudinary')->putFile('/profile_pictures', $file);
+
+            if ($user->profile_pic_public_id) {
+                Storage::disk('cloudinary')->delete($user->profile_pic_public_id);
+            }
+
+            $url = Storage::disk('cloudinary')->url($uploadPath);
+            $user->profile_pic_url = $url;
+            $user->profile_pic_public_id = $uploadPath;
+
+            $user->save();
+        }
+
+        return back();
     }
 }

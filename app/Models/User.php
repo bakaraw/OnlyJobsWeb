@@ -22,6 +22,8 @@ class User extends Authenticatable
         'contact_number',
         'birthdate',
         'gender',
+        'profile_pic_url',
+        'profile_pic_public_id',
         'address_id',
         'password',
         //'account_type',
