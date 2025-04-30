@@ -22,7 +22,6 @@ export default function JobDetails({ job_details, applicants }) {
         requirements = [],
         skills = [],
         status = null,
-        degree = null,
 
     } = job_details;
 

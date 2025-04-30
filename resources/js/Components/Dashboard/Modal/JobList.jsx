@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
@@ -17,6 +17,7 @@ const handleDeleteJob = async (jobId) => {
 };
 
 export default function JobList({ jobs, onJobSelect }) {
+
     return (
         <div className="w-full px-4">
             <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
@@ -32,6 +33,10 @@ export default function JobList({ jobs, onJobSelect }) {
                             <th className="py-3 px-4 text-center">Qualified</th>
                             <th className="py-3 px-4 text-center">Hired</th>
                             <th className="py-3 px-4 text-center">Rejected</th>
+                            <th className="py-3 px-4 text-center">Status</th>
+                            <th className="py-3 px-4 text-center"></th>
+
+
                         </tr>
                     </thead>
                     <tbody>
@@ -54,20 +59,37 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4 text-center">{job.qualified_count}</td>
                                 <td className="py-3 px-4 text-center">{job.accepted_count}</td>
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>
+
                                 <td className="py-3 px-4 text-center">
-                                    <div className="flex flex-col space-y-2" onClick={(e) => e.stopPropagation()}>
+                                    <div className="relative">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                // Add your desired click functionality here
+                                                alert(`clicked: ${job.status?.name || 'N/A'}`);
+                                            }}
+                                            className="hover:underline"
+                                        >
+                                            {job.status?.name || 'N/A'}
+                                        </button>
+                                    </div>
+                                </td>
 
 
-                                        <p
-                                            className={"text-red-600 text-sm cursor-pointer"}
+                                <td className="py-3 px-4 text-center">
+                                    <div className="relative">
+
+                                        <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleDeleteJob(job.id);
+                                                setOpenMenuJobId(null);
                                             }}
+                                            className="text-red-500 hover:underline"
                                         >
-
                                             Delete
-                                        </p>
+                                        </button>
+
                                     </div>
                                 </td>
                             </tr>

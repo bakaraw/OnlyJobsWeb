@@ -108,7 +108,6 @@ export default function DashboardContent({
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
                 {
                     //<Link href={route('job_posts.create')}>
                     //    <PrimaryButton>
@@ -116,13 +115,7 @@ export default function DashboardContent({
                     //    </PrimaryButton>
                     //</Link>
                 }
-                <PrimaryButton onClick={() => setIsModalOpen(true)}>
-                    Create Job
-                </PrimaryButton>
-                <CreateJobPostModal
-                    show={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                />
+
             </div>
 
             <div className="space-y-6">
@@ -145,7 +138,7 @@ export default function DashboardContent({
 
 
                     />
-                    <DashboardCard className="flex-1 h-50 w-1/2 border rounded-lg shadow p-4 bg-white">
+                    <DashboardCard className="flex-1 h-50 w-1/3 border rounded-lg shadow p-4 bg-white">
                         <div className="w-full h-full flex items-center justify-center">
                             <Doughnut
                                 data={doughnutData}
@@ -157,7 +150,16 @@ export default function DashboardContent({
                             />
                         </div>
                     </DashboardCard>
-                    <div className="flex flex-col flex-1 space-y-6">
+                    <div className="space-y-2.5">
+                        <div className="text-center">
+                        <PrimaryButton onClick={() => setIsModalOpen(true)}>
+                            Create Job
+                        </PrimaryButton>
+                        </div>
+                        <CreateJobPostModal
+                            show={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                        />
                         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
                             <div className="flex items-center justify-between">
                                 <div>

@@ -221,12 +221,16 @@ class JobPostController extends Controller
             'created_at',
             'company',
             'views',
+            'status_id'
         )
             ->with([
                 'applications' => function ($query) {
                     $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
-                }
+                },
+                 'status'
+
             ])
+
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {
@@ -267,6 +271,7 @@ class JobPostController extends Controller
             'getJobPostData' => $getJobPostData,
         ]);
     }
+
 
     public function getUsersData()
     {
@@ -319,7 +324,7 @@ class JobPostController extends Controller
 
     public function getJobPostData()
     {
-        $jobpostData = JobPost::with([ 'skills','requirements' ,'degree', 'status'])
+        $jobpostData = JobPost::with(['skills', 'requirements', 'degree', 'status'])
             ->select(
                 'id',
                 'job_title',
@@ -339,31 +344,7 @@ class JobPostController extends Controller
 
         return $jobpostData;
     }
-//    public function getJobPostData()
-//    {
-//        $jobpostData = JobPost::with([
-//            'degree',
-//        ])
-//            ->select(
-//                'id',               // always include the PK
-//                'job_title',
-//                'job_description',
-//                'job_location',
-//                'job_type',
-//                'min_salary',
-//                'max_salary',
-//                'min_experience_years',
-//                'company',
-//                'views',
-//                'salary_type',
-//                'status_id',        // include FK for eager load
-//                'degree_id',
-//                'JobPostSkill.skill'
-//            )
-//            ->get();
-//
-//        return $jobpostData;
-//    }
+
     public function viewJobPost($id)
     {
         $job = JobPost::with([
@@ -403,5 +384,10 @@ class JobPostController extends Controller
             'job_details' => $job,
             'applicants'   => $applicants,
         ]);
+    }
+
+    public function updateStatus(Request $request, $id) {
+
+
     }
 }
