@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { router, usePage } from '@inertiajs/react';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
@@ -6,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import MessagePanel from '@/Components/Chat/MessagePanel';
 
 const JobDescriptionCard = ({ jobDescription, className }) => (
     <div className={" " + className}>
@@ -145,17 +147,40 @@ const handleApply = (jobId) => {
 
 export default function JobView() {
     const { jobview } = usePage().props;
+    const [showMessages, setShowMessages] = useState(false);
 
     return (
         <MainPageLayout>
             <Head title={jobview.job_title} />
             <ContentLayout>
                 <div className='mt-24'>
-                    <p className="text-3xl font-bold text-dark">{jobview.job_title}</p>
-                    <p className="text-gray-500 text-md mt-2">
-                        Posted {formatDistanceToNow(new Date(jobview.created_at), { addSuffix: true })} —{" "}
-                        <i className="fa-solid fa-location-dot"></i> {jobview.job_location}
-                    </p>
+                    <div className='flex items-center justify-between'>
+                        <div>
+                            <p className="text-3xl font-bold text-dark">{jobview.job_title}</p>
+                            <p className="text-gray-500 text-md mt-2">
+                                Posted {formatDistanceToNow(new Date(jobview.created_at), { addSuffix: true })} —{" "}
+                                <i className="fa-solid fa-location-dot"></i> {jobview.job_location}
+                            </p>
+                        </div>
+                        <div className='flex items-center justify-between'>
+                            <button
+                                id='message-job'
+                                className='hover:bg-gray-200 text-primary px-3 py-2 rounded-lg'
+                                onClick={() => setShowMessages(true)}
+                            >
+                                <i class="fa-regular fa-message fa-xl"></i>
+                            </button>
+                            <div className="ml-5">
+                                <PrimaryButton
+
+                                    className='min-w-32 flex items-center justify-center'
+                                    onClick={() => handleApply(jobview.id)}
+                                >
+                                    Apply
+                                </PrimaryButton>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
                 <JobDescriptionCard className="mt-5" jobDescription={jobview.job_description} />
@@ -169,15 +194,20 @@ export default function JobView() {
                 <JobCompanyCard JobCompany={jobview.company} />
 
 
-                <div className="mt-12">
-                    <PrimaryButton
-                        className='min-w-32 flex items-center justify-center'
-                        onClick={() => handleApply(jobview.id)}
-                    >
-                        Apply
-                    </PrimaryButton>
-                </div>
             </ContentLayout>
+            <div>
+                {/* Your job content here */}
+
+                <button
+                    onClick={() => setShowMessages(true)}
+                    className="fixed bottom-8 right-8 bg-primary hover:bg-dark text-white rounded-full w-14 h-14 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+                >
+                    💬
+                </button>
+                <AnimatePresence>
+                    {showMessages && <MessagePanel onClose={() => setShowMessages(false)} />}
+                </AnimatePresence>
+            </div>
         </MainPageLayout>
     );
 }

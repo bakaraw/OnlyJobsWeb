@@ -3,7 +3,6 @@
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerController;
@@ -12,17 +11,14 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ViewsController;
 use App\Http\Controllers\WorkHistoryController;
-use App\Http\Middleware\RoleMiddleware;
-use App\Models\Certification;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LightcastController;
 use App\Http\Controllers\UserSkillsController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -164,6 +160,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/job-posts/{id}', [JobPostController::class, 'viewJobPost'])->name('job-posts.view');
     Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+
+    // Email Verification Notice
+    Route::get('/email/verify', [AuthController::class, 'verifyNotice'])
+        ->name('verification.notice');
+    //
+    // Email verification Handler
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+        ->middleware('signed')
+        ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [AuthController::class, 'verifyHandler'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    // messaging
+    Route::get('/conversations', [MessageController::class, 'getConversations']);  // Fetch user's conversations
+    Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'getMessages']);  // Get messages for a specific conversation
+    Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message
+    Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

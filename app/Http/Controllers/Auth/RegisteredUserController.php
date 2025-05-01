@@ -89,6 +89,8 @@ class RegisteredUserController extends Controller
         // Log in the user
         Auth::login($user);
 
+        event(new Registered($user));
+
         return redirect()->route('find_work');
     }
 };
