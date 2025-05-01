@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
@@ -7,13 +7,12 @@ import ApplicantsSection from "../Components/Dashboard/Modal/ApplicantsSection.j
 import InputLabel from "@/Components/InputLabel.jsx";
 import InputError from "@/Components/InputError.jsx";
 
-export default function JobDetails({ job_details, applicants }) {
+export default function JobDetails({ job_details, applicants, degrees }) {
     const {
         job_title = "N/A",
         job_type = "N/A",
         job_description = "N/A",
         job_location = "N/A",
-
         company = "",
         views = 'N/A',
         salary_type = "",
@@ -24,15 +23,14 @@ export default function JobDetails({ job_details, applicants }) {
         skills = [],
         status = null,
 
+
     } = job_details;
 
     console.log('sd', job_details)
     console.log('sd', job_details.degree)
     console.log('sst', job_details.status)
 
-
     const [isEditing, setIsEditing] = useState(false);
-
 
     const [form, setForm] = useState({
         job_title: job_details.job_title || "N/A",
@@ -45,6 +43,7 @@ export default function JobDetails({ job_details, applicants }) {
         max_salary: job_details.max_salary || "N/A",
         min_experience_years: job_details.min_experience_years || "N/A",
         requirements: job_details.requirements || [],
+        degree_id: job_details.degree_id || "1",
         skills: job_details.skills || [],
         status: job_details.status || "N/A"
     });
@@ -87,7 +86,6 @@ export default function JobDetails({ job_details, applicants }) {
 
     };
 
-
     return (
         <div>
             {isEditing ? (
@@ -105,7 +103,7 @@ export default function JobDetails({ job_details, applicants }) {
 
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
+                        <div >
                             <div className="mb-4">
                                 <label className="font-semibold">Company: </label>
                                 <input
@@ -113,7 +111,7 @@ export default function JobDetails({ job_details, applicants }) {
                                     name="company"
                                     value={form.company}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded px-3 py-2 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/4"
                                 />
                             </div>
 
@@ -124,7 +122,7 @@ export default function JobDetails({ job_details, applicants }) {
                                     name="job_location"
                                     value={form.job_location}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded px-3 py-2 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/4"
                                 />
                             </div>
 
@@ -134,7 +132,7 @@ export default function JobDetails({ job_details, applicants }) {
                                     name ="job_type"
                                     value={form.job_type}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded px-3 py-2 mb-2 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 mb-2 w-1/4"
                                 >
                                     <option value="Full Time">Full Time</option>
                                     <option value="Part Time">Part Time</option>
@@ -152,7 +150,7 @@ export default function JobDetails({ job_details, applicants }) {
                                     name="salary_type"
                                     value={form.salary_type}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded px-3 py-2 mb-4 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 mb-4 w-1/4"
                                 >
                                     <option value="Fixed">Fixed</option>
                                     <option value="Range">Range</option>
@@ -166,7 +164,7 @@ export default function JobDetails({ job_details, applicants }) {
                                             name="min_salary"
                                             value={form.min_salary}
                                             onChange={handleChange}
-                                            className="border border-gray-300 rounded px-3 py-2 mb-4"
+                                            className="border border-gray-300 rounded-md px-3 py-2 mb-4"
                                         />
                                     </div>
                                     {form.salary_type === "Range" && (
@@ -177,28 +175,46 @@ export default function JobDetails({ job_details, applicants }) {
                                                 name="max_salary"
                                                 value={form.max_salary}
                                                 onChange={handleChange}
-                                                className="border border-gray-300 rounded px-3 py-2"
+                                                className="border border-gray-300 rounded-md px-3 py-2"
                                             />
                                         </>
                                     )}
                                 </div>
                             </div>
-                            <div className="col-span-1">
-                                <InputLabel value="Required Experience" />
+                        </div>
+                        <div className="mb-4">
+                            <label className="font-semibold">Required Experience: </label>
+                            <select
+                                name="min_experience_years"
+                                value={form.min_experience_years}
+                                onChange={handleChange}
+                                className="rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1"
+                            >
+                                <option value="1">Entry Level</option>
+                                <option value="3">Intermediate Level</option>
+                                <option value="5">Expert Level</option>
+                            </select>
+                            <div>
+                                <label className="font-semibold">Required Education: </label>
                                 <select
-                                    id="Minimum Experience"
-                                    name="Minimum Experience"
-                                    value={form.min_experience_years}
+                                    name="degree_id"
+                                    className=' rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
+                                    value={form.degree_id}
                                     onChange={handleChange}
                                 >
-                                    <option value="1">Entry Level</option>
-                                    <option value="3" >Intermediate  Level</option>
-                                    <option value="5">Expert Level</option>
+                                    {
+                                        degrees && degrees.map(d => (
+                                            <option key={d.id} value={d.id}>
+                                                {d.name}
+                                            </option>
+                                        ))
+                                    }
                                 </select>
-                            </div>
 
+                            </div>
                         </div>
-                    </div>
+
+
 
                     <div className="flex justify-end mt-4">
                         <div className="w-full mb-6">

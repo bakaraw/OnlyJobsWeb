@@ -374,6 +374,7 @@ class JobPostController extends Controller
             )
             ->get();
 
+
         return $jobpostData;
     }
 
