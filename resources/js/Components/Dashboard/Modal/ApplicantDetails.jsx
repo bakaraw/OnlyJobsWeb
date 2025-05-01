@@ -16,15 +16,9 @@ export default function ApplicantDetails({ user, onClose }) {
             </div>
         );
     }
-
     console.log("certi", user.certifications);
     console.log("skills", user.user_skills);
-
-
     console.log("skills", user.user_skills);
-
-
-
 
 
     const statusClasses = {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import DashboardCard from "../Components/Dashboard/Modal/DashboardCard.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
+import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
 
 
 export default function ApplicantsSection({ applicants }) {

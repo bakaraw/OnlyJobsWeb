@@ -2,7 +2,6 @@
 import React from "react";
 
 
-//The DashboardCard component is a reusable React naay sample sa joblist na file unsaon pag call sa component
 export default function DashboardCard({ title, children, className = "" }) {
     return (
         <div className={` ${className}`}>

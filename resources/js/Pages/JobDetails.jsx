@@ -29,142 +29,62 @@ export default function JobDetails({ job_details, applicants }) {
     console.log('sst', job_details.status)
 
 
-
-    const [selectedStatus, setSelectedStatus] = useState("all");
-    const filteredApplicants = applicants
-        .filter((app) => selectedStatus === "all" || app.status?.toLowerCase() === selectedStatus.toLowerCase());
-
-    // const [isEditing, setIsEditing] = useState(false);
-    //
-    //
-    // const [form, setForm] = useState({
-    //     job_title: job_details.job_title || "N/A",
-    //     job_type: job_details.job_title || "N/A",
-    //     job_description: job_details.job_description || "N/A",
-    //     job_location: job_details.job_location || "N/A",
-    //     company: job_details.company || "N/A",
-    //     salary_type: job_details.salary_type || "N/A",
-    //     min_salary: job_details.min_salary || "N/A",
-    //     max_salary: job_details.max_salary || "N/A",
-    //     min_experience_years: job_details.min_experience_years || "N/A",
-    //     requirements: job_details.requirements || [],
-    //     skills: job_details.skills || [],
-    //     status: job_details.status || "N/A"
-    // });
-    //
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setForm((prev) => ({ ...prev, [name]: value }));
-    // };
-    //
-    // const handleSave = async () => {
-    //     try {
-    //
-    //         const payload = {
-    //             job_title: form.job_title,
-    //             job_type: form.job_type,
-    //             job_description: form.job_description,
-    //             job_location: form.job_location,
-    //
-    //             company: form.company,
-    //             salary_type: form.salary_type,
-    //             min_salary: form.min_salary,
-    //             max_salary: form.max_salary,
-    //             min_experience_years: form.min_experience_years,
-    //             requirements: form.requirements,
-    //             skills: form.skills,
-    //             status: form.status
-    //
-    //         };
-    //         const res = await axios.patch('')
-    //     }
-    // }
+    const [isEditing, setIsEditing] = useState(false);
 
 
+    const [form, setForm] = useState({
+        job_title: job_details.job_title || "N/A",
+        job_type: job_details.job_title || "N/A",
+        job_description: job_details.job_description || "N/A",
+        job_location: job_details.job_location || "N/A",
+        company: job_details.company || "N/A",
+        salary_type: job_details.salary_type || "N/A",
+        min_salary: job_details.min_salary || "N/A",
+        max_salary: job_details.max_salary || "N/A",
+        min_experience_years: job_details.min_experience_years || "N/A",
+        requirements: job_details.requirements || [],
+        skills: job_details.skills || [],
+        status: job_details.status || "N/A"
+    });
 
-
-
-    const handleAccept = async (application) => {
-        try {
-            let endpoint;
-            let newStatus;
-            const qualifiedMsg = `Are you sure you want to qualify  ${application.user.first_name}  ${application.user.last_name} ?`;
-            const acceptedMsg = `Are you sure you want to accept ${application.user.first_name}  ${application.user.last_name} ?`;
-
-            switch (application.status) {
-
-                case 'Pending':
-                    if (confirm(qualifiedMsg)) {
-
-                        endpoint = '/applicants/qualified';
-                        newStatus = 'Qualified';
-                        break;
-                    } else
-                        return;
-
-                case 'Qualified':
-                    if (confirm(acceptedMsg)) {
-
-                        endpoint = '/applicants/accepted';
-                        newStatus = 'Accepted';
-                        break;
-                    }
-                    else
-                        return;
-                default:
-                    console.log('Invalid status for acceptance');
-                    return;
-            }
-
-            const response = await axios.post(endpoint, {
-                application_id: application.id
-            });
-
-            if (response.data.success) {
-                 window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error updating application status:", error);
-        }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleReject = async (application) => {
+    const handleSave = async () => {
         try {
-            const response = await axios.post('/applicants/rejected', {
-                application_id: application.id
-            });
 
-            if (response.data.success) {
-                // window.location.reload();
+            const payload = {
+                job_title: form.job_title,
+                job_type: form.job_type,
+                job_description: form.job_description,
+                job_location: form.job_location,
+
+                company: form.company,
+                salary_type: form.salary_type,
+                min_salary: form.min_salary,
+                max_salary: form.max_salary,
+                min_experience_years: form.min_experience_years,
+                requirements: form.requirements,
+                skills: form.skills,
+                status: form.status
+
+            };
+            const res = await axios.patch(
+                '/job-posts/{$job_details.id}',
+                payload
+            );
+
+            if (res.data.sucess) {
+                setIsEditing(false);
             }
-        } catch (error) {
-            console.error("Error rejecting application:", error);
+        } catch (err) {
+            alert("Error updating job details");
         }
+
     };
 
-    const [editingId, setEditingId] = useState(null);
-    const [remarkInput, setRemarkInput] = useState("");
-
-    const saveRemark = async (application) => {
-        try {
-            const response = await axios.patch("/applications/update-remark", {
-                application_id: application.id,
-                remarks: remarkInput.trim(),
-            });
-
-            if (response.data.success) {
-                application.remarks = remarkInput.trim();
-                setEditingId(null);
-                setRemarkInput("");
-                // window.location.reload();
-            } else {
-                throw new Error(response.data.message || "Failed to update remark");
-            }
-        } catch (error) {
-            console.error("Failed to save remark:", error);
-            alert(error.response?.data?.message || "Failed to save remark. Please try again.");
-        }
-    };
 
     return (
         <div>
@@ -172,104 +92,150 @@ export default function JobDetails({ job_details, applicants }) {
                 <h2 className="text-2xl font-bold">{job_title}</h2>
                 <SecondaryButton
                     className="px-4 py-2  black-white rounded "
-                    onClick={() => console.log("Edit button clicked")}
+                    onClick={() => setIsEditing(!isEditing)}
                 >
                     Edit
                 </SecondaryButton>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <div className="mb-4">
-                        <p className="font-semibold">Company:</p>
-                        <p className="text-gray-600">{company}</p>
-                    </div>
+                {isEditing ? (
 
-                    <div className="mb-4">
-                        <p className="font-semibold">Location:</p>
-                        <p className="text-gray-600">{job_location}</p>
-                    </div>
+                        <div className="col-span-2">
+                            <div className="mb-4">
+                                <label className="font-semibold">Company:</label>
+                                <input
+                                    type="text"
+                                    name="company"
+                                    value={form.company}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                                />
+                            </div>
 
-                    <div className="mb-4">
-                        <p className="font-semibold">Type:</p>
-                        <p className="text-gray-600">{job_type}</p>
-                    </div>
+                            <div className="mb-4">
+                                <label className="font-semibold">Location</label>
+                                <input
+                                    type="text"
+                                    name="Location"
+                                    value={form.job_location}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                                />
+                            </div>
 
-
-
-                    <div className="mb-4">
-                        <p className="font-semibold">Salary:</p>
-                        <p className="text-gray-600">
-                            {salary_type === 'Range'
-                                ? `$${min_salary.toLocaleString()} - $${max_salary.toLocaleString()}`
-                                : `$${min_salary.toLocaleString()}`
-                            }
-                        </p>
-                    </div>
-                </div>
-
-                <div>
-                    <div className="mb-4">
-                        <p className="font-semibold">Experience Required:</p>
-                        <p className="text-gray-600">{min_experience_years} years</p>
-                    </div>
-
-                    <div className="mb-4">
-                        <p className="font-semibold">Education:</p>
-                        <p className="text-gray-600">{job_details.degree?.name || 'N/A'}</p>
-
-                    </div>
-
-
-                    {status && (
-                        <div className="mb-4">
-                            <p className="font-semibold">Status:</p>
-                            <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>
+                            <div className="text">
+                                <label className="font-semibold">Job Type</label>
+                                <select
+                                    name ="job_type"
+                                    value={form.job_type}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                                    >
+                                    <option value="Full Time">Full Time</option>
+                                    <option value="Part Time">Part Time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Temporary">Temporary</option>
+                                    <option value="Internship">Internship</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Freelance">Freelance</option>
+                                </select>
+.
+                            </div>
                         </div>
-                    )}
+                            ) : (
+                            <>
+                                <div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Company:</p>
+                                        <p className="text-gray-600">{company}</p>
+                                    </div>
 
-                    <div className="mb-4">
-                        <p className="font-semibold">Views:</p>
-                        <p className="text-gray-600">{views}</p>
-                    </div>
-                </div>
-            </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Location:</p>
+                                        <p className="text-gray-600">{job_location}</p>
+                                    </div>
 
-            <div className="mb-6">
-                <p className="font-semibold">Description:</p>
-                <p className="text-gray-600 whitespace-pre-wrap">{job_description}</p>
-            </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Type:</p>
+                                        <p className="text-gray-600">{job_type}</p>
+                                    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {skills && skills.length > 0 && (
-                    <div className="mb-4">
-                        <p className="font-semibold mb-2">Skills:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {skills.map((skill, index) => (
-                                <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                    {skill.skill_name}
-                                </span>
-                            ))}
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Salary:</p>
+                                        <p className="text-gray-600">
+                                            {salary_type === 'Range'
+                                                ? `$${min_salary.toLocaleString()} - $${max_salary.toLocaleString()}`
+                                                : `$${min_salary.toLocaleString()}`
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Experience Required:</p>
+                                        <p className="text-gray-600">{min_experience_years} years</p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Education:</p>
+                                        <p className="text-gray-600">{job_details.degree?.name || 'N/A'}</p>
+                                    </div>
+
+                                    {status && (
+                                        <div className="mb-4">
+                                            <p className="font-semibold">Status:</p>
+                                            <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="mb-4">
+                                        <p className="font-semibold">Views:</p>
+                                        <p className="text-gray-600">{views}</p>
+                                    </div>
+                                </div>
+                            </>
+                            )}
+
                         </div>
-                    </div>
-                )}
 
-                {requirements && requirements.length > 0 && (
-                    <div className="mb-4">
-                        <p className="font-semibold mb-2">Requirements:</p>
-                        <ul className="list-disc ml-5">
-                            {requirements.map((req, index) => (
-                                <li key={index} className="text-gray-600">
-                                    {req.requirement_name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
+                            <div className="mb-6">
+                                <p className="font-semibold">Description:</p>
+                                <p className="text-gray-600 whitespace-pre-wrap">{job_description}</p>
+                            </div>
 
-            <ApplicantsSection applicants={applicants} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                {skills && skills.length > 0 && (
+                                    <div className="mb-4">
+                                        <p className="font-semibold mb-2">Skills:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {skills.map((skill, index) => (
+                                                <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                                    {skill.skill_name}
+                                                  </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
-        </div>
-    );
-}
+                                {requirements && requirements.length > 0 && (
+                                    <div className="mb-4">
+                                        <p className="font-semibold mb-2">Requirements:</p>
+                                        <ul className="list-disc ml-5">
+                                            {requirements.map((req, index) => (
+                                                <li key={index} className="text-gray-600">
+                                                    {req.requirement_name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <ApplicantsSection applicants={applicants} />
+                            </div>
+                        </div>
+                            )
+                }
