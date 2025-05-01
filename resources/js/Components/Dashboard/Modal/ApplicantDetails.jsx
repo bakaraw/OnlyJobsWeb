@@ -1,7 +1,5 @@
-// Modified ApplicantDetails.jsx
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
-import Chip from "@/Components/Chip.jsx";
 
 export default function ApplicantDetails({ user, onClose }) {
     // Add safeguards for possibly missing data

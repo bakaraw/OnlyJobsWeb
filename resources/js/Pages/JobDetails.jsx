@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import DashboardCard from "../Components/Dashboard/Modal/DashboardCard.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
-import PrimaryButton from "@/Components/PrimaryButton.jsx";
-import DangerButton from "@/Components/DangerButton.jsx";
+
+
 import axios from "axios";
-import Sidebar from "@/Components/Dashboard/Sidebar.jsx";
+import ApplicantsSection from "../Components/Dashboard/Modal/ApplicantsSection.jsx";
 
 export default function JobDetails({ job_details, applicants }) {
     const {
@@ -34,6 +33,54 @@ export default function JobDetails({ job_details, applicants }) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const filteredApplicants = applicants
         .filter((app) => selectedStatus === "all" || app.status?.toLowerCase() === selectedStatus.toLowerCase());
+
+    // const [isEditing, setIsEditing] = useState(false);
+    //
+    //
+    // const [form, setForm] = useState({
+    //     job_title: job_details.job_title || "N/A",
+    //     job_type: job_details.job_title || "N/A",
+    //     job_description: job_details.job_description || "N/A",
+    //     job_location: job_details.job_location || "N/A",
+    //     company: job_details.company || "N/A",
+    //     salary_type: job_details.salary_type || "N/A",
+    //     min_salary: job_details.min_salary || "N/A",
+    //     max_salary: job_details.max_salary || "N/A",
+    //     min_experience_years: job_details.min_experience_years || "N/A",
+    //     requirements: job_details.requirements || [],
+    //     skills: job_details.skills || [],
+    //     status: job_details.status || "N/A"
+    // });
+    //
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setForm((prev) => ({ ...prev, [name]: value }));
+    // };
+    //
+    // const handleSave = async () => {
+    //     try {
+    //
+    //         const payload = {
+    //             job_title: form.job_title,
+    //             job_type: form.job_type,
+    //             job_description: form.job_description,
+    //             job_location: form.job_location,
+    //
+    //             company: form.company,
+    //             salary_type: form.salary_type,
+    //             min_salary: form.min_salary,
+    //             max_salary: form.max_salary,
+    //             min_experience_years: form.min_experience_years,
+    //             requirements: form.requirements,
+    //             skills: form.skills,
+    //             status: form.status
+    //
+    //         };
+    //         const res = await axios.patch('')
+    //     }
+    // }
+
+
 
 
 
@@ -221,136 +268,8 @@ export default function JobDetails({ job_details, applicants }) {
                 )}
             </div>
 
-            <DashboardCard className="border rounded-lg shadow p-4 bg-white">
-                {/* Filter Buttons */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {['all', 'pending', 'qualified', 'accepted', 'rejected'].map(status => (
-                        <SecondaryButton
-                            key={status}
-                            onClick={() => setSelectedStatus(status)}
-                            className={`px-4 py-2 rounded-full border transition-all ${
-                                selectedStatus === status
-                                    ? 'bg-blue-600 text-black'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
-                        >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </SecondaryButton>
-                    ))}
-                </div>
+            <ApplicantsSection applicants={applicants} />
 
-                {filteredApplicants.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="table-auto w-full border-collapse">
-                            <thead className="bg-gray-50">
-                            <tr>
-                                <th className="py-2 px-4 text-left">Applicant</th>
-                                <th className="py-2 px-4 text-left">Status</th>
-                                <th className="py-2 px-4 text-left">Date Applied</th>
-                                <th className="py-2 px-4 text-left">Remarks</th>
-                                <th className="py-2 px-4 text-left">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {filteredApplicants.map((application, index) => (
-                                <tr key={application.id} className="border-t hover:bg-gray-50">
-                                    <td className="py-2 px-4">
-                                        <div className="flex items-center">
-                                            <span className="mr-2 text-gray-500">{index + 1}.</span>
-                                            {application.user.first_name} {application.user.last_name}
-                                        </div>
-                                    </td>
-                                    <td className="py-2 px-4 capitalize">{application.status}</td>
-                                    <td className="py-2 px-4">
-                                        {new Date(application.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {editingId === application.id ? (
-                                            <textarea
-                                                className="w-full border p-1 rounded"
-                                                value={remarkInput}
-                                                onChange={(e) => setRemarkInput(e.target.value)}
-                                                rows={2}
-                                            />
-                                        ) : (
-                                            <span>
-                                                    {application.remarks && application.remarks !== ""
-                                                        ? application.remarks
-                                                        : "No remarks"}
-                                                </span>
-                                        )}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {editingId === application.id ? (
-                                            <div className="flex space-x-2">
-                                                <PrimaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => saveRemark(application)}
-                                                >
-                                                    Save
-                                                </PrimaryButton>
-                                                <SecondaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => {
-                                                        setEditingId(null);
-                                                        setRemarkInput("");
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </SecondaryButton>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-wrap gap-2">
-                                                <SecondaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => {
-                                                        setEditingId(application.id);
-                                                        setRemarkInput(application.remarks || "");
-                                                    }}
-                                                >
-                                                    Add Remark
-                                                </SecondaryButton>
-
-                                                {application.status === 'Pending' && (
-                                                    <PrimaryButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleAccept(application)}
-                                                    >
-                                                        Qualify
-                                                    </PrimaryButton>
-                                                )}
-
-                                                {application.status === 'Qualified' && (
-                                                    <PrimaryButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleAccept(application)}
-                                                    >
-                                                        Accept
-                                                    </PrimaryButton>
-                                                )}
-
-                                                {(application.status === 'Pending' || application.status === 'Qualified') && (
-                                                    <DangerButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleReject(application)}
-                                                    >
-                                                        Reject
-                                                    </DangerButton>
-                                                )}
-                                            </div>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <p className="text-gray-500 text-center py-4">
-                        No {selectedStatus !== 'all' ? selectedStatus : ''} applicants available.
-                    </p>
-                )}
-            </DashboardCard>
         </div>
     );
 }

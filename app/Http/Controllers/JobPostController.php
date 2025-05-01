@@ -156,6 +156,38 @@ class JobPostController extends Controller
         $jobPost->requirement()->sync($requirementIds);
     }
 
+    public function edit($id) {
+
+        $editJob = JobPost::with(['skills', 'requirements', 'degree', 'status'])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'views',
+                'salary_type',
+                'status_id',
+                'degree_id',
+            )
+            ->findOrFail($id);
+
+
+
+
+        if ($editJob->id() !== 1) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return Inertia::render('JobDetails', [
+            'editJob' => $editJob,
+            ]);
+    }
+
     /*public function destroy($id)*/
     /*{*/
     /*    $jobPost = JobPost::findOrFail($id);*/

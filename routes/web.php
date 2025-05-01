@@ -160,7 +160,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/pipeline', [ApplicantController::class, 'pipeLineData'])->name('pipelineData');
     Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
     Route::get('/job-posts/{id}', [JobPostController::class, 'viewJobPost'])->name('job-posts.view');
-    Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
+    Route::get('/job-posts/{id}/edit', [JobPostController::class, 'update'])->name('job-posts.edit');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');});
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

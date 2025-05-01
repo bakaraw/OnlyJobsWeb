@@ -24,6 +24,8 @@ import {
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 import CreateJobPostModal from "./Modal/CreateJobPostModal.jsx";
+import {Button} from "@headlessui/react";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
 ChartJS.register(
@@ -152,9 +154,9 @@ export default function DashboardContent({
                     </DashboardCard>
                     <div className="space-y-2.5">
                         <div className="text-center">
-                        <PrimaryButton onClick={() => setIsModalOpen(true)}>
-                            Create Job
-                        </PrimaryButton>
+                        <SecondaryButton onClick={() => setIsModalOpen(true)}>
+                            + Create
+                        </SecondaryButton>
                         </div>
                         <CreateJobPostModal
                             show={isModalOpen}
