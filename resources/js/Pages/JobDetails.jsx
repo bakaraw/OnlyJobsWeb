@@ -240,6 +240,7 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                             Save
                         </SecondaryButton>
                     </div>
+                    </div>
 
 
 
@@ -344,6 +345,8 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                         <p className="font-semibold">Description:</p>
                         <p className="text-gray-600 whitespace-pre-wrap">{job_description}</p>
                     </div>
+
+
 
                     <div>
                         <ApplicantsSection applicants={applicants} />
