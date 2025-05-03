@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
@@ -6,8 +6,11 @@ import axios from "axios";
 import ApplicantsSection from "../Components/Dashboard/Modal/ApplicantsSection.jsx";
 import InputLabel from "@/Components/InputLabel.jsx";
 import InputError from "@/Components/InputError.jsx";
+import TextInput from "@/Components/TextInput.jsx";
+import debounce from "lodash.debounce";
+import Chip from "@/Components/Chip.jsx";
 
-export default function JobDetails({ job_details, applicants, degrees }) {
+export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_skills, edit_requirements}) {
     const {
         job_title = "N/A",
         job_type = "N/A",
@@ -21,7 +24,6 @@ export default function JobDetails({ job_details, applicants, degrees }) {
         min_experience_years = "",
         requirements = [],
         skills = [],
-        status = null,
 
 
     } = job_details;
@@ -31,10 +33,23 @@ export default function JobDetails({ job_details, applicants, degrees }) {
     console.log('sst', job_details.status)
 
     const [isEditing, setIsEditing] = useState(false);
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [adding, setAdding] = useState(false);
+
+
+    const [searchRequirement, setSearchRequirement] = useState('');
+    const [customRequirements, setCustomRequirements] = useState([]);
+    const filteredRequirements = (requirements || []).filter((requirement) =>
+        requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
+    );
+
 
     const [form, setForm] = useState({
         job_title: job_details.job_title || "N/A",
-        job_type: job_details.job_title || "N/A",
+        job_type: job_details.job_type || "N/A",
         job_description: job_details.job_description || "N/A",
         job_location: job_details.job_location || "N/A",
         company: job_details.company || "N/A",
@@ -44,9 +59,84 @@ export default function JobDetails({ job_details, applicants, degrees }) {
         min_experience_years: job_details.min_experience_years || "N/A",
         requirements: job_details.requirements || [],
         degree_id: job_details.degree_id || "1",
+        status_id: job_details.status_id || "1",
         skills: job_details.skills || [],
-        status: job_details.status || "N/A"
     });
+
+
+    const fetchSkills = useCallback(
+        debounce(async (search) => {
+            if (!search) {
+                setSuggestions([]);
+                return;
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const res = await fetch(`/skills?q=${encodeURIComponent(search)}`, {
+                    headers: { Accept: 'application/json' },
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                const data = await res.json();
+
+                // Match the exact response handling from your CreateJobPostModal
+                setSuggestions(data.data || data || []);
+
+            } catch (error) {
+                console.error("Failed to fetch skills", error);
+                setError("Failed to fetch skills. Please try again later.");
+                setSuggestions([]);
+            } finally {
+                setLoading(false);
+            }
+        }, 300),
+        []
+    );
+
+    useEffect(() => {
+        if (query) {
+            fetchSkills(query);
+        }
+        return fetchSkills.cancel;
+    }, [query, fetchSkills]);
+
+    const handleSkillSelect = (skill) => {
+        // Check if the skill is already selected
+        const skillAlreadySelected = form.skills.some(s => s.id === skill.id);
+
+        if (!skillAlreadySelected) {
+            setForm(prev => ({
+                ...prev,
+                skills: [...prev.skills, { id: skill.id, name: skill.name }]
+            }));
+        }
+
+        setQuery("");
+        setSuggestions([]);
+    };
+
+    const handleSelectRequirement = (requirement) => {
+        if (!form.requirements.some(req => req.requirement_id === requirement.requirement_id)) {
+            setForm(prev => ({
+                ...prev,
+                requirements: [...prev.requirements, requirement]
+            }));
+        }
+        setSearchRequirement("");
+    };
+
+
+    const handleRemoveRequirement = (requirementId) =>
+        setForm(prev => ({
+            ...prev,
+            requirements: prev.requirements.filter((req) => req.requirement_id !== requirementId)
+        }));
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,35 +145,42 @@ export default function JobDetails({ job_details, applicants, degrees }) {
 
     const handleSave = async () => {
         try {
+            // Format skills as needed for the API based on your CreateJobPostModal
+            const skillsArray = form.skills.map(skill => ({
+                skill_id: skill.id,
+                skill_name: skill.name
+            }));
 
             const payload = {
                 job_title: form.job_title,
                 job_type: form.job_type,
                 job_description: form.job_description,
                 job_location: form.job_location,
-
                 company: form.company,
                 salary_type: form.salary_type,
                 min_salary: form.min_salary,
                 max_salary: form.max_salary,
                 min_experience_years: form.min_experience_years,
                 requirements: form.requirements,
-                skills: form.skills,
-                status: form.status
-
+                skills: skillsArray,
+                status_id: form.status_id
             };
+
+            // Fixed URL template string
             const res = await axios.patch(
-                '/job-posts/{$job_details.id}',
+                `/job-posts/${job_details.id}`,
                 payload
             );
 
-            if (res.data.sucess) {
+            if (res.data && res.data.success) {
                 setIsEditing(false);
+                // You might want to refresh the job details here
+                console.log("Job updated successfully");
             }
         } catch (err) {
+            console.error("Error updating job details:", err);
             alert("Error updating job details");
         }
-
     };
 
     return (
@@ -212,8 +309,138 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                                 </select>
 
                             </div>
+
+                            <div className="mt-4 relative w-full">
+                                <InputLabel value="Skills"/>
+                                <div className="flex items-center">
+                                    <TextInput
+                                        className="mt-1 block w-full"
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                        placeholder="Search Skills"
+                                    />
+
+                                    {loading && (
+                                        <div className="mt-4 absolute right-3 inset-y-0 flex items-center">
+                                            <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <InputError message={error}/>
+
+                                {suggestions.length > 0 && (
+                                    <ul className="absolute top-full left-0 right-0 z-50 bg-white border mt-1 rounded-md shadow-md max-h-48 overflow-y-auto">
+                                        {suggestions.map((skill) => (
+                                            <li
+                                                key={skill.id}
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => handleSkillSelect(skill)}
+                                            >
+                                                {skill.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+
+                                <div className="flex items-center mt-4 gap-3">
+                                    {form.skills && form.skills.length > 0 ? (
+                                        form.skills.map((skill) => (
+                                            <Chip key={skill.id} className="min-w-32">
+                                                <div className="flex items-center justify-between w-full gap-2">
+                                                    <span>{skill.name}</span>
+                                                    <button
+                                                        onClick={() =>
+                                                            setForm(prev => ({
+                                                                ...prev,
+                                                                skills: prev.skills.filter((s) => s.id !== skill.id)
+                                                            }))
+                                                        }
+                                                        type="button"
+                                                    >
+                                                        <i className="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                            </Chip>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500">No skills selected</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="mt-4 relative">
+                                <InputLabel value="Requirements"/>
+                                <input
+                                    type="text"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                    value={searchRequirement}
+                                    onChange={(e) => setSearchRequirement(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            const requirementName = searchRequirement.trim();
+                                            const exists = requirements.some(
+                                                (r) => r.requirement_name.toLowerCase() === requirementName.toLowerCase()
+                                            );
+                                            const alreadySelected =
+                                                form.requirements.some(id =>
+                                                    requirements.find(r => r.requirement_id === id)?.requirement_name.toLowerCase() === requirementName.toLowerCase()
+                                                ) ||
+                                                customRequirements.includes(requirementName);
+
+                                            if (requirementName && !exists && !alreadySelected) {
+                                                setCustomRequirements(prev => [...prev, requirementName]);
+                                                setSearchRequirement('');
+                                            }
+                                        }
+                                    }}
+                                    placeholder="Search or add new requirement"
+                                />
+                                <InputError message={error?.requirements}/>
+                                {searchRequirement && (
+                                    <div
+                                        className="absolute top-full left-0 bg-white border border-gray-300 rounded-md shadow-lg w-full max-h-60 overflow-y-auto z-50">
+                                        {filteredRequirements.slice(0, 5).map((requirement) => (
+                                            <div
+                                                key={requirement.requirement_id}
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => handleSelectRequirement(requirement)}
+                                            >
+                                                {requirement.requirement_name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex items-center mt-4 gap-3 w-full">
+                                {(form?.requirements ?? []).map((reqId) => {
+                                    const req = (requirements ?? []).find((r) => r.requirement_id === reqId);
+                                    return req ? (
+                                        <Chip
+                                            key={req.requirement_id}
+                                            className="min-w-32"
+                                        >
+                                            <div className="flex items-center justify-between w-full gap-2">
+                                                <div>
+                                                    {req.requirement_name}
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemoveRequirement(req.requirement_id)}
+                                                >
+                                                    <i className="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+
+                                        </Chip>
+                                    ) : null;
+                                })}
+
+                            </div>
+
+
                         </div>
 
+                    </div>
 
 
                     <div className="flex justify-end mt-4">
@@ -226,6 +453,7 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                                 className="mt-1 block w-full h-40 p-2 border border-gray-500 rounded-md align-top"/>
                         </div>
                     </div>
+
                     <div className="flex justify-end mt-4">
                         <SecondaryButton
                             className="px-4 py-2 mr-2"
@@ -240,8 +468,6 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                             Save
                         </SecondaryButton>
                     </div>
-                    </div>
-
 
 
                 </>
@@ -286,6 +512,18 @@ export default function JobDetails({ job_details, applicants, degrees }) {
                         </div>
 
                         <div>
+                            <label className="font-semibold">Status: </label>
+                            <select
+                                name="status_id"
+                                className=' rounded-md'
+                                value={form.status_id}
+                                onChange={handleChange}
+                            >
+                                {edit_status.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+
                             <div className="mb-4">
                                 <p className="font-semibold">Experience Required:</p>
                                 <p className="text-gray-600">{min_experience_years} years</p>

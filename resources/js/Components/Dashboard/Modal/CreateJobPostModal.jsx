@@ -74,6 +74,7 @@ function CreateJobPostModal({ className, show, onClose }) {
             } catch (error) {
                 console.error("Failed to fetch skills", error);
                 setError("Failed to fetch skills. Please try again later.");
+
                 setSuggestions([]);
             } finally {
                 setLoading(false);
