@@ -83,14 +83,19 @@ export default function MessagePanel({ onClose, conversation }) {
 
     const onSend = async (messageText) => {
         try {
+            if (!selectedConversation?.id) {
+                throw new Error("No conversation selected.");
+            }
+
             const response = await axios.post(
-                `/conversations/${conversation.id}/send`,
+                `/conversations/${selectedConversation.id}/send`,
                 { text: messageText },
                 { withCredentials: true }
             );
 
             const newMsg = response.data;
 
+            // Update selected conversation's messages
             setSelectedConversation((prev) => ({
                 ...prev,
                 messages: [...prev.messages, {
@@ -99,10 +104,27 @@ export default function MessagePanel({ onClose, conversation }) {
                     fromUser: true,
                 }],
             }));
+
+            // Also update the conversations list
+            setConversations((prevConvs) =>
+                prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? {
+                            ...conv,
+                            messages: [...(conv.messages || []), {
+                                id: newMsg.id,
+                                text: newMsg.text,
+                                fromUser: true,
+                            }],
+                        }
+                        : conv
+                )
+            );
         } catch (error) {
             console.error("Failed to send message:", error);
         }
     };
+
 
     return (
         <div className="fixed inset-0 z-40 pointer-events-none">

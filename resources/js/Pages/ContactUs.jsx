@@ -1,7 +1,10 @@
 import ContentLayout from "@/Layouts/ContentLayout";
 import MainPageLayout from "@/Layouts/MainPageLayout";
+import { useState } from "react";
+import MessageButton from "@/Components/MessageButton";
 
 export default function ContactUs() {
+    const [showMessages, setShowMessages] = useState(false);
 
     return (
         <MainPageLayout
@@ -11,6 +14,11 @@ export default function ContactUs() {
                 </ContentLayout>
             }
         >
+            <MessageButton
+                show={showMessages}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
         </MainPageLayout>
     );
 }

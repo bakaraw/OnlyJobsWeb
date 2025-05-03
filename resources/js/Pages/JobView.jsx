@@ -150,7 +150,6 @@ export default function JobView() {
     const [showMessages, setShowMessages] = useState(false);
     const [conversation, setConversation] = useState(null);
 
-    const [conversationId, setConversationId] = useState(null);
 
     const handleSendMessage = async (message) => {
         try {
