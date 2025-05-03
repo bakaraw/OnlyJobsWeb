@@ -231,15 +231,13 @@ export default function JobView() {
 
                 <JobCompanyCard JobCompany={jobview.company} />
             </ContentLayout>
-            {
 
-                auth.user && (<MessageButton
-                    show={showMessages}
-                    conversation={conversation}
-                    onClick={() => setShowMessages(true)}
-                    onClose={() => setShowMessages(false)}
-                />)
-            }
+            <MessageButton
+                show={showMessages}
+                conversation={conversation}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
         </MainPageLayout>
     );
 }

@@ -14,8 +14,9 @@ class MessageController extends Controller
 {
     public function getConversations(Request $request)
     {
-        $conversations = Conversation::with('job')  // Eager load job relationship
+        $conversations = Conversation::with(['job', 'messages'])  // Eager load job relationship
             ->where('user_id', $request->user()->id)  // Example filter for current user
+            ->has('messages')
             ->get();
 
         return response()->json($conversations);
@@ -81,14 +82,25 @@ class MessageController extends Controller
         return response()->json($conversation, 201);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
+        // Get the current user's ID
+        $userId = $request->user()->id;
+
+        // Retrieve the conversation along with the related job and messages
         $conversation = Conversation::with(['job', 'messages'])->find($id);
 
+        // If the conversation is not found, return a 404 error
         if (!$conversation) {
             return response()->json(['error' => 'Conversation not found'], 404);
         }
 
+        // Add 'fromUser' to each message
+        $conversation->messages->each(function ($message) use ($userId) {
+            $message->fromUser = $message->sender_id === $userId; // Check if the sender is the current user
+        });
+
+        // Return the conversation with the messages including the 'fromUser' field
         return response()->json($conversation);
     }
 }
