@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
+import { usePage } from '@inertiajs/react';
 
 const panelVariants = {
     hidden: { opacity: 0, y: 80, scale: 0.95 },
@@ -28,75 +29,97 @@ const panelVariants = {
 };
 
 export default function MessagePanel({ onClose, conversation }) {
+    const { auth } = usePage().props;
     const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(conversation);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+    const [loadingConversation, setLoadingConversation] = useState(false);
+    const panelRef = useRef(null);
 
-    // Fetch conversation data based on conversationId when MessagePanel opens
-    //useEffect(() => {
-    //    if (conversation) {
-    //        axios.get(`/conversations/${conversation.id}`)
-    //            .then((response) => {
-    //                setSelectedConversation(response.data);
-    //            })
-    //            .catch((error) => {
-    //                console.error("Error fetching conversation:", error);
-    //            });
-    //    }
-    //}, [conversation]);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (panelRef.current && !panelRef.current.contains(event.target)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [onClose]);
 
     useEffect(() => {
         if (selectedConversation?.id) {
-            axios.get(`/conversations/${selectedConversation.id}`)
+            setLoadingMessages(true); // Start loading messages
+
+            axios.get(`/conversations/${selectedConversation.id}`, { withCredentials: true })
                 .then((response) => {
-                    setSelectedConversation(response.data);
+                    setSelectedConversation(response.data); // No need to map 'fromUser' in the frontend anymore
                 })
                 .catch((error) => {
                     console.error("Error fetching selected conversation:", error);
+                })
+                .finally(() => {
+                    setLoadingMessages(false); // Stop loading
                 });
         }
     }, [selectedConversation?.id]);
 
     useEffect(() => {
+        setLoadingConversation(true);
         axios.get('/conversations')
             .then((response) => {
-                console.log("Conversations fetched:", response.data);
                 setConversations(response.data);
             })
             .catch((error) => {
                 console.error("Error fetching conversations:", error);
-            });
+            })
+            .finally(() => {
+                setLoadingConversation(false);
+            })
+            ;
     }, []);
-
-    // Update the conversation state when a new message is sent
-    const updateSelectedConversation = (newMessage) => {
-        if (!selectedConversation) return;
-
-        const updatedConversation = {
-            ...selectedConversation,
-            messages: [...selectedConversation.messages, newMessage],
-        };
-        setSelectedConversation(updatedConversation);
-    };
 
     const onSend = async (messageText) => {
         try {
+            if (!selectedConversation?.id) {
+                throw new Error("No conversation selected.");
+            }
+
             const response = await axios.post(
-                `/conversations/${conversation.id}/send`,
+                `/conversations/${selectedConversation.id}/send`,
                 { text: messageText },
                 { withCredentials: true }
             );
 
-            // Append the new message to the UI
             const newMsg = response.data;
 
+            // Update selected conversation's messages
             setSelectedConversation((prev) => ({
                 ...prev,
                 messages: [...prev.messages, {
                     id: newMsg.id,
                     text: newMsg.text,
-                    fromUser: true, // you may confirm from response if it came from the user
+                    fromUser: true,
                 }],
             }));
+
+            // Also update the conversations list
+            setConversations((prevConvs) =>
+                prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? {
+                            ...conv,
+                            messages: [...(conv.messages || []), {
+                                id: newMsg.id,
+                                text: newMsg.text,
+                                fromUser: true,
+                            }],
+                        }
+                        : conv
+                )
+            );
         } catch (error) {
             console.error("Failed to send message:", error);
         }
@@ -104,9 +127,10 @@ export default function MessagePanel({ onClose, conversation }) {
 
 
     return (
-        <>
+        <div className="fixed inset-0 z-40 pointer-events-none">
             <motion.div
-                className="fixed bottom-6 right-6 w-full max-w-5xl h-[70vh] bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 flex overflow-hidden"
+                ref={panelRef}
+                className="absolute bottom-6 right-6 w-full max-w-5xl h-[70vh] bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 flex overflow-hidden pointer-events-auto"
                 initial="hidden"
                 animate="visible"
                 exit="exit"
@@ -116,14 +140,16 @@ export default function MessagePanel({ onClose, conversation }) {
                     conversations={conversations}
                     selected={selectedConversation}
                     onSelect={setSelectedConversation}
+                    loading={loadingConversation}
                 />
                 <ChatWindow
                     conversation={selectedConversation}
                     onSend={onSend}
                     onClose={onClose}
+                    loading={loadingMessages}
                 />
             </motion.div>
-        </>
+        </div>
     );
 }
 

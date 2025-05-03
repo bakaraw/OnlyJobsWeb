@@ -159,7 +159,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/requirements', [RequirementController::class, 'store'])->name('requirements.store');
     Route::get('/job-posts/{id}', [JobPostController::class, 'viewJobPost'])->name('job-posts.view');
     Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
-    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+    /*Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');*/
 
     // Email Verification Notice
     Route::get('/email/verify', [AuthController::class, 'verifyNotice'])
@@ -180,6 +180,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'getMessages']);  // Get messages for a specific conversation
     /*Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message*/
     Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
+
+    Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+    Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

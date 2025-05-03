@@ -9,12 +9,16 @@ import axios from 'axios';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
+import MessageButton from '@/Components/MessageButton';
 
 export default function FindWork() {
     const { jobs } = usePage().props;
     const { filters = {} } = usePage().props;
     const { search } = usePage().props;
     const { auth } = usePage().props;
+    const [showMessages, setShowMessages] = useState(false);
+
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
@@ -170,6 +174,12 @@ export default function FindWork() {
                     </div>
                 </div>
             </div>
+            <MessageButton
+                show={showMessages}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
+
         </MainPageLayout>
     );
 }

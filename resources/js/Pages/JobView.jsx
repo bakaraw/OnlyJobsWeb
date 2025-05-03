@@ -150,7 +150,6 @@ export default function JobView() {
     const [showMessages, setShowMessages] = useState(false);
     const [conversation, setConversation] = useState(null);
 
-    const [conversationId, setConversationId] = useState(null);
 
     const handleSendMessage = async (message) => {
         try {
@@ -231,15 +230,13 @@ export default function JobView() {
 
                 <JobCompanyCard JobCompany={jobview.company} />
             </ContentLayout>
-            {
 
-                auth.user && (<MessageButton
-                    show={showMessages}
-                    conversation={conversation}
-                    onClick={() => setShowMessages(true)}
-                    onClose={() => setShowMessages(false)}
-                />)
-            }
+            <MessageButton
+                show={showMessages}
+                conversation={conversation}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
         </MainPageLayout>
     );
 }
