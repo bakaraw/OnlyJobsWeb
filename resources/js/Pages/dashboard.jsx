@@ -7,11 +7,10 @@ import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function dashboard({ statuses, requirements , skills, degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({ statuses, requirements , degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
 
-    // Find the selected job if a job ID is set
     const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
     console.log("placements", placements);
     console.log("jobs", jobs);
@@ -65,7 +64,6 @@ export default function dashboard({ statuses, requirements , skills, degrees,get
                         <JobDetails
                             edit_status={statuses}
                             edit_requirements ={requirements}
-                            edit_skills={skills}
                             degrees={degrees}
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}

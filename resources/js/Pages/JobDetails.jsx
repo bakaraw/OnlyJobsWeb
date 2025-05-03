@@ -10,7 +10,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import debounce from "lodash.debounce";
 import Chip from "@/Components/Chip.jsx";
 
-export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_skills, edit_requirements}) {
+export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_requirements}) {
     const {
         job_title = "N/A",
         job_type = "N/A",
@@ -91,11 +91,12 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         []
     );
 
+    // Normalize skills data when job_details changes
     useEffect(() => {
         if (Array.isArray(job_details.skills)) {
             const normalized = job_details.skills.map(s => ({
-                id:   s.id        ?? s.skill_id,
-                name: s.name      ?? s.skill_name,
+                id: s.skill_id,          // <-- use skill_id
+                name: s.skill_name,      // <-- use skill_name
             }));
             setForm(prev => ({ ...prev, skills: normalized }));
         }
@@ -105,10 +106,11 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         fetchSkills(query);
     }, [query, fetchSkills]);
 
-
     const handleSkillSelect = (skill) => {
-
-        const skillAlreadySelected = form.skills.some(s => s.id === skill.id);
+        const skillAlreadySelected = form.skills.some(s =>
+            s.id === skill.id ||
+            (s.name && s.name.toLowerCase() === skill.name.toLowerCase())
+        );
 
         if (!skillAlreadySelected) {
             setForm(prev => ({
@@ -120,8 +122,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         setQuery("");
         setSuggestions([]);
     };
-    const handleSelectRequirement = (requirement) => {
 
+    const handleSelectRequirement = (requirement) => {
         if (!form.requirements.some(req => req.requirement_id === requirement.requirement_id)) {
             setForm(prev => ({
                 ...prev,
@@ -144,19 +146,32 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
     const handleSave = async () => {
         try {
-            setLoading(true);
-            setError(null);
+            // Log the original skills data from form
+            console.log('Original form skills:', form.skills);
 
-            // Format skills exactly as the backend expects
-            const skillsPayload = form.skills.map(s =>
-                // only include skill_id when it's a real ID
-                s.id != null
-                    ? { skill_id: s.id, skill_name: s.name }
-                    : { skill_name: s.name }
+            // Correctly format skills to match API expectations
+            const formattedSkills = form.skills.map(skill => {
+                // Create a properly formatted skill object
+                const formattedSkill = {
+                    skill_id: typeof skill === 'object' ?
+                        (skill.skill_id || skill.id || "") :
+                        (skill || ""),
+                    skill_name: typeof skill === 'object' ?
+                        (skill.skill_name || skill.name || "") :
+                        ""
+                };
+
+                // Log each skill transformation
+                console.log(`Formatting skill from:`, skill, `to:`, formattedSkill);
+
+                return formattedSkill;
+            });
+
+            console.log('Final formatted skills:', formattedSkills);
+
+            const formattedRequirements = form.requirements.map(req =>
+                typeof req === 'object' ? req.requirement_id : req
             );
-
-            // Requirements: get just the IDs as the backend expects
-            const requirementIds = form.requirements.map(r => r.requirement_id);
 
             const payload = {
                 job_title: form.job_title,
@@ -168,36 +183,33 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 min_salary: form.min_salary,
                 max_salary: form.max_salary,
                 min_experience_years: form.min_experience_years,
-                requirements: requirementIds,
-                skills: skillsPayload,
+                requirements: formattedRequirements,
+                skills: formattedSkills,
                 status_id: form.status_id,
-                degree_id: form.degree_id,
+                degree_id: form.degree_id
             };
 
-            console.log('🔍 sending skills payload:', payload.skills);
+            console.log('Sending payload:', payload);
 
-            // Use PUT as per your route definition
-            const res = await axios.put(
-                `/job-posts/${job_details.id}`,
-                payload
-            );
+            try {
+                const res = await axios.put(
+                    `/job-posts/${job_details.id}`,
+                    payload
+                );
 
-            if (res.data?.success) {
-                setIsEditing(false);
-                console.log("Job updated successfully");
-                // You might want to refresh the job details here or redirect
-                // window.location.reload(); // Uncomment if you want to reload the page
-            } else {
-                setError("Unexpected server response");
+                if (res.data.success) {
+                    setIsEditing(false);
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.log('Full error response:', error.response);
+                throw error;
             }
         } catch (err) {
-            console.error(err.response?.data || err);
-            setError(err.response?.data?.message || "Error updating job.");
-        } finally {
-            setLoading(false);
+            console.error('Error details:', err.response?.data || err);
+            alert("Error updating job details: " + (err.response?.data?.message || err.message));
         }
     };
-
     return (
         <div>
             {isEditing ? (
