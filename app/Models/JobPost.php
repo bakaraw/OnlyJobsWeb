@@ -36,7 +36,6 @@ class JobPost extends Model
     {
         return $this->belongsTo(Degree::class);
     }
-
     public function requirements()
     {
         return $this->belongsToMany(Requirement::class, 'job_post_requirement', 'job_post_id', 'requirement_id')

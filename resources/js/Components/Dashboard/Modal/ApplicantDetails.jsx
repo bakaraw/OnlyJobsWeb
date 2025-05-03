@@ -1,7 +1,5 @@
-// Modified ApplicantDetails.jsx
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
-import Chip from "@/Components/Chip.jsx";
 
 export default function ApplicantDetails({ user, onClose }) {
     // Add safeguards for possibly missing data
@@ -18,8 +16,8 @@ export default function ApplicantDetails({ user, onClose }) {
             </div>
         );
     }
-
     console.log("certi", user.certifications);
+    console.log("skills", user.user_skills);
     console.log("skills", user.user_skills);
 
 
@@ -95,6 +93,31 @@ export default function ApplicantDetails({ user, onClose }) {
                     </div>
                 )}
             </div>
+
+            {user.userSkills && user.userSkills.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Certificates</h3>
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Title</th>
+                            <th className="py-2 px-4">Description</th>
+                            <th className="py-2 px-4">Year</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {user.userSkills.map((skill, index) => (
+                                <td className="py-2 px-4">
+                                    {skill.skill_name }
+                                </td>
+
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+
 
 
 

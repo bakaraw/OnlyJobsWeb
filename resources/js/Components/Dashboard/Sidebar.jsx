@@ -39,7 +39,7 @@ export default function Sidebar({ auth, setActiveView }) {
                             onClick={() => setActiveView("joblist")}
                             className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
                         >
-                            💼 Job Posting
+                            💼 Jobs
                         </button>
                     </li>
 

@@ -117,64 +117,95 @@ class JobPostController extends Controller
     }
 
 
-    public function update(Request $request, $id)
-    {
-        $jobPost = JobPost::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $jobPost = JobPost::findOrFail($id);
 
-        if ($jobPost->user_id !== auth()->id()) {
+    if ($jobPost->user_id !== auth()->id()) {
+        abort(403, 'Unauthorized action.');
+    }
+
+
+    $validatedData = $request->validate([
+        'job_title'            => 'required|string|max:255',
+        'job_description'      => 'required|string',
+        'job_location'         => 'required|string|max:255',
+        'job_type'             => 'required|string|max:255',
+        'min_salary'           => 'required|numeric',
+        'max_salary'           => 'required|numeric',
+        'min_experience_years' => 'required|integer',
+        'company'              => 'required|string|max:255',
+        'status_id'            => 'nullable|exists:job_statuses,id',
+        'degree_id'            => 'nullable|exists:degrees,id',
+        'views'                => 'nullable',
+
+        'requirements'          => 'nullable|array',
+        'requirements.*'        => 'exists:requirements,requirement_id',
+
+        'skills'                => 'nullable|array',
+        'skills.*.skill_id'     => 'present|string', // Changed to present|string instead of requiring it to exist
+        'skills.*.skill_name'   => 'required|string|max:100'
+    ]);
+
+    $requirementIds = $validatedData['requirements'] ?? [];
+    unset($validatedData['requirements']);
+
+    $skillData = $validatedData['skills'] ?? [];
+    unset($validatedData['skills']);
+
+
+    $jobPost->update($validatedData);
+    $jobPost->requirements()->sync($requirementIds);
+
+    $jobPost->skills()->delete();
+
+    foreach ($skillData as $skill) {
+        try {
+            $jobPost->skills()->create([
+                'skill_id' => $skill['skill_id'], // Don't use null as default, use the provided value
+                'skill_name' => $skill['skill_name']
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating skill:', [
+                'skill' => $skill,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    return response()->json(['success' => true, 'message' => 'Job updated successfully']);
+}
+
+    public function edit($id) {
+        $editJob = JobPost::with(['skills', 'requirements', 'degree', 'status'])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'views',
+                'salary_type',
+                'status_id',
+                'degree_id',
+                'user_id'
+            )
+            ->findOrFail($id);
+
+        if ($editJob->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        $validatedData = $request->validate([
-            'job_title'            => 'required|string|max:255',
-            'job_description'      => 'required|string',
-            'job_location'         => 'required|string|max:255',
-            'job_type'             => 'required|string|max:255',
-            'min_salary'           => 'required|numeric',
-            'max_salary'           => 'required|numeric',
-            'min_experience_years' => 'required|integer',
-            'company'              => 'required|string|max:255',
-            'status_id'            => 'nullable|exists:job_statuses,id',
-            'degree_id'            => 'nullable|exists:degrees,id',
-            'views',
-
-            'requirements'          => 'nullable|array',
-            'requirements.*'        => 'exists:requirements,requirement_id',
-
-            'skills'               => 'nullable|array',
-            'skills.*'             => 'exists:skills,skill_id'
+        return Inertia::render('JobDetails', [
+            'editJob' => $editJob,
         ]);
-
-        $requirementIds = $validatedData['requirements'] ?? [];
-        unset($validatedData['requirements']);
-
-        $skillIds = $validatedData['skills'] ?? [];
-        unset($validatedData['skills']);
-
-        $jobPost->update($validatedData);
-        $jobPost->skills()->sync($skillIds);
-        $jobPost->requirement()->sync($requirementIds);
     }
 
-    /*public function destroy($id)*/
-    /*{*/
-    /*    $jobPost = JobPost::findOrFail($id);*/
-    /**/
-    /**/
-    /*    $jobPost->delete();*/
-    /**/
-    /*    return redirect()->route('dashboard')*/
-    /*        ->with('success', 'Job post deleted successfully.');*/
-    /*}*/
 
-    /*public function destroy(JobPost $job)*/
-    /*{*/
-    /*    if (!$job) {*/
-    /*        return response()->json(['error' => 'Job not found'], 404);*/
-    /*    }*/
-    /*    $job->delete();*/
-    /*    return response()->json(['success' => 'Deleted Successfully']);*/
-    /*}*/
     public function destroy($id)
     {
         $job = JobPost::find($id);
@@ -221,12 +252,16 @@ class JobPostController extends Controller
             'created_at',
             'company',
             'views',
+            'status_id'
         )
             ->with([
                 'applications' => function ($query) {
                     $query->select('id', 'job_post_id', 'status', 'remarks', 'created_at');
-                }
+                },
+                 'status'
+
             ])
+
             ->withCount([
                 'applications',
                 'applications as pending_count' => function ($query) {
@@ -246,6 +281,7 @@ class JobPostController extends Controller
 
 
         $users = $this->getUsersData();
+        $getJobPostData = $this->getJobPostData();
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
@@ -263,8 +299,10 @@ class JobPostController extends Controller
             'degrees' => Degree::all(),
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
+            'getJobPostData' => $getJobPostData,
         ]);
     }
+
 
     public function getUsersData()
     {
@@ -315,6 +353,30 @@ class JobPostController extends Controller
         return $users;
     }
 
+    public function getJobPostData()
+    {
+        $jobpostData = JobPost::with(['skills', 'requirements', 'degree', 'status'])
+            ->select(
+                'id',
+                'job_title',
+                'job_description',
+                'job_location',
+                'job_type',
+                'min_salary',
+                'max_salary',
+                'min_experience_years',
+                'company',
+                'views',
+                'salary_type',
+                'status_id',
+                'degree_id',
+            )
+            ->get();
+
+
+        return $jobpostData;
+    }
+
     public function viewJobPost($id)
     {
         $job = JobPost::with([
@@ -354,5 +416,10 @@ class JobPostController extends Controller
             'job_details' => $job,
             'applicants'   => $applicants,
         ]);
+    }
+
+    public function updateStatus(Request $request, $id) {
+
+
     }
 }

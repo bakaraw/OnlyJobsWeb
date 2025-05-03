@@ -5,17 +5,19 @@ import JobDetails from "@/Pages/JobDetails.jsx"; // Import the JobDetails compon
 import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function dashboard({ jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({ statuses, requirements , degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
 
-    // Find the selected job if a job ID is set
-    const selectedJob = selectedJobId ? jobs.find(job => job.id === selectedJobId) : null;
-
+    const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);
+
+
+
 
     const handleJobSelect = (jobId) => {
         setSelectedJobId(jobId);
@@ -52,14 +54,17 @@ export default function dashboard({ jobs, placements, auth, totalApplicants, use
                 ) : activeView === "jobDetails" && selectedJob ? (
                     // Show job details when a job is selected
                     <div>
-                        <PrimaryButton
+                        <SecondaryButton
                             onClick={handleBackToJobs}
                             className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                         >
 
-                            Back to Job List
-                        </PrimaryButton>
+                            Back
+                        </SecondaryButton>
                         <JobDetails
+                            edit_status={statuses}
+                            edit_requirements ={requirements}
+                            degrees={degrees}
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
                         />
