@@ -403,7 +403,7 @@ export default function CreateJobPost({ statuses, degrees, skills, requirements 
                             {customRequirements.map((requirement, index) => (
                                 <span
                                     key={`custom-${index}`}
-                                    className="inline-block bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
+                                    className="inline-blocka bg-gray-200 rounded px-2 py-1 mr-2 cursor-pointer"
                                     onClick={() =>
                                         setCustomRequirements((prev) => prev.filter((_, i) => i !== index))
                                     }
