@@ -39,13 +39,11 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
     const [error, setError] = useState(null);
     const [adding, setAdding] = useState(false);
 
-
     const [searchRequirement, setSearchRequirement] = useState('');
     const [customRequirements, setCustomRequirements] = useState([]);
-    const filteredRequirements = (requirements || []).filter((requirement) =>
+    const filteredRequirements = (edit_requirements || []).filter((requirement) =>
         requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
     );
-
 
     const [form, setForm] = useState({
         job_title: job_details.job_title || "N/A",
@@ -63,17 +61,14 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         skills: job_details.skills || [],
     });
 
-
     const fetchSkills = useCallback(
         debounce(async (search) => {
             if (!search) {
                 setSuggestions([]);
                 return;
             }
-
             setLoading(true);
             setError(null);
-
             try {
                 const res = await fetch(`/skills?q=${encodeURIComponent(search)}`, {
                     headers: { Accept: 'application/json' },
@@ -82,10 +77,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
-
                 const data = await res.json();
-
-                // Match the exact response handling from your CreateJobPostModal
                 setSuggestions(data.data || data || []);
 
             } catch (error) {
@@ -100,14 +92,22 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
     );
 
     useEffect(() => {
-        if (query) {
-            fetchSkills(query);
+        if (Array.isArray(job_details.skills)) {
+            const normalized = job_details.skills.map(s => ({
+                id:   s.id        ?? s.skill_id,
+                name: s.name      ?? s.skill_name,
+            }));
+            setForm(prev => ({ ...prev, skills: normalized }));
         }
-        return fetchSkills.cancel;
+    }, [job_details.skills]);
+
+    useEffect(() => {
+        fetchSkills(query);
     }, [query, fetchSkills]);
 
+
     const handleSkillSelect = (skill) => {
-        // Check if the skill is already selected
+
         const skillAlreadySelected = form.skills.some(s => s.id === skill.id);
 
         if (!skillAlreadySelected) {
@@ -120,8 +120,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         setQuery("");
         setSuggestions([]);
     };
-
     const handleSelectRequirement = (requirement) => {
+
         if (!form.requirements.some(req => req.requirement_id === requirement.requirement_id)) {
             setForm(prev => ({
                 ...prev,
@@ -130,7 +130,6 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         }
         setSearchRequirement("");
     };
-
 
     const handleRemoveRequirement = (requirementId) =>
         setForm(prev => ({
@@ -145,11 +144,19 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
     const handleSave = async () => {
         try {
-            // Format skills as needed for the API based on your CreateJobPostModal
-            const skillsArray = form.skills.map(skill => ({
-                skill_id: skill.id,
-                skill_name: skill.name
-            }));
+            setLoading(true);
+            setError(null);
+
+            // Format skills exactly as the backend expects
+            const skillsPayload = form.skills.map(s =>
+                // only include skill_id when it's a real ID
+                s.id != null
+                    ? { skill_id: s.id, skill_name: s.name }
+                    : { skill_name: s.name }
+            );
+
+            // Requirements: get just the IDs as the backend expects
+            const requirementIds = form.requirements.map(r => r.requirement_id);
 
             const payload = {
                 job_title: form.job_title,
@@ -161,25 +168,33 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 min_salary: form.min_salary,
                 max_salary: form.max_salary,
                 min_experience_years: form.min_experience_years,
-                requirements: form.requirements,
-                skills: skillsArray,
-                status_id: form.status_id
+                requirements: requirementIds,
+                skills: skillsPayload,
+                status_id: form.status_id,
+                degree_id: form.degree_id,
             };
 
-            // Fixed URL template string
-            const res = await axios.patch(
+            console.log('🔍 sending skills payload:', payload.skills);
+
+            // Use PUT as per your route definition
+            const res = await axios.put(
                 `/job-posts/${job_details.id}`,
                 payload
             );
 
-            if (res.data && res.data.success) {
+            if (res.data?.success) {
                 setIsEditing(false);
-                // You might want to refresh the job details here
                 console.log("Job updated successfully");
+                // You might want to refresh the job details here or redirect
+                // window.location.reload(); // Uncomment if you want to reload the page
+            } else {
+                setError("Unexpected server response");
             }
         } catch (err) {
-            console.error("Error updating job details:", err);
-            alert("Error updating job details");
+            console.error(err.response?.data || err);
+            setError(err.response?.data?.message || "Error updating job.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -327,7 +342,9 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     )}
                                 </div>
 
-                                <InputError message={error}/>
+                                {error && (
+                                    <div className="text-red-500 text-sm mt-1">{error}</div>
+                                )}
 
                                 {suggestions.length > 0 && (
                                     <ul className="absolute top-full left-0 right-0 z-50 bg-white border mt-1 rounded-md shadow-md max-h-48 overflow-y-auto">
@@ -343,19 +360,22 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     </ul>
                                 )}
 
-                                <div className="flex items-center mt-4 gap-3">
+                                <div className="flex flex-wrap items-center mt-4 gap-3">
                                     {form.skills && form.skills.length > 0 ? (
                                         form.skills.map((skill) => (
-                                            <Chip key={skill.id} className="min-w-32">
+                                            <Chip key={skill.id || skill.name} className="min-w-32">
                                                 <div className="flex items-center justify-between w-full gap-2">
                                                     <span>{skill.name}</span>
                                                     <button
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
                                                             setForm(prev => ({
                                                                 ...prev,
-                                                                skills: prev.skills.filter((s) => s.id !== skill.id)
-                                                            }))
-                                                        }
+                                                                skills: prev.skills.filter((s) =>
+                                                                    (s.id !== skill.id) || (!s.id && s.name !== skill.name)
+                                                                )
+                                                            }));
+                                                        }}
                                                         type="button"
                                                     >
                                                         <i className="fa-solid fa-xmark"></i>
@@ -412,30 +432,25 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     </div>
                                 )}
                             </div>
-                            <div className="flex items-center mt-4 gap-3 w-full">
-                                {(form?.requirements ?? []).map((reqId) => {
-                                    const req = (requirements ?? []).find((r) => r.requirement_id === reqId);
-                                    return req ? (
-                                        <Chip
-                                            key={req.requirement_id}
-                                            className="min-w-32"
-                                        >
-                                            <div className="flex items-center justify-between w-full gap-2">
-                                                <div>
-                                                    {req.requirement_name}
-                                                </div>
-                                                <button
-                                                    onClick={() => handleRemoveRequirement(req.requirement_id)}
-                                                >
-                                                    <i className="fa-solid fa-xmark"></i>
-                                                </button>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {(form?.requirements ?? []).map((req) => (
+                                    <div
+                                        key={req.requirement_id}
+                                    >
+                                        <div className="flex items-center justify-between w-full gap-2">
+                                            <div>
+                                                {req.requirement_name}
                                             </div>
-
-                                        </Chip>
-                                    ) : null;
-                                })}
-
+                                            <button
+                                                onClick={() => handleRemoveRequirement(req.requirement_id)}
+                                            >
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
+
 
 
                         </div>
