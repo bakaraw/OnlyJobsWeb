@@ -176,10 +176,16 @@ Route::middleware('auth')->group(function () {
 
     // messaging
     Route::get('/conversations', [MessageController::class, 'getConversations']);  // Fetch user's conversations
+    Route::get('/conversations/{id}', [MessageController::class, 'show']);
     Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'getMessages']);  // Get messages for a specific conversation
-    Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message
+    /*Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message*/
     Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);
+});
+
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
 //        'auth' => [

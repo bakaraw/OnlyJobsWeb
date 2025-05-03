@@ -1,5 +1,4 @@
 import React from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { router, usePage } from '@inertiajs/react';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
@@ -7,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import MessagePanel from '@/Components/Chat/MessagePanel';
+import MessageButton from '@/Components/MessageButton';
 
 const JobDescriptionCard = ({ jobDescription, className }) => (
     <div className={" " + className}>
@@ -37,7 +36,7 @@ const JobDetailsCard = ({ job, className }) => {
                             {
                                 job.salary_type === "Range" ?
                                     <p className="font-semibold">
-                                        ₱{job.min_salary} - ₱{job.max_salary}
+                                        Php {Number(job.min_salary).toLocaleString()} - Php {Number(job.max_salary).toLocaleString()}
                                     </p> : <p className='font-semibold'>₱{job.min_salary}</p>
 
                             }
@@ -147,7 +146,43 @@ const handleApply = (jobId) => {
 
 export default function JobView() {
     const { jobview } = usePage().props;
+    const { auth } = usePage().props;
     const [showMessages, setShowMessages] = useState(false);
+    const [conversation, setConversation] = useState(null);
+
+    const [conversationId, setConversationId] = useState(null);
+
+    const handleSendMessage = async (message) => {
+        try {
+            if (!conversation || !conversation.id) {
+                console.error("No conversation exists to send message.");
+                return;
+            }
+
+            await axios.post(`/conversations/${conversation.id}/messages`, {
+                text: message.text,
+            });
+
+            // Optional: append the new message to local state
+        } catch (err) {
+            console.error("Error sending message:", err);
+        }
+    };
+
+    const startConversation = async () => {
+        try {
+            // Call backend to create real conversation immediately
+            const response = await axios.post(`/conversations/${jobview.id}/create`);
+            console.log("Conversation response:", response.data); // debug log
+
+            setConversation(response.data);
+            setShowMessages(true);
+        } catch (err) {
+            console.error("Error creating conversation:", err);
+        }
+    };
+
+    // Function to handle starting a new conversation
 
     return (
         <MainPageLayout>
@@ -163,13 +198,16 @@ export default function JobView() {
                             </p>
                         </div>
                         <div className='flex items-center justify-between'>
-                            <button
-                                id='message-job'
-                                className='hover:bg-gray-200 text-primary px-3 py-2 rounded-lg'
-                                onClick={() => setShowMessages(true)}
-                            >
-                                <i class="fa-regular fa-message fa-xl"></i>
-                            </button>
+                            {
+
+                                auth.user && (<button
+                                    id='message-job'
+                                    className='hover:bg-gray-200 text-primary px-3 py-2 rounded-lg'
+                                    onClick={startConversation}
+                                >
+                                    <i class="fa-regular fa-message fa-xl"></i>
+                                </button>)
+                            }
                             <div className="ml-5">
                                 <PrimaryButton
 
@@ -192,22 +230,16 @@ export default function JobView() {
                 <RequirementsCard requirements={jobview.requirements} />
 
                 <JobCompanyCard JobCompany={jobview.company} />
-
-
             </ContentLayout>
-            <div>
-                {/* Your job content here */}
+            {
 
-                <button
+                auth.user && (<MessageButton
+                    show={showMessages}
+                    conversation={conversation}
                     onClick={() => setShowMessages(true)}
-                    className="fixed bottom-8 right-8 bg-primary hover:bg-dark text-white rounded-full w-14 h-14 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
-                >
-                    💬
-                </button>
-                <AnimatePresence>
-                    {showMessages && <MessagePanel onClose={() => setShowMessages(false)} />}
-                </AnimatePresence>
-            </div>
+                    onClose={() => setShowMessages(false)}
+                />)
+            }
         </MainPageLayout>
     );
 }

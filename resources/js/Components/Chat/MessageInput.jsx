@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import SecondaryButton from '../SecondaryButton';
+import TextInput from '../TextInput';
 
 export default function MessageInput({ onSend }) {
     const [message, setMessage] = useState('');
@@ -6,19 +8,20 @@ export default function MessageInput({ onSend }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!message.trim()) return;
-        onSend({ id: Date.now(), text: message, fromUser: true });
+
+        onSend(message); // Send just the raw text to the parent
         setMessage('');
     };
 
     return (
         <form onSubmit={handleSubmit} className="flex gap-2">
-            <input
+            <TextInput
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 border px-3 py-2 rounded"
+                className="flex-1 border px-3 w-full py-2 rounded"
                 placeholder="Type a message..."
             />
-            <button className="bg-blue-600 text-white px-4 py-2 rounded">Send</button>
+            <SecondaryButton className="px-4 py-2 rounded">Send</SecondaryButton>
         </form>
     );
 }

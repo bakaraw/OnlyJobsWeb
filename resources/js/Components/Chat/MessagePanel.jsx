@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 
@@ -26,56 +27,103 @@ const panelVariants = {
     },
 };
 
-export default function MessagePanel({ onClose }) {
-    const [conversations, setConversations] = useState([
-        {
-            id: 1,
-            name: 'Employer A',
-            lastMessage: 'Looking forward to working with you!',
-            messages: [
-                { id: 1, text: 'Hi! Is the job available?', fromUser: true },
-                { id: 2, text: 'Yes, are you free to start this week?', fromUser: false },
-            ],
-        },
-    ]);
-    const [selected, setSelected] = useState(conversations[0]);
+export default function MessagePanel({ onClose, conversation }) {
+    const [conversations, setConversations] = useState([]);
+    const [selectedConversation, setSelectedConversation] = useState(conversation);
 
+    // Fetch conversation data based on conversationId when MessagePanel opens
+    //useEffect(() => {
+    //    if (conversation) {
+    //        axios.get(`/conversations/${conversation.id}`)
+    //            .then((response) => {
+    //                setSelectedConversation(response.data);
+    //            })
+    //            .catch((error) => {
+    //                console.error("Error fetching conversation:", error);
+    //            });
+    //    }
+    //}, [conversation]);
+
+    useEffect(() => {
+        if (selectedConversation?.id) {
+            axios.get(`/conversations/${selectedConversation.id}`)
+                .then((response) => {
+                    setSelectedConversation(response.data);
+                })
+                .catch((error) => {
+                    console.error("Error fetching selected conversation:", error);
+                });
+        }
+    }, [selectedConversation?.id]);
+
+    useEffect(() => {
+        axios.get('/conversations')
+            .then((response) => {
+                console.log("Conversations fetched:", response.data);
+                setConversations(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching conversations:", error);
+            });
+    }, []);
+
+    // Update the conversation state when a new message is sent
     const updateSelectedConversation = (newMessage) => {
-        const updatedConversations = conversations.map((conv) =>
-            conv.id === selected.id
-                ? {
-                    ...conv,
-                    messages: [...conv.messages, newMessage],
-                    lastMessage: newMessage.text,
-                }
-                : conv
-        );
-        setConversations(updatedConversations);
-        setSelected((prev) => ({
-            ...prev,
-            messages: [...prev.messages, newMessage],
-        }));
+        if (!selectedConversation) return;
+
+        const updatedConversation = {
+            ...selectedConversation,
+            messages: [...selectedConversation.messages, newMessage],
+        };
+        setSelectedConversation(updatedConversation);
     };
 
+    const onSend = async (messageText) => {
+        try {
+            const response = await axios.post(
+                `/conversations/${conversation.id}/send`,
+                { text: messageText },
+                { withCredentials: true }
+            );
+
+            // Append the new message to the UI
+            const newMsg = response.data;
+
+            setSelectedConversation((prev) => ({
+                ...prev,
+                messages: [...prev.messages, {
+                    id: newMsg.id,
+                    text: newMsg.text,
+                    fromUser: true, // you may confirm from response if it came from the user
+                }],
+            }));
+        } catch (error) {
+            console.error("Failed to send message:", error);
+        }
+    };
+
+
     return (
-        <motion.div
-            className="fixed bottom-6 right-6 w-full max-w-5xl h-[70vh] bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 flex overflow-hidden"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={panelVariants}
-        >
-            <ConversationList
-                conversations={conversations}
-                selected={selected}
-                onSelect={setSelected}
-            />
-            <ChatWindow
-                conversation={selected}
-                onSend={updateSelectedConversation}
-                onClose={onClose}
-            />
-        </motion.div>
+        <>
+            <motion.div
+                className="fixed bottom-6 right-6 w-full max-w-5xl h-[70vh] bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 flex overflow-hidden"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={panelVariants}
+            >
+                <ConversationList
+                    conversations={conversations}
+                    selected={selectedConversation}
+                    onSelect={setSelectedConversation}
+                />
+                <ChatWindow
+                    conversation={selectedConversation}
+                    onSend={onSend}
+                    onClose={onClose}
+                />
+            </motion.div>
+        </>
     );
 }
 

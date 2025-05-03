@@ -14,8 +14,9 @@ class MessageController extends Controller
 {
     public function getConversations(Request $request)
     {
-        // Get the conversations for the authenticated user (only those with messages)
-        $conversations = Conversation::where('user_id', $request->user()->id)->get();
+        $conversations = Conversation::with('job')  // Eager load job relationship
+            ->where('user_id', $request->user()->id)  // Example filter for current user
+            ->get();
 
         return response()->json($conversations);
     }
@@ -35,13 +36,19 @@ class MessageController extends Controller
             'text' => 'required|string',
         ]);
 
-        // Get the conversation
+        // Get the conversation or fail with 404
         $conversation = Conversation::findOrFail($conversationId);
+
+        // Optional: Check if the user is a participant of the conversation
+        // (assuming you have such logic)
+        // if (!$conversation->participants->contains($request->user()->id)) {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
 
         // Create a new message
         $message = Message::create([
             'conversation_id' => $conversation->id,
-            'sender_id' => $request->user()->id,
+            'sender_id' => $request->user()->id,  // This requires authentication middleware
             'text' => $request->text,
         ]);
 
@@ -51,9 +58,8 @@ class MessageController extends Controller
     // Method to create a new conversation (if it doesn't exist)
     public function createConversation(Request $request, $jobId)
     {
-        // Ensure the job exists (and belongs to an admin)
+        // Ensure the job exists
         $job = JobPost::findOrFail($jobId);
-        $admin = User::findOrFail($job->admin_id);
 
         // Check if a conversation already exists between this user and the admin for this job
         $existingConversation = Conversation::where('user_id', $request->user()->id)
@@ -61,15 +67,28 @@ class MessageController extends Controller
             ->first();
 
         if ($existingConversation) {
+            // If a conversation exists, return it
             return response()->json($existingConversation);
         }
 
         // Otherwise, create a new conversation
         $conversation = Conversation::create([
-            'user_id' => $request->user()->id,
-            'job_id' => $jobId,
+            'user_id' => $request->user()->id, // Associate the conversation with the logged-in user
+            'job_id' => $jobId, // Associate the conversation with the job
         ]);
 
+        // Return the created conversation with a 201 status
         return response()->json($conversation, 201);
+    }
+
+    public function show($id)
+    {
+        $conversation = Conversation::with(['job', 'messages'])->find($id);
+
+        if (!$conversation) {
+            return response()->json(['error' => 'Conversation not found'], 404);
+        }
+
+        return response()->json($conversation);
     }
 }
