@@ -1,8 +1,17 @@
 import React from 'react';
+import { Loader2 } from 'lucide-react';
 
-export default function ConversationList({ conversations, selected, onSelect }) {
+export default function ConversationList({ conversations, selected, onSelect, loading }) {
     console.log("Conversion List: ", conversations)
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Loader2 className="animate-spin w-8 h-8 text-gray-500" />
+            </div>
+        );
+    }
     return (
+
         <div className="w-1/3 border-r overflow-y-auto p-4">
             {conversations
                 .filter((conv) => conv.messages?.length > 0 || selected?.id === conv.id)

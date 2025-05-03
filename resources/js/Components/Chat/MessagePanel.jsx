@@ -33,6 +33,7 @@ export default function MessagePanel({ onClose, conversation }) {
     const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(conversation);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [loadingConversation, setLoadingConversation] = useState(false);
     const panelRef = useRef(null);
 
     useEffect(() => {
@@ -66,13 +67,18 @@ export default function MessagePanel({ onClose, conversation }) {
     }, [selectedConversation?.id]);
 
     useEffect(() => {
+        setLoadingConversation(true);
         axios.get('/conversations')
             .then((response) => {
                 setConversations(response.data);
             })
             .catch((error) => {
                 console.error("Error fetching conversations:", error);
-            });
+            })
+            .finally(() => {
+                setLoadingConversation(false);
+            })
+            ;
     }, []);
 
     const onSend = async (messageText) => {
@@ -112,6 +118,7 @@ export default function MessagePanel({ onClose, conversation }) {
                     conversations={conversations}
                     selected={selectedConversation}
                     onSelect={setSelectedConversation}
+                    loading={loadingConversation}
                 />
                 <ChatWindow
                     conversation={selectedConversation}
