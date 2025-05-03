@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -133,37 +134,44 @@ class JobSeekerController extends Controller
     /*        'filters' => $request->only(['experience', 'job_type']),*/
     /*    ]);*/
     /*}*/
-
     public function show(Request $request)
     {
+        $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
+        $searchTerm = $request->input('search');
+
+        // Apply filters to query before fetching data
+        if ($request->filled('experience')) {
+            $expFilters = (array) $request->input('experience');
+            $jobQuery->whereIn('min_experience_years', $expFilters);
+        }
+
+        if ($request->filled('job_type')) {
+            $jobTypes = (array) $request->input('job_type');
+            $jobQuery->whereIn('job_type', $jobTypes);
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+
+            $jobQuery->where(function ($query) use ($searchTerm) {
+                $query->where('job_title', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('skills', function ($skillQuery) use ($searchTerm) {
+                        $skillQuery->where('skill_name', 'like', "%{$searchTerm}%");
+                    });
+            });
+        }
+
+        // Fetch jobs
+        $jobs = $jobQuery->get();
+        $user = null;
+
         if (Auth::check()) {
             $user = Auth::user();
-
-            // Start query
-            $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
-
-            // Apply filters to query before fetching data
-            if ($request->filled('experience')) {
-                $expFilters = (array) $request->input('experience');
-                $jobQuery->whereIn('min_experience_years', $expFilters);
-            }
-
-            if ($request->filled('job_type')) {
-                $jobTypes = (array) $request->input('job_type');
-                $jobQuery->whereIn('job_type', $jobTypes);
-            }
-
-            // Fetch filtered jobs
-            $filteredJobs = $jobQuery->get();
-
             // Score the jobs
-            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs($user, $filteredJobs);
-
-            // Take top 10 based on score
+            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs($user, $jobs);
             $jobs = $scoredJobs->sortByDesc('match_score')->take(10)->values();
         } else {
-            // Guest users just get the latest jobs
-            $jobs = JobPost::with(['skills', 'requirements'])->latest()->take(10)->get();
+            $jobs = $jobs->take(10)->values();
         }
 
         // Format for frontend
@@ -192,8 +200,38 @@ class JobSeekerController extends Controller
         });
 
         return Inertia::render('FindWork', [
+            'user' => $user,
             'jobs' => $formattedJobs,
-            'filters' => $request->only(['experience', 'job_type']),
+            'filters' => $request->only(['experience', 'job_type', 'search']),
+            'search' => $searchTerm,
         ]);
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => ['required', 'image', 'max:2048'],
+        ]);
+
+
+        $user = $request->user();
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+
+            $uploadPath = Storage::disk('cloudinary')->putFile('/profile_pictures', $file);
+
+            if ($user->profile_pic_public_id) {
+                Storage::disk('cloudinary')->delete($user->profile_pic_public_id);
+            }
+
+            $url = Storage::disk('cloudinary')->url($uploadPath);
+            $user->profile_pic_url = $url;
+            $user->profile_pic_public_id = $uploadPath;
+
+            $user->save();
+        }
+
+        return back();
     }
 }

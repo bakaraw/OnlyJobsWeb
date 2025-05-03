@@ -75,8 +75,6 @@ export default function NavBarAuthBtns() {
                             >
                                 Log Out
                             </Dropdown.Link>
-
-
                         </Dropdown.Content>
                     </Dropdown>
                 </div>

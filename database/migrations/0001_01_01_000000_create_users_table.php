@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('address_id')->nullable()->constrained('addresses')->nullOnDelete();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-           // $table->enum('account_type', ['jobseeker', 'company']);
+            // $table->enum('account_type', ['jobseeker', 'company']);
             $table->rememberToken();
             $table->timestamps();
             $table->unsignedBigInteger('account_id')->nullable();
