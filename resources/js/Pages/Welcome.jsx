@@ -1,8 +1,11 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
+import MessageButton from '@/Components/MessageButton';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
+    const [showMessages, setShowMessages] = useState(false);
     return (
         <>
             <MainPageLayout />
@@ -35,6 +38,12 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                     </div>
                 </div>
             </div>
+            <MessageButton
+                show={showMessages}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
+
         </>
     );
 }

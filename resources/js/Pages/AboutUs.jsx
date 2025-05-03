@@ -1,7 +1,10 @@
 import ContentLayout from "@/Layouts/ContentLayout";
 import MainPageLayout from "@/Layouts/MainPageLayout";
+import { useState } from "react";
+import MessageButton from "@/Components/MessageButton";
 
 export default function AboutUs() {
+    const [showMessages, setShowMessages] = useState(false);
     return (
         <MainPageLayout
             header={
@@ -32,6 +35,11 @@ export default function AboutUs() {
                     </div>
                 </div>
             </div>
+            <MessageButton
+                show={showMessages}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
         </MainPageLayout>
     );
 }

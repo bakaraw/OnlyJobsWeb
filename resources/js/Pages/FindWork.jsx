@@ -8,10 +8,17 @@ import { router } from '@inertiajs/react';
 import axios from 'axios';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
+import { Link } from '@inertiajs/react';
+import { useState } from 'react';
+import MessageButton from '@/Components/MessageButton';
 
-export default function FindWork({ auth, laravelVersion, phpVersion }) {
+export default function FindWork() {
     const { jobs } = usePage().props;
     const { filters = {} } = usePage().props;
+    const { search } = usePage().props;
+    const { auth } = usePage().props;
+    const [showMessages, setShowMessages] = useState(false);
+
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
@@ -34,6 +41,7 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
             replace: true,
         });
     }, [data]);
+    console.log(("User: " + auth.user))
 
     return (
         <MainPageLayout
@@ -41,6 +49,18 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                 <ContentLayout>
                     <p className="text-3xl">Find the best jobs for you</p>
                     <p className='mt-3'>Browse jobs posted on here or search the job you want</p>
+                    {
+                        auth.user && auth.user.user_skills.length == 0 ? (
+                            <div className='mt-10 bg-yellow-200 p-4 flex items-center justify-between border border-yellow-500 rounded-lg'>
+                                <p>Set-up your profile for personalized Job recommendations</p>
+                                <Link
+                                    className='bg-yellow-500 px-4 py-2 rounded-lg'
+                                    href={route("profile.edit")}
+                                >Set up profile</Link>
+                            </div>
+                        ) : <></>
+
+                    }
                 </ContentLayout>
             }
         >
@@ -120,6 +140,15 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
 
                 {/* Job listing section - filling the rest of the width */}
                 <div className="flex-1 pl-4">
+                    {
+                        search && (
+                            <div className='pl-6'>
+                                <p className='text-xl'>Results for "{search}"</p>
+                            </div>
+
+                        )
+                    }
+
                     {jobs && jobs.map((job) => (
                         <div key={job.id} className="mb-4">
                             <JobCard job={job}>
@@ -145,6 +174,12 @@ export default function FindWork({ auth, laravelVersion, phpVersion }) {
                     </div>
                 </div>
             </div>
+            <MessageButton
+                show={showMessages}
+                onClick={() => setShowMessages(true)}
+                onClose={() => setShowMessages(false)}
+            />
+
         </MainPageLayout>
     );
 }
