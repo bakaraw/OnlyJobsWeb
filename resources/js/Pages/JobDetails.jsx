@@ -45,6 +45,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
     );
 
+
+
     const [form, setForm] = useState({
         job_title: job_details.job_title || "N/A",
         job_type: job_details.job_type || "N/A",
@@ -60,6 +62,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         status_id: job_details.status_id || "1",
         skills: job_details.skills || [],
     });
+
 
     const fetchSkills = useCallback(
         debounce(async (search) => {
@@ -146,28 +149,11 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
     const handleSave = async () => {
         try {
-            // Log the original skills data from form
-            console.log('Original form skills:', form.skills);
-
-            // Correctly format skills to match API expectations
-            const formattedSkills = form.skills.map(skill => {
-                // Create a properly formatted skill object
-                const formattedSkill = {
-                    skill_id: typeof skill === 'object' ?
-                        (skill.skill_id || skill.id || "") :
-                        (skill || ""),
-                    skill_name: typeof skill === 'object' ?
-                        (skill.skill_name || skill.name || "") :
-                        ""
-                };
-
-                // Log each skill transformation
-                console.log(`Formatting skill from:`, skill, `to:`, formattedSkill);
-
-                return formattedSkill;
-            });
-
-            console.log('Final formatted skills:', formattedSkills);
+            // Format skills and requirements as before
+            const formattedSkills = form.skills.map(skill => ({
+                skill_id: typeof skill === 'object' ? (skill.skill_id || skill.id || "") : (skill || ""),
+                skill_name: typeof skill === 'object' ? (skill.skill_name || skill.name || "") : ""
+            }));
 
             const formattedRequirements = form.requirements.map(req =>
                 typeof req === 'object' ? req.requirement_id : req
@@ -189,26 +175,35 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 degree_id: form.degree_id
             };
 
-            console.log('Sending payload:', payload);
+            const res = await axios.put(`/job-posts/${job_details.id}`, payload);
+            if (res.data.success) {
 
-            try {
-                const res = await axios.put(
-                    `/job-posts/${job_details.id}`,
-                    payload
-                );
-
-                if (res.data.success) {
-                    setIsEditing(false);
-                    window.location.reload();
+                // If the updated data is included in the response, use it
+                if (res.data.job) {
+                    setForm({
+                        job_title: res.data.job.job_title || form.job_title,
+                        job_type: res.data.job.job_type || form.job_type,
+                        job_description: res.data.job.job_description || form.job_description,
+                        job_location: res.data.job.job_location || form.job_location,
+                        company: res.data.job.company || form.company,
+                        salary_type: res.data.job.salary_type || form.salary_type,
+                        min_salary: res.data.job.min_salary || form.min_salary,
+                        max_salary: res.data.job.max_salary || form.max_salary,
+                        min_experience_years: res.data.job.min_experience_years || form.min_experience_years,
+                        requirements: res.data.job.requirements || form.requirements,
+                        degree_id: res.data.job.degree_id || form.degree_id,
+                        status_id: res.data.job.status_id || form.status_id,
+                        skills: res.data.job.skills || form.skills,
+                    });
                 }
-            } catch (error) {
-                console.log('Full error response:', error.response);
-                throw error;
+                // Exit edit mode
+                setIsEditing(false);
             }
         } catch (err) {
             console.error('Error details:', err.response?.data || err);
             alert("Error updating job details: " + (err.response?.data?.message || err.message));
         }
+
     };
     return (
         <div>
@@ -530,9 +525,9 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                             <div className="mb-4">
                                 <p className="font-semibold">Salary:</p>
                                 <p className="text-gray-600">
-                                    {salary_type === 'Range'
-                                        ? `$${min_salary.toLocaleString()} - $${max_salary.toLocaleString()}`
-                                        : `$${min_salary.toLocaleString()}`
+                                    {form.salary_type === 'Range'
+                                        ? `$${Number(form.min_salary).toLocaleString()} - $${Number(form.max_salary).toLocaleString()}`
+                                        : `$${Number(form.min_salary).toLocaleString()}`
                                     }
                                 </p>
                             </div>
