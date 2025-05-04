@@ -282,6 +282,7 @@ public function update(Request $request, $id)
 
         $users = $this->getUsersData();
         $getJobPostData = $this->getJobPostData();
+        $jobView = $this->getJobView();
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
@@ -300,6 +301,8 @@ public function update(Request $request, $id)
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
             'getJobPostData' => $getJobPostData,
+            'jobView ' => $jobView,
+
         ]);
     }
 
@@ -377,6 +380,17 @@ public function update(Request $request, $id)
         return $jobpostData;
     }
 
+    public function getJobView()
+    {
+        $jobView = JobPost::select(
+            'id',
+            'job_title',
+            'views'
+        )->get();
+
+        return $jobView;
+    }
+
     public function viewJobPost($id)
     {
         $job = JobPost::with([
@@ -418,8 +432,19 @@ public function update(Request $request, $id)
         ]);
     }
 
-    public function updateStatus(Request $request, $id) {
 
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate(['status_id' => 'required|exists:job_statuses,id']);
 
+        $job = JobPost::findOrFail($id);
+        $job->status_id = $request->status_id;
+        $job->save();
+
+        return response()->json(['success' => true, 'job' => $job]);
     }
+
+
+
+
 }

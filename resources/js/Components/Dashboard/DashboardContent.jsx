@@ -39,7 +39,8 @@ export default function DashboardContent({
     applicants,
     totalViews,
     totalUsers,
-    totalJob,
+    totalJob, jobView
+
 }) {
 
     // function toggleUserDetails(id) {
@@ -94,18 +95,6 @@ export default function DashboardContent({
         }
     };
 
-    // const chartData = {
-    //     labels: jobs.map((job) => job.job_title),
-    //     datasets: [
-    //         {
-    //             label: "Job Views",
-    //             data: jobs.map((job) => job.views),
-    //             backgroundColor: "rgba(75, 192, 192, 0.2)",
-    //             borderColor: "rgba(75, 192, 192, 1)",
-    //             borderWidth: 1,
-    //         },
-    //     ],
-    // };
 
     return (
         <div className="p-6">

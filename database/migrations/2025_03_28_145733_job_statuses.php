@@ -20,7 +20,10 @@ return new class extends Migration {
             ['name' => 'Active'],
             ['name' => 'Closed'],
             ['name' => 'Temporary Closed'],
-            ['name' => 'Updated'],
+            ['name' => 'Filled '],
+            ['name' => 'Expired  '],
+            ['name' => 'Paused '],
+            ['name' => 'Suspended '],
         ]);
     }
 
