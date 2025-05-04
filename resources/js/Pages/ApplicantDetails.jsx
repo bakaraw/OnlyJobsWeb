@@ -1,7 +1,9 @@
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function ApplicantDetails({ selectedApplicant, onClose }) {
+export default function ApplicantDetails({ selectedApplicant, onClose, onBack }) {
+
 
     console.log(selectedApplicant)
     if (!selectedApplicant) {
@@ -34,20 +36,49 @@ export default function ApplicantDetails({ selectedApplicant, onClose }) {
     const lastName = selectedApplicant.last_name || "";
     const suffix = selectedApplicant.suffix || "";
 
+
+    const handleExportPdf = async () => {
+        try {
+            const response = axios.get(`/users/${selectedApplicant.id}/export-pdf`, { responseType: 'blob' });
+
+            // Create a blob URL and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute(
+                'download',
+                `user-${selectedApplicant.id}-profile.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error('PDF export failed', err);
+            alert('Failed to download PDF.');
+        }
+    };
+
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <div>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">
                     {firstName}{" "}
                     {middleName ? middleName[0] + ". " : ""} {lastName}
                     {suffix ? ", " + suffix : ""}
                 </h2>
-                <DangerButton
-                    onClick={onClose}
-                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+
+                <SecondaryButton
+                    onClick={onBack}
+                    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                 >
-                    Close
-                </DangerButton>
+                    Back
+                </SecondaryButton>
+
+                <SecondaryButton onClick={handleExportPdf}>
+                    Export PDF
+                </SecondaryButton>
+
+
+
             </div>
 
             {/* Personal Info */}

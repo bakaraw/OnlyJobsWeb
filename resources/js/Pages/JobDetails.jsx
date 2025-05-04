@@ -10,7 +10,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import debounce from "lodash.debounce";
 import Chip from "@/Components/Chip.jsx";
 
-export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_requirements}) {
+export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_requirements, onBack}) {
     const {
         job_title = "N/A",
         job_type = "N/A",
@@ -487,6 +487,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                     </div>
 
 
+
                     <div className="flex justify-end mt-4">
                         <div className="w-full mb-6">
                             <label className="font-semibold">Job Description: </label>
@@ -494,8 +495,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 name="job_description"
                                 value={form.job_description}
                                 onChange={handleChange}
-                                className="mt-1 block w-full h-40 p-2 border border-gray-500 rounded-md align-top"/>
-                        </div>
+                                className="mt-1 block w-full h-80 p-2 border border-gray-500 rounded-md align-top"/>                        </div>
                     </div>
 
                     <div className="flex justify-end mt-4">
@@ -547,12 +547,23 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 </div>
                             </div>
                             <div className="flex-1">
+
                                 <SecondaryButton
                                     className="px-4 py-2 black-white rounded-md flex justify-center"
                                     onClick={() => setIsEditing(true)}
                                 >
                                     Edit
                                 </SecondaryButton>
+
+                                <SecondaryButton
+                                    onClick={onBack}
+                                    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+                                >
+                                    Back
+                                </SecondaryButton>
+
+
+
                             </div>
                         </div>
 

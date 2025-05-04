@@ -67,37 +67,42 @@ export default function dashboard({ jobView, statuses, requirements , degrees,ge
                         applicants={applicants}
                         auth={auth}
                         onApplicantSelect={handleApplicantSelect}
+                        onBack={handleBackToApplicants}
+
                     />
                 ) : activeView === "applicantDetails" && selectedApplicant ? (
                     <div>
-                        <SecondaryButton
-                            onClick={handleBackToApplicants}
-                            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
-                        >
-                            Back
-                        </SecondaryButton>
+                        {/*<SecondaryButton*/}
+                        {/*    onClick={handleBackToApplicants}*/}
+                        {/*    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"*/}
+                        {/*>*/}
+                        {/*    Back*/}
+                        {/*</SecondaryButton>*/}
                         <ApplicantDetails
                             selectedApplicant={selectedApplicant}
                             auth={auth}
+                            onBack={handleBackToApplicants}
+
                         />
                     </div>
 
                 ) : activeView === "jobDetails" && selectedJob ? (
-                    // Show job details when a job is selected
                     <div>
-                        <SecondaryButton
-                            onClick={handleBackToJobs}
-                            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
-                        >
+                        {/*<SecondaryButton*/}
+                        {/*    onClick={handleBackToJobs}*/}
+                        {/*    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"*/}
+                        {/*>*/}
 
-                            Back
-                        </SecondaryButton>
+                        {/*    Back*/}
+                        {/*</SecondaryButton>*/}
                         <JobDetails
                             edit_status={statuses}
                             edit_requirements ={requirements}
                             degrees={degrees}
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
+                            onBack={handleBackToJobs}
+
                         />
                     </div>
                 ) : (

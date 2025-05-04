@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Validation\Rule;
 use App\Models\Application;
 use App\Models\JobPost;
@@ -378,16 +379,6 @@ public function update(Request $request, $id)
         return $jobpostData;
     }
 
-//    public function getJobView()
-//    {
-//        $jobView = JobPost::select(
-//            'id',
-//            'job_title',
-//            'views'
-//        )->get();
-//
-//        return $jobView;
-//    }
 
     public function incrementJobViews($id)
     {
@@ -436,6 +427,29 @@ public function update(Request $request, $id)
         ]);
     }
 
+    public function exportPdf($id)
+    {
+        $user = User::select(
+            'id','first_name','last_name','middle_name','suffix',
+            'email','contact_number','birthdate','gender','address_id'
+        )
+            ->with([
+                'address',
+                'applications'            => fn($q) => $q->select('id','user_id','job_post_id','status','remarks','created_at'),
+                'applications.jobPost'    => fn($q) => $q->select('id','job_title','job_type','company'),
+                'applications.jobPost.requirements',
+                'requirements',
+                'educations',
+                'workHistories',
+                'certifications',
+                'userSkills.skill',
+            ])
+            ->findOrFail($id);
+
+        $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
+
+        return $pdf->download("user-{$user->id}-profile.pdf");
+    }
 
     public function updateStatus(Request $request, $id)
     {
