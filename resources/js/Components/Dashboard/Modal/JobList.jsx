@@ -71,6 +71,8 @@ export default function JobList({ jobs, onJobSelect }) {
                                                 e.stopPropagation();
                                                 handleDeleteJob(job.id);
                                                 setOpenMenuJobId(null);
+
+
                                             }}
                                             className="text-red-500 hover:underline"
                                         >
