@@ -282,7 +282,6 @@ public function update(Request $request, $id)
 
         $users = $this->getUsersData();
         $getJobPostData = $this->getJobPostData();
-        $jobView = $this->getJobView();
 
         return Inertia::render('dashboard', [
             'jobs' => $jobs,
@@ -301,7 +300,6 @@ public function update(Request $request, $id)
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
             'getJobPostData' => $getJobPostData,
-            'jobView ' => $jobView,
 
         ]);
     }
@@ -380,19 +378,28 @@ public function update(Request $request, $id)
         return $jobpostData;
     }
 
-    public function getJobView()
+//    public function getJobView()
+//    {
+//        $jobView = JobPost::select(
+//            'id',
+//            'job_title',
+//            'views'
+//        )->get();
+//
+//        return $jobView;
+//    }
+
+    public function incrementJobViews($id)
     {
-        $jobView = JobPost::select(
-            'id',
-            'job_title',
-            'views'
-        )->get();
+        $job = JobPost::findOrFail($id);
+        $job->increment('views');
 
-        return $jobView;
+        return $job->fresh(['created_at']);
     }
-
     public function viewJobPost($id)
     {
+        $job = $this->incrementJobViews($id);
+
         $job = JobPost::with([
             'skills',
             'requirements:requirement_id,requirement_name',
@@ -420,10 +427,7 @@ public function update(Request $request, $id)
             )
             ->findOrFail($id);
 
-        // Increment the view count
-        $job->increment('views');
 
-        // Pull out the applications as a top-level prop
         $applicants = $job->applications;
 
         return Inertia::render('JobDetails', [
