@@ -33,7 +33,7 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user(), // Ensure 'user' key is lowercase
+                'user' => $request->user()->load('address'), // Ensure 'user' key is lowercase
             ],
         ]);
     }
