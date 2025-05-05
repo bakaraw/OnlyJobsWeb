@@ -3,26 +3,24 @@ import JobCard from '@/Components/JobCard';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
-import { usePage } from '@inertiajs/react';
-import { router } from '@inertiajs/react';
-import axios from 'axios';
-import { useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
-import { Link } from '@inertiajs/react';
-import { useState } from 'react';
 import MessageButton from '@/Components/MessageButton';
 
-export default function FindWork() {
-    const { jobs } = usePage().props;
-    const { filters = {} } = usePage().props;
-    const { search } = usePage().props;
-    const { auth } = usePage().props;
-    const [showMessages, setShowMessages] = useState(false);
+import { usePage, router, useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { Link } from '@inertiajs/react';
+import axios from 'axios';
 
+export default function FindWork() {
+    const { jobs: initialJobs, filters = {}, search, auth, hasMore, currentPage } = usePage().props;
+
+    const [jobList, setJobList] = useState(initialJobs);
+    const [nextPage, setNextPage] = useState(hasMore ? currentPage + 1 : null);
+    const [showMessages, setShowMessages] = useState(false);
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
         job_type: filters?.job_type || [],
+        search: search || '',
     });
 
     const handleCheckboxChange = (type, value) => {
@@ -39,9 +37,29 @@ export default function FindWork() {
             preserveState: true,
             preserveScroll: true,
             replace: true,
+            onSuccess: (page) => {
+                const newJobs = Array.isArray(page.props.jobs) ? page.props.jobs : [];
+                setJobList(newJobs);
+                setNextPage(page.props.hasMore ? page.props.currentPage + 1 : null);
+            },
         });
     }, [data]);
-    console.log(("User: " + auth.user))
+
+    const loadMore = async () => {
+        if (!nextPage) return;
+
+        try {
+            const response = await axios.get(route('find_work', { page: nextPage }));
+            const newJobs = response.data?.jobs || [];
+            const hasNext = response.data?.links?.next !== null;
+            console.log("New Jobs: ", newJobs);
+
+            setJobList(prev => [...prev, ...newJobs]);
+            setNextPage(hasNext ? nextPage + 1 : null);
+        } catch (error) {
+            console.error("Error loading more jobs:", error);
+        }
+    };
 
     return (
         <MainPageLayout
@@ -50,113 +68,64 @@ export default function FindWork() {
                     <p className="text-3xl">Find the best jobs for you</p>
                     <p className='mt-3'>Browse jobs posted on here or search the job you want</p>
                     {
-                        auth.user && auth.user.user_skills.length == 0 ? (
+                        auth.user && auth.user.user_skills.length === 0 && (
                             <div className='mt-10 bg-yellow-200 p-4 flex items-center justify-between border border-yellow-500 rounded-lg'>
-                                <p>Set-up your profile for personalized Job recommendations</p>
+                                <p>Set up your profile for personalized Job recommendations</p>
                                 <Link
                                     className='bg-yellow-500 px-4 py-2 rounded-lg'
                                     href={route("profile.edit")}
                                 >Set up profile</Link>
                             </div>
-                        ) : <></>
-
+                        )
                     }
                 </ContentLayout>
             }
         >
             <div className="flex w-full mx-0 px-0">
-                {/* Filter section - fixed width on the left */}
+                {/* Filter section */}
                 <div className="w-64 flex-none">
                     <div className="bg-light rounded-lg p-4">
-                        <div className="font-medium text-md">
-                            <div className="flex flex-col space-y-1">
-                                <p>Experience Level</p>
-                                <Checkbox
-                                    label="Entry Level"
-                                    className="ml-4"
-                                    checked={data.experience.includes(1)}
-                                    onChange={() => handleCheckboxChange('experience', 1)}
-                                />
-                                <Checkbox
-                                    label="Intermediate Level"
-                                    className="ml-4"
-                                    checked={data.experience.includes(3)}
-                                    onChange={() => handleCheckboxChange('experience', 3)}
+                        <div className="font-medium text-md flex flex-col space-y-1">
+                            <p>Experience Level</p>
+                            <Checkbox label="Entry Level" className="ml-4"
+                                checked={data.experience.includes(1)}
+                                onChange={() => handleCheckboxChange('experience', 1)} />
+                            <Checkbox label="Intermediate Level" className="ml-4"
+                                checked={data.experience.includes(3)}
+                                onChange={() => handleCheckboxChange('experience', 3)} />
+                            <Checkbox label="Expert Level" className="ml-4"
+                                checked={data.experience.includes(5)}
+                                onChange={() => handleCheckboxChange('experience', 5)} />
 
-                                />
-                                <Checkbox
-                                    label="Expert Level"
-                                    className="ml-4"
-                                    checked={data.experience.includes(5)}
-                                    onChange={() => handleCheckboxChange('experience', 5)}
-
-                                />
-                                <div>
-                                    <p className="mt-4">Job Type</p>
-                                </div>
-
-                                <Checkbox
-                                    label="Full time"
-                                    className="ml-4"
-                                    checked={data.job_type.includes('Full Time')}
-                                    onChange={() => handleCheckboxChange('job_type', 'Full Time')}
-                                />
-                                <Checkbox
-                                    label="Part time"
-                                    className="ml-4"
-                                    checked={data.job_type.includes('Part Time')}
-                                    onChange={() => handleCheckboxChange('job_type', 'Part Time')}
-                                />
-                                <Checkbox
-                                    label="Contract"
-                                    className="ml-4"
-                                    checked={data.job_type.includes('Contract')}
-                                    onChange={() => handleCheckboxChange('job_type', 'Contract')}
-                                />
-
-                                {
-                                    //<div>
-                                    //    <p className="mt-4">Location</p>
-                                    //    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
-                                    //        <option value="option 1">Option 1</option>
-                                    //        <option value="option 2">Option 2</option>
-                                    //        <option value="option 3">Option 3</option>
-                                    //    </select>
-                                    //</div>
-                                    //
-                                    //<div>
-                                    //    <p className="mt-4">Skills</p>
-                                    //    <select className="border-secondary rounded px-2 py-1 w-full focus:ring-dark focus:border-secondary">
-                                    //        <option value="option 1">Option 1</option>
-                                    //        <option value="option 2">Option 2</option>
-                                    //        <option value="option 3">Option 3</option>
-                                    //    </select>
-                                    //</div>
-                                }
-                            </div>
+                            <p className="mt-4">Job Type</p>
+                            <Checkbox label="Full time" className="ml-4"
+                                checked={data.job_type.includes('Full Time')}
+                                onChange={() => handleCheckboxChange('job_type', 'Full Time')} />
+                            <Checkbox label="Part time" className="ml-4"
+                                checked={data.job_type.includes('Part Time')}
+                                onChange={() => handleCheckboxChange('job_type', 'Part Time')} />
+                            <Checkbox label="Contract" className="ml-4"
+                                checked={data.job_type.includes('Contract')}
+                                onChange={() => handleCheckboxChange('job_type', 'Contract')} />
                         </div>
                     </div>
                 </div>
 
-                {/* Job listing section - filling the rest of the width */}
+                {/* Job listing */}
                 <div className="flex-1 pl-4">
-                    {
-                        search && (
-                            <div className='pl-6'>
-                                <p className='text-xl'>Results for "{search}"</p>
-                            </div>
+                    {search && (
+                        <div className='pl-6'>
+                            <p className='text-xl'>Results for "{search}"</p>
+                        </div>
+                    )}
 
-                        )
-                    }
-
-                    {jobs && jobs.map((job) => (
+                    {jobList.map((job) => (
                         <div key={job.id} className="mb-4">
                             <JobCard job={job}>
                                 <PrimaryButton
                                     onClick={async (e) => {
                                         e.preventDefault();
                                         await axios.post(`/job_posts/${job.id}/increment_views`);
-                                        console.log(`View incremented for Job ID: ${job.id}`);
                                         router.visit(route('job.view', job.id));
                                     }}
                                     className="w-full text-sm px-3 py-1"
@@ -167,19 +136,22 @@ export default function FindWork() {
                         </div>
                     ))}
 
-                    <div className="flex items-center justify-center mt-6">
-                        <PrimaryButton>
-                            Load More Jobs
-                        </PrimaryButton>
-                    </div>
+                    {nextPage && (
+                        <div className="flex items-center justify-center mt-6">
+                            <PrimaryButton onClick={loadMore}>
+                                Load More Jobs
+                            </PrimaryButton>
+                        </div>
+                    )}
                 </div>
             </div>
+
             <MessageButton
                 show={showMessages}
                 onClick={() => setShowMessages(true)}
                 onClose={() => setShowMessages(false)}
             />
-
         </MainPageLayout>
     );
 }
+
