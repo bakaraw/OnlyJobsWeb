@@ -21,7 +21,14 @@ export default function FindWork() {
         experience: filters?.experience || [],
         job_type: filters?.job_type || [],
         search: search || '',
+        salary: filters?.salary || { min: '', max: '' },
+        location: filters?.location || '', // <-- Add this line
+        sort_by: filters?.sort_by || 'newest', // <-- Add this line (default to 'newest')
+
     });
+    const handleSortChange = (event) => {
+        setData('sort_by', event.target.value);
+    };
 
     const handleCheckboxChange = (type, value) => {
         const selected = data[type] || [];
@@ -96,7 +103,6 @@ export default function FindWork() {
                             <Checkbox label="Expert Level" className="ml-4"
                                 checked={data.experience.includes(5)}
                                 onChange={() => handleCheckboxChange('experience', 5)} />
-
                             <p className="mt-4">Job Type</p>
                             <Checkbox label="Full time" className="ml-4"
                                 checked={data.job_type.includes('Full Time')}
@@ -107,51 +113,100 @@ export default function FindWork() {
                             <Checkbox label="Contract" className="ml-4"
                                 checked={data.job_type.includes('Contract')}
                                 onChange={() => handleCheckboxChange('job_type', 'Contract')} />
-                        </div>
-                    </div>
-                </div>
+                            <div className="flex flex-col space-y-2 w-full">
+                                <label className="text-md">Minimum Salary</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="border border-gray-300 rounded px-2 py-1 w-full"
+                                    placeholder="e.g. 10000"
+                                    value={data.salary.min}
+                                    onChange={(e) => setData('salary', { ...data.salary, min: e.target.value })}
+                                />
+
+                                <label className="text-md">Maximum Salary</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="border border-gray-300 rounded px-2 py-1 w-full"
+                                    placeholder="e.g. 50000"
+                                    value={data.salary.max}
+                                    onChange={(e) => setData('salary', { ...data.salary, max: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="flex flex-col space-y-2 w-full mt-4">
+                                <label className="text-md">Location</label>
+                                <input
+                                    type="text"
+                                    className="border border-gray-300 rounded px-2 py-1 w-full"
+                                    placeholder="e.g. Davao City"
+                                    value={data.location}
+                                    onChange={(e) => setData('location', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex flex-col space-y-2 w-full mt-4">
+                                <label className="text-md">Sort by</label>
+                                <select
+                                    className='border border-gray-300 rounded px-2 py-1 w-full'
+                                    name="sort_by"
+                                    value={data.sort_by}
+                                    onChange={handleSortChange}
+                                >
+                                    <option value="newest">Newest</option>
+                                    <option value="oldest">Oldest</option>
+                                </select>
+                            </div>
+                        </div >
+                    </div >
+                </div >
 
                 {/* Job listing */}
-                <div className="flex-1 pl-4">
+                < div className="flex-1 pl-4" >
                     {search && (
                         <div className='pl-6'>
                             <p className='text-xl'>Results for "{search}"</p>
                         </div>
                     )}
 
-                    {jobList.map((job) => (
-                        <div key={job.id} className="mb-4">
-                            <JobCard job={job}>
-                                <PrimaryButton
-                                    onClick={async (e) => {
-                                        e.preventDefault();
-                                        await axios.post(`/job_posts/${job.id}/increment_views`);
-                                        router.visit(route('job.view', job.id));
-                                    }}
-                                    className="w-full text-sm px-3 py-1"
-                                >
-                                    View Job
-                                </PrimaryButton>
-                            </JobCard>
-                        </div>
-                    ))}
+                    {
+                        jobList.map((job) => (
+                            <div key={job.id} className="mb-4">
+                                <JobCard job={job}>
+                                    <PrimaryButton
+                                        onClick={async (e) => {
+                                            e.preventDefault();
+                                            await axios.post(`/job_posts/${job.id}/increment_views`);
+                                            router.visit(route('job.view', job.id));
+                                        }}
+                                        className="w-full text-sm px-3 py-1"
+                                    >
+                                        View Job
+                                    </PrimaryButton>
+                                </JobCard>
+                            </div>
+                        ))
+                    }
 
-                    {nextPage && (
-                        <div className="flex items-center justify-center mt-6">
-                            <PrimaryButton onClick={loadMore}>
-                                Load More Jobs
-                            </PrimaryButton>
-                        </div>
-                    )}
-                </div>
-            </div>
+                    {
+                        nextPage && (
+                            <div className="flex items-center justify-center mt-6">
+                                <PrimaryButton onClick={loadMore}>
+                                    Load More Jobs
+                                </PrimaryButton>
+                            </div>
+                        )
+                    }
+                </div >
+            </div >
 
             <MessageButton
                 show={showMessages}
                 onClick={() => setShowMessages(true)}
                 onClose={() => setShowMessages(false)}
             />
-        </MainPageLayout>
+        </MainPageLayout >
     );
 }
 
