@@ -171,7 +171,7 @@ export default function FindWork() {
                     )}
 
                     {
-                        jobList.map((job) => (
+                        jobList.length > 0 ? jobList.map((job) => (
                             <div key={job.id} className="mb-4">
                                 <JobCard job={job}>
                                     <PrimaryButton
@@ -186,9 +186,12 @@ export default function FindWork() {
                                     </PrimaryButton>
                                 </JobCard>
                             </div>
-                        ))
+                        )) : (
+                            <div className='flex items-center justify-center mt-44'>
+                                <p className='text-lg font-medium text-gray-600'>No jobs found</p>
+                            </div>
+                        )
                     }
-
                     {
                         nextPage && (
                             <div className="flex items-center justify-center mt-6">
