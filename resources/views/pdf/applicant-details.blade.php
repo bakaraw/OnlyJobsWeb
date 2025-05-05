@@ -14,12 +14,11 @@
 </head>
 <body>
 <div class="header">
-    <h1>Applicant Profile</h1>
-    <h2>{{ $user->first_name }} {{ $user->middle_name ?? '' }} {{ $user->last_name }}</h2>
+    <h1>{{ $user->first_name }} {{ $user->middle_name ?? '' }} {{ $user->last_name }}</h1>
 </div>
 
 <div class="section">
-    <h2>Personal Information</h2>
+    <h4>Personal Information</h4>
     <p><strong>Email:</strong> {{ $user->email }}</p>
     <p><strong>Contact:</strong> {{ $user->contact_number }}</p>
     <p><strong>Gender:</strong> {{ $user->gender }}</p>
@@ -35,7 +34,7 @@
 
 @if($user->educations && $user->educations->count() > 0)
     <div class="section">
-        <h2>Education</h2>
+        <h4>Education</h4>
         <table>
             <thead>
             <tr>
@@ -59,7 +58,7 @@
 
 @if($user->workHistories && $user->workHistories->count() > 0)
     <div class="section">
-        <h2>Work Experience</h2>
+        <h4>Work Experience</h4>
         <table>
             <thead>
             <tr>
@@ -83,7 +82,7 @@
 
 @if($user->userSkills && $user->userSkills->count() > 0)
     <div class="section">
-        <h2>Skills</h2>
+        <h4>Skills</h4>
         <ul>
             @foreach($user->userSkills as $userSkill)
                 <li>{{ $userSkill->skill->name ?? $userSkill->skill_name ?? 'Unnamed skill' }}</li>
@@ -94,7 +93,7 @@
 
 @if($user->applications && $user->applications->count() > 0)
     <div class="section">
-        <h2>Applications</h2>
+        <h4>Job Applied</h4>
         <table>
             <thead>
             <tr>

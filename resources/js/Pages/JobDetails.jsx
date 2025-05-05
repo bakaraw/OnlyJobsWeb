@@ -482,6 +482,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
 
 
+
+
                         </div>
 
                     </div>

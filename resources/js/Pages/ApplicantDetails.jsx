@@ -234,6 +234,7 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
             )}
 
 
+
             {/* Work Experience */}
             {selectedApplicant.work_histories && selectedApplicant.work_histories.length > 0 && (
                 <div className="mb-6">
@@ -269,6 +270,41 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                 </div>
             )}
 
+            {/* Applications */}
+            {selectedApplicant.applications && selectedApplicant.applications.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Applications</h3>
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Job Title</th>
+                            <th className="py-2 px-4">Company</th>
+                            <th className="py-2 px-4">Date Applied</th>
+                            <th className="py-2 px-4">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {selectedApplicant.applications.map((application, index) => (
+                            <tr key={application.id || index} className="border-b">
+                                <td className="py-2 px-4">
+                                    {application.job_title || "N/A"}
+                                </td>
+                                <td className="py-2 px-4">{application.company || "N/A"}</td>
+                                <td className="py-2 px-4">
+                                    {application.application_date
+                                        ? new Date(application.application_date).toLocaleDateString()
+                                        : "N/A"}
+                                </td>
+                                <td className={`py-2 px-4 ${statusClasses[application.status?.toLowerCase()] || ''}`}>
+                                    {application.status || "Pending"}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
             {/* Requirements/Documents */}
             {selectedApplicant.requirements && selectedApplicant.requirements.length > 0 && (
                 <div className="mb-6">
@@ -295,6 +331,9 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                     </table>
                 </div>
             )}
+
+
         </div>
+
     );
 }
