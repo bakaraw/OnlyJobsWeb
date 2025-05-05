@@ -20,6 +20,7 @@ export default function FindWork() {
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
         job_type: filters?.job_type || [],
+        search: search || '',
     });
 
     const handleCheckboxChange = (type, value) => {

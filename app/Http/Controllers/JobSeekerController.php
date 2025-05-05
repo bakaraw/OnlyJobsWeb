@@ -227,9 +227,6 @@ class JobSeekerController extends Controller
         ]);
     }
 
-
-
-
     public function updateProfilePicture(Request $request)
     {
         $request->validate([
