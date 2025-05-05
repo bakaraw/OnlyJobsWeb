@@ -19,11 +19,17 @@ export default function FindWork() {
     const { auth } = usePage().props;
     const [showMessages, setShowMessages] = useState(false);
 
-
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
         job_type: filters?.job_type || [],
+        salary: filters?.salary || { min: '', max: '' },
+        location: filters?.location || '', // <-- Add this line
+        sort_by: filters?.sort_by || 'newest', // <-- Add this line (default to 'newest')
     });
+    const handleSortChange = (event) => {
+        setData('sort_by', event.target.value);
+    };
+
 
     const handleCheckboxChange = (type, value) => {
         const selected = data[type] || [];
@@ -113,6 +119,52 @@ export default function FindWork() {
                                     checked={data.job_type.includes('Contract')}
                                     onChange={() => handleCheckboxChange('job_type', 'Contract')}
                                 />
+
+                                <div className="flex flex-col space-y-2 w-full">
+                                    <label className="text-md">Minimum Salary</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="border border-gray-300 rounded px-2 py-1 w-full"
+                                        placeholder="e.g. 10000"
+                                        value={data.salary.min}
+                                        onChange={(e) => setData('salary', { ...data.salary, min: e.target.value })}
+                                    />
+
+                                    <label className="text-md">Maximum Salary</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="border border-gray-300 rounded px-2 py-1 w-full"
+                                        placeholder="e.g. 50000"
+                                        value={data.salary.max}
+                                        onChange={(e) => setData('salary', { ...data.salary, max: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col space-y-2 w-full mt-4">
+                                    <label className="text-md">Location</label>
+                                    <input
+                                        type="text"
+                                        className="border border-gray-300 rounded px-2 py-1 w-full"
+                                        placeholder="e.g. Davao City"
+                                        value={data.location}
+                                        onChange={(e) => setData('location', e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col space-y-2 w-full mt-4">
+                                    <label className="text-md">Sort by</label>
+                                    <select
+                                        className='border border-gray-300 rounded px-2 py-1 w-full'
+                                        name="sort_by"
+                                        value={data.sort_by}
+                                        onChange={handleSortChange}
+                                    >
+                                        <option value="newest">Newest</option>
+                                        <option value="oldest">Oldest</option>
+                                    </select>
+                                </div>
 
                                 {
                                     //<div>

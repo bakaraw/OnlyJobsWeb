@@ -136,7 +136,7 @@ class JobSeekerController extends Controller
     /*}*/
     public function show(Request $request)
     {
-        $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
+        $jobQuery = JobPost::with(['skills', 'requirements']);
         $searchTerm = $request->input('search');
 
         // Apply filters to query before fetching data
@@ -150,6 +150,27 @@ class JobSeekerController extends Controller
             $jobQuery->whereIn('job_type', $jobTypes);
         }
 
+        if ($request->filled('salary')) {
+            $salary = $request->input('salary');
+
+            $minSalary = $salary['min'] ?? null;
+            $maxSalary = $salary['max'] ?? null;
+
+            if ($minSalary !== null) {
+                $jobQuery->where('max_salary', '>=', $minSalary); // must offer at least this much
+            }
+
+            if ($maxSalary !== null) {
+                $jobQuery->where('min_salary', '<=', $maxSalary); // must start no higher than this
+            }
+        }
+
+        if ($request->filled('location')) {
+            $location = $request->input('location');
+            $jobQuery->where('job_location', 'like', "%{$location}%");
+        }
+
+
         if ($request->filled('search')) {
             $searchTerm = $request->input('search');
 
@@ -159,6 +180,17 @@ class JobSeekerController extends Controller
                         $skillQuery->where('skill_name', 'like', "%{$searchTerm}%");
                     });
             });
+        }
+        if ($request->filled('sort_by')) {
+            $sortOrder = $request->input('sort_by'); // Could be 'newest' or 'oldest'
+
+            if ($sortOrder == 'oldest') {
+                $jobQuery->oldest(); // Sort by oldest (ascending)
+            } else {
+                $jobQuery->latest(); // Sort by newest (descending)
+            }
+        } else {
+            $jobQuery->latest(); // Default to sorting by newest if no sort is selected
         }
 
         // Fetch jobs
@@ -202,7 +234,7 @@ class JobSeekerController extends Controller
         return Inertia::render('FindWork', [
             'user' => $user,
             'jobs' => $formattedJobs,
-            'filters' => $request->only(['experience', 'job_type', 'search']),
+            'filters' => $request->only(['experience', 'job_type', 'search', 'salary', 'location', 'sort_by']),
             'search' => $searchTerm,
         ]);
     }
