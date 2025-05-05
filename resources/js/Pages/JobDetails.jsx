@@ -62,6 +62,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         status_id: job_details.status_id || "1",
         skills: job_details.skills || [],
     });
+    const [status, setStatus] = useState(job_details.status_id || "1");
 
 
     const fetchSkills = useCallback(
@@ -94,12 +95,11 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         []
     );
 
-    // Normalize skills data when job_details changes
     useEffect(() => {
         if (Array.isArray(job_details.skills)) {
             const normalized = job_details.skills.map(s => ({
-                id: s.skill_id,          // <-- use skill_id
-                name: s.skill_name,      // <-- use skill_name
+                id: s.skill_id,
+                name: s.skill_name,
             }));
             setForm(prev => ({ ...prev, skills: normalized }));
         }
@@ -147,6 +147,26 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleStatusChange = async (e) => {
+        const newStatusId = e.target.value;
+        setStatus(newStatusId);
+
+        try {
+            // Use the dedicated endpoint for status updates
+            const res = await axios.patch(`/job-posts/${job_details.id}/status`, {
+                status_id: newStatusId
+            });
+
+            if (res.data.success) {
+                console.log("Status updated successfully");
+            }
+        } catch (err) {
+            console.error('Error updating status:', err.response?.data || err);
+            alert("Error updating status: " + (err.response?.data?.message || err.message));
+            setStatus(job_details.status_id);
+        }
+    };
+
     const handleSave = async () => {
         try {
             // Format skills and requirements as before
@@ -178,7 +198,6 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
             const res = await axios.put(`/job-posts/${job_details.id}`, payload);
             if (res.data.success) {
 
-                // If the updated data is included in the response, use it
                 if (res.data.job) {
                     setForm({
                         job_title: res.data.job.job_title || form.job_title,
@@ -196,7 +215,6 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                         skills: res.data.job.skills || form.skills,
                     });
                 }
-                // Exit edit mode
                 setIsEditing(false);
             }
         } catch (err) {
@@ -209,28 +227,30 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         <div>
             {isEditing ? (
                 <>
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">{job_title}</h2>
-                        <SecondaryButton
-                            className="px-4 py-2  black-white rounded "
-                            onClick={() => setIsEditing(!isEditing)}
-                        >
-                            Edit
-                        </SecondaryButton>
-                    </div>
 
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 w-full">
+                        <div className="w-full">
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div >
                             <div className="mb-4">
-                                <label className="font-semibold">Company: </label>
+                                <label className="font-semibold">Job Title:   </label>
+                                <input
+                                    type="text"
+                                    name="jobtitle"
+                                    value={form.job_title}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="font-semibold">Company:   </label>
                                 <input
                                     type="text"
                                     name="company"
                                     value={form.company}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/2"
                                 />
                             </div>
 
@@ -241,7 +261,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     name="job_location"
                                     value={form.job_location}
                                     onChange={handleChange}
-                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/4"
+                                    className="border border-gray-300 rounded-md px-3 py-2 w-1/2"
                                 />
                             </div>
 
@@ -460,6 +480,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
 
 
+
+
                         </div>
 
                     </div>
@@ -492,17 +514,50 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                     </div>
 
 
+
                 </>
             ) : (
                 <>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold">{job_title}</h2>
-                        <SecondaryButton
-                            className="px-4 py-2 black-white rounded"
-                            onClick={() => setIsEditing(true)}
-                        >
-                            Edit
-                        </SecondaryButton>
+                        <div className="flex flex-row items-center space-x-4">
+
+
+                            <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                    <label className="font-semibold whitespace-nowrap">Status:</label>
+                                    <select
+                                        name="status_id"
+                                        className="rounded-md py-2 w-auto min-w-[120px] border"
+                                        style={{
+                                            width: 'auto',
+                                            borderWidth: `${
+                                                edit_status.find(s => s.id.toString() === form.status_id.toString())?.name.length > 10
+                                                    ? '2px'
+                                                    : '1px'
+                                            }`
+                                        }}
+                                        value={form.status_id}
+                                        onChange={handleStatusChange}
+                                    >
+                                        {edit_status.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex-1">
+                                <SecondaryButton
+                                    className="px-4 py-2 black-white rounded-md flex justify-center"
+                                    onClick={() => setIsEditing(true)}
+                                >
+                                    Edit
+                                </SecondaryButton>
+                            </div>
+                        </div>
+
+
+
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -534,17 +589,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                         </div>
 
                         <div>
-                            <label className="font-semibold">Status: </label>
-                            <select
-                                name="status_id"
-                                className=' rounded-md'
-                                value={form.status_id}
-                                onChange={handleChange}
-                            >
-                                {edit_status.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
+
 
                             <div className="mb-4">
                                 <p className="font-semibold">Experience Required:</p>
@@ -556,48 +601,57 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 <p className="text-gray-600">{job_details.degree?.name || 'N/A'}</p>
                             </div>
 
-                            {status && (
-                                <div className="mb-4">
-                                    <p className="font-semibold">Status:</p>
-                                    <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>
-                                </div>
-                            )}
+                            {/*{status && (*/}
+                            {/*    <div className="mb-4">*/}
+                            {/*        <p className="font-semibold">Status:</p>*/}
+                            {/*        <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>*/}
+                            {/*    </div>*/}
+                            {/*)}*/}
 
                             <div className="mb-4">
                                 <p className="font-semibold">Views:</p>
                                 <p className="text-gray-600">{views}</p>
                             </div>
+
                         </div>
 
 
-                    <div className="grid grid-cols-1 gap-6 mb-6">
-                        {skills && skills.length > 0 && (
-                            <div className="mb-4">
-                                <p className="font-semibold mb-2">Skills:</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {skills.map((skill, index) => (
-                                        <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                        {skill.skill_name}
-                                    </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
 
-                        {requirements && requirements.length > 0 && (
-                            <div className="mb-4">
-                                <p className="font-semibold mb-2">Requirements:</p>
-                                <ul className="list-disc ml-5">
-                                    {requirements.map((req, index) => (
-                                        <li key={index} className="text-gray-600">
-                                            {req.requirement_name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                        <div className="grid grid-cols-1 gap-6 mb-6">
+                            {skills && skills.length > 0 && (
+                                <div className="mb-4">
+                                    <p className="font-semibold mb-2">Skills:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {skills.map((skill, index) => (
+                                            <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                            {skill.skill_name}
+                                        </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 mb-6">
+
+                            {requirements && requirements.length > 0 && (
+                                <div className="mb-4">
+                                    <p className="font-semibold mb-2">Requirements:</p>
+                                    <ul className="list-disc ml-5">
+                                        {requirements.map((req, index) => (
+                                            <li key={index} className="text-gray-600">
+                                                {req.requirement_name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+
+
                     </div>
-                    </div>
+
+
 
 
 

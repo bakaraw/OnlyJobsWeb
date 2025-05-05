@@ -6,17 +6,31 @@ import DashboardContent from "@/Components/Dashboard/DashboardContent.jsx";
 import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import ApplicantDetails from "@/Pages/ApplicantDetails.jsx";
 
-export default function dashboard({ statuses, requirements , degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({ jobView, statuses, requirements , degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
+    const [selectedApplicantId, setSelectedApplicantId] = useState(null);
+
 
     const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
+    const selectedApplicant = selectedApplicantId ? users.find(user => user.id === selectedApplicantId) : null;
+
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);
 
 
+    const handleApplicantSelect = (applicantId) => {
+        setSelectedApplicantId(applicantId);
+        setActiveView("applicantDetails");
+    };
+
+    const handleBackToApplicants = () => {
+        setSelectedApplicantId(null);
+        setActiveView("applicants");
+    };
 
 
     const handleJobSelect = (jobId) => {
@@ -43,14 +57,31 @@ export default function dashboard({ statuses, requirements , degrees,getJobPostD
                         totalUsers={totalUsers}
                         totalJob={totalJob}
                         applicants={applicants}
+                        jobView={jobView}
                         auth={auth}
+
                     />
                 ) : activeView === "applicants" ? (
                     <ApplicantCard
                         users={users}
                         applicants={applicants}
                         auth={auth}
+                        onApplicantSelect={handleApplicantSelect}
                     />
+                ) : activeView === "applicantDetails" && selectedApplicant ? (
+                    <div>
+                        <SecondaryButton
+                            onClick={handleBackToApplicants}
+                            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+                        >
+                            Back
+                        </SecondaryButton>
+                        <ApplicantDetails
+                            selectedApplicant={selectedApplicant}
+                            auth={auth}
+                        />
+                    </div>
+
                 ) : activeView === "jobDetails" && selectedJob ? (
                     // Show job details when a job is selected
                     <div>
@@ -71,7 +102,6 @@ export default function dashboard({ statuses, requirements , degrees,getJobPostD
                     </div>
                 ) : (
                     <div>
-                        {/* Left: Job Listings (Only Show if Authenticated) */}
                         {auth?.user ? (
                             <div className="w-full">
                                 {jobs && jobs.length > 0 ? (

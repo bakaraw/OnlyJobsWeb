@@ -59,21 +59,8 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4 text-center">{job.qualified_count}</td>
                                 <td className="py-3 px-4 text-center">{job.accepted_count}</td>
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>
+                                <td className="py-3 px-4 text-center">{job.status?.name}</td>
 
-                                <td className="py-3 px-4 text-center">
-                                    <div className="relative">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                // Add your desired click functionality here
-                                                alert(`clicked: ${job.status?.name || 'N/A'}`);
-                                            }}
-                                            className="hover:underline"
-                                        >
-                                            {job.status?.name || 'N/A'}
-                                        </button>
-                                    </div>
-                                </td>
 
 
                                 <td className="py-3 px-4 text-center">
@@ -84,6 +71,8 @@ export default function JobList({ jobs, onJobSelect }) {
                                                 e.stopPropagation();
                                                 handleDeleteJob(job.id);
                                                 setOpenMenuJobId(null);
+
+
                                             }}
                                             className="text-red-500 hover:underline"
                                         >

@@ -300,6 +300,7 @@ public function update(Request $request, $id)
             'requirements' => Requirement::all(),
             'skills' => Skill::all(),
             'getJobPostData' => $getJobPostData,
+
         ]);
     }
 
@@ -377,8 +378,28 @@ public function update(Request $request, $id)
         return $jobpostData;
     }
 
+//    public function getJobView()
+//    {
+//        $jobView = JobPost::select(
+//            'id',
+//            'job_title',
+//            'views'
+//        )->get();
+//
+//        return $jobView;
+//    }
+
+    public function incrementJobViews($id)
+    {
+        $job = JobPost::findOrFail($id);
+        $job->increment('views');
+
+        return $job->fresh(['created_at']);
+    }
     public function viewJobPost($id)
     {
+        $job = $this->incrementJobViews($id);
+
         $job = JobPost::with([
             'skills',
             'requirements:requirement_id,requirement_name',
@@ -406,10 +427,7 @@ public function update(Request $request, $id)
             )
             ->findOrFail($id);
 
-        // Increment the view count
-        $job->increment('views');
 
-        // Pull out the applications as a top-level prop
         $applicants = $job->applications;
 
         return Inertia::render('JobDetails', [
@@ -418,8 +436,19 @@ public function update(Request $request, $id)
         ]);
     }
 
-    public function updateStatus(Request $request, $id) {
 
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate(['status_id' => 'required|exists:job_statuses,id']);
 
+        $job = JobPost::findOrFail($id);
+        $job->status_id = $request->status_id;
+        $job->save();
+
+        return response()->json(['success' => true, 'job' => $job]);
     }
+
+
+
+
 }

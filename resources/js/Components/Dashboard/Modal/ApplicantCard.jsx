@@ -2,27 +2,27 @@ import React, { useState } from "react";
 import DashboardCard from "./DashboardCard.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
-import ApplicantDetails from "./ApplicantDetails.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
-export default function ApplicantCard({ users }) {
-    const [expandedUser, setExpandedUser] = useState(null);
+export default function ApplicantCard({ users, onApplicantSelect }) {
     const [selectedStatus, setSelectedStatus] = useState("all");
 
     if (!users || users.length === 0) {
         return <div className="p-6 bg-white rounded-lg shadow">No applicants found.</div>;
     }
 
-    const toggleUserDetails = (userId) => {
-        if (expandedUser === userId) {
-            setExpandedUser(null);
-        } else {
-            setExpandedUser(userId);
-        }
-    };
+    // const toggleUserDetails = (userId) => {
+    //     if (expandedUser === userId) {
+    //         setExpandedUser(null);
+    //     } else {
+    //         setExpandedUser(userId);
+    //     }
+    // };
 
     // Filter applicants based on selected status
+
+    console.log(onApplicantSelect)
     const filteredUsers = users.filter(user => {
         if (selectedStatus === "all") return true;
         return user.applications && user.applications.some(app =>
@@ -71,7 +71,12 @@ export default function ApplicantCard({ users }) {
                         </thead>
                         <tbody>
                         {filteredUsers.map((user, index) => (
-                            <tr key={user.id} className="border-b hover:bg-gray-50 cursor-pointer">
+
+
+                            <tr   key={user.id}
+                                  className="border-b hover:bg-gray-50 cursor-pointer"
+                                  onClick={() => onApplicantSelect(user.id)}
+                            >
                                 <td className="py-3 px-4">
                                     <div className="flex items-center">
                                         <span className="mr-2 text-gray-500">{index + 1}.</span>
@@ -106,29 +111,29 @@ export default function ApplicantCard({ users }) {
                                 {/*        <span className="text-gray-500">-</span>*/}
                                 {/*    )}*/}
                                 {/*</td>*/}
-                                <td className="py-3 px-4 text-center">
-                                    <SecondaryButton
-                                        onClick={() => toggleUserDetails(user.id)}
-                                        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-                                    >
-                                        {expandedUser === user.id ? "Hide Details" : "View Details"}
-                                    </SecondaryButton>
-                                </td>
+                                {/*<td className="py-3 px-4 text-center">*/}
+                                {/*    <SecondaryButton*/}
+                                {/*        onClick={() => toggleUserDetails(user.id)}*/}
+                                {/*        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"*/}
+                                {/*    >*/}
+                                {/*        {expandedUser === user.id ? "Hide Details" : "View Details"}*/}
+                                {/*    </SecondaryButton>*/}
+                                {/*</td>*/}
                             </tr>
                         ))}
                         </tbody>
                     </table>
             </DashboardCard>
 
-             {expandedUser && (() => {
-                const user = users.find(u => u.id === expandedUser);
-                return user ? (
-                      <ApplicantDetails
-                user={user}
-                   onClose={() => setExpandedUser(null)}
-                  />
-                ) : null;
-              })()}
+             {/*{expandedUser && (() => {*/}
+             {/*   const user = users.find(u => u.id === expandedUser);*/}
+             {/*   return user ? (*/}
+             {/*         <ApplicantDetails*/}
+             {/*   user={user}*/}
+             {/*      onClose={() => setExpandedUser(null)}*/}
+             {/*     />*/}
+             {/*   ) : null;*/}
+             {/* })()}*/}
         </div>
     );
 }

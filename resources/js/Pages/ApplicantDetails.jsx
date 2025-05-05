@@ -1,9 +1,10 @@
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
 
-export default function ApplicantDetails({ user, onClose }) {
-    // Add safeguards for possibly missing data
-    if (!user) {
+export default function ApplicantDetails({ selectedApplicant, onClose }) {
+
+    console.log(selectedApplicant)
+    if (!selectedApplicant) {
         return (
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                 <div className="flex justify-between items-center mb-4">
@@ -16,9 +17,9 @@ export default function ApplicantDetails({ user, onClose }) {
             </div>
         );
     }
-    console.log("certi", user.certifications);
-    console.log("skills", user.user_skills);
-    console.log("skills", user.user_skills);
+    console.log("certi", selectedApplicant.certifications);
+    console.log("skills", selectedApplicant.user_skills);
+    console.log("skills", selectedApplicant.user_skills);
 
 
     const statusClasses = {
@@ -28,10 +29,10 @@ export default function ApplicantDetails({ user, onClose }) {
         pending: "text-yellow-600",
     };
 
-    const firstName = user.first_name || "N/A";
-    const middleName = user.middle_name || "";
-    const lastName = user.last_name || "";
-    const suffix = user.suffix || "";
+    const firstName = selectedApplicant.first_name || "N/A";
+    const middleName = selectedApplicant.middle_name || "";
+    const lastName = selectedApplicant.last_name || "";
+    const suffix = selectedApplicant.suffix || "";
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md mt-6">
@@ -55,37 +56,37 @@ export default function ApplicantDetails({ user, onClose }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p className="font-semibold">Email:</p>
-                        <p className="text-gray-600">{user.email || "Not specified"}</p>
+                        <p className="text-gray-600">{selectedApplicant.email || "Not specified"}</p>
                     </div>
                     <div>
                         <p className="font-semibold">Contact Number:</p>
-                        <p className="text-gray-600">{user.contact_number || "Not specified"}</p>
+                        <p className="text-gray-600">{selectedApplicant.contact_number || "Not specified"}</p>
                     </div>
                     <div>
                         <p className="font-semibold">Gender:</p>
-                        <p className="text-gray-600">{user.gender || "Not specified"}</p>
+                        <p className="text-gray-600">{selectedApplicant.gender || "Not specified"}</p>
                     </div>
                     <div>
                         <p className="font-semibold">Birthdate:</p>
                         <p className="text-gray-600">
-                            {user.birthdate
-                                ? new Date(user.birthdate).toLocaleDateString()
+                            {selectedApplicant.birthdate
+                                ? new Date(selectedApplicant.birthdate).toLocaleDateString()
                                 : "Not specified"}
                         </p>
                     </div>
                 </div>
 
-                {user.address && (
+                {selectedApplicant.address && (
                     <div className="mt-4">
                         <p className="font-semibold">Address:</p>
                         <p className="text-gray-600">
                             {[
-                                user.address.street,
-                                user.address.street2,
-                                user.address.city,
-                                user.address.province,
-                                user.address.postal_code,
-                                user.address.country,
+                                selectedApplicant.address.street,
+                                selectedApplicant.address.street2,
+                                selectedApplicant.address.city,
+                                selectedApplicant.address.province,
+                                selectedApplicant.address.postal_code,
+                                selectedApplicant.address.country,
                             ]
                                 .filter(Boolean)
                                 .join(", ") || "Not specified"}
@@ -94,7 +95,7 @@ export default function ApplicantDetails({ user, onClose }) {
                 )}
             </div>
 
-            {user.userSkills && user.userSkills.length > 0 && (
+            {selectedApplicant.userSkills && selectedApplicant.userSkills.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Certificates</h3>
                     <table className="table-auto w-full border-collapse">
@@ -106,10 +107,10 @@ export default function ApplicantDetails({ user, onClose }) {
                         </tr>
                         </thead>
                         <tbody>
-                        {user.userSkills.map((skill, index) => (
-                                <td className="py-2 px-4">
-                                    {skill.skill_name }
-                                </td>
+                        {selectedApplicant.userSkills.map((skill, index) => (
+                            <td className="py-2 px-4">
+                                {skill.skill_name }
+                            </td>
 
                         ))}
                         </tbody>
@@ -122,7 +123,7 @@ export default function ApplicantDetails({ user, onClose }) {
 
 
 
-            {user.user_skills && user.user_skills.length > 0 && (
+            {selectedApplicant.user_skills && selectedApplicant.user_skills.length > 0 && (
                 <div className="mb-6">
                     <table className="table-auto w-full ">
                         <thead className="bg-gray-100 text-left">
@@ -133,7 +134,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </thead>
                         <tbody>
 
-                        {user.user_skills.map((skill, index) => (
+                        {selectedApplicant.user_skills.map((skill, index) => (
                             <tr key={skill.id || index} className="border-b">
                                 <td className="py-2 px-4">{skill.skill_name|| "N/A"}</td>
                             </tr>
@@ -146,7 +147,7 @@ export default function ApplicantDetails({ user, onClose }) {
 
 
             {/* Education */}
-            {user.educations && user.educations.length > 0 && (
+            {selectedApplicant.educations && selectedApplicant.educations.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Education</h3>
                     <table className="table-auto w-full border-collapse">
@@ -159,7 +160,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </thead>
                         <tbody>
 
-                        {user.educations.map((edu, index) => (
+                        {selectedApplicant.educations.map((edu, index) => (
                             <tr key={edu.id || index} className="border-b">
                                 <td className="py-2 px-4">{edu.degree || "N/A"}</td>
                                 <td className="py-2 px-4">{edu.school || "N/A"}</td>
@@ -175,7 +176,7 @@ export default function ApplicantDetails({ user, onClose }) {
             )}
 
 
-            {user.certifications && user.certifications.length > 0 && (
+            {selectedApplicant.certifications && selectedApplicant.certifications.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Certificates</h3>
                     <table className="table-auto w-full border-collapse">
@@ -187,7 +188,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </tr>
                         </thead>
                         <tbody>
-                        {user.certifications.map((certificate, index) => (
+                        {selectedApplicant.certifications.map((certificate, index) => (
                             <tr key={certificate.id || index} className="border-b">
                                 <td className="py-2 px-4">
                                     {certificate.title }
@@ -206,7 +207,7 @@ export default function ApplicantDetails({ user, onClose }) {
 
 
             {/* Work Experience */}
-            {user.work_histories && user.work_histories.length > 0 && (
+            {selectedApplicant.work_histories && selectedApplicant.work_histories.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
                     <table className="table-auto w-full border-collapse">
@@ -218,7 +219,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </tr>
                         </thead>
                         <tbody>
-                        {user.work_histories.map((work, index) => (
+                        {selectedApplicant.work_histories.map((work, index) => (
                             <tr key={work.id || index} className="border-b">
                                 <td className="py-2 px-4">
                                     {work.job_title || work.position || "N/A"}
@@ -241,7 +242,7 @@ export default function ApplicantDetails({ user, onClose }) {
             )}
 
             {/* Requirements/Documents */}
-            {user.requirements && user.requirements.length > 0 && (
+            {selectedApplicant.requirements && selectedApplicant.requirements.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">
                         Requirements/Documents
@@ -254,7 +255,7 @@ export default function ApplicantDetails({ user, onClose }) {
                         </tr>
                         </thead>
                         <tbody>
-                        {user.requirements.map((req, index) => (
+                        {selectedApplicant.requirements.map((req, index) => (
                             <tr key={req.id || index} className="border-b">
                                 <td className="py-2 px-4">{req.name || "N/A"}</td>
                                 <td className="py-2 px-4 capitalize">
