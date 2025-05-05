@@ -39,15 +39,13 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
 
     const handleExportPdf = async () => {
         try {
-            const response = axios.get(`/users/${selectedApplicant.id}/export-pdf`, { responseType: 'blob' });
+            const response = await axios.get(`/applicants/${selectedApplicant.id}/pdf`, { responseType: 'blob' });
 
             // Create a blob URL and trigger download
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute(
-                'download',
-                `user-${selectedApplicant.id}-profile.pdf`);
+            link.setAttribute('download', `user-${selectedApplicant.id}-profile.pdf`);
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -56,7 +54,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
             alert('Failed to download PDF.');
         }
     };
-
     return (
         <div>
             <div className="flex justify-between items-center mb-4">

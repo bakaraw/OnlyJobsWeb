@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Models\Application;
 use App\Models\JobPost;
@@ -435,8 +436,8 @@ public function update(Request $request, $id)
         )
             ->with([
                 'address',
-                'applications'            => fn($q) => $q->select('id','user_id','job_post_id','status','remarks','created_at'),
-                'applications.jobPost'    => fn($q) => $q->select('id','job_title','job_type','company'),
+                'applications',
+                'applications.jobPost',
                 'applications.jobPost.requirements',
                 'requirements',
                 'educations',
@@ -447,10 +448,8 @@ public function update(Request $request, $id)
             ->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
-
-        return $pdf->download("user-{$user->id}-profile.pdf");
+        return $pdf->download('applicant-details.pdf');
     }
-
     public function updateStatus(Request $request, $id)
     {
         $request->validate(['status_id' => 'required|exists:job_statuses,id']);

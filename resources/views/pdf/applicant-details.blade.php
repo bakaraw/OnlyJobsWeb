@@ -1,64 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>{{ "{$user->first_name} {$user->last_name}" }}</title>
+    <title>Applicant Details</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-        h1 { text-align: center; margin-bottom: 20px; }
-        .label { font-weight: bold; display: inline-block; width: 120px; vertical-align: top; }
-        .section { margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
-        th { background: #f5f5f5; }
+        body { font-family: Arial, sans-serif; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .section { margin-bottom: 20px; }
+        h2 { border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
     </style>
 </head>
 <body>
-<h1>User Profile</h1>
+<div class="header">
+    <h1>Applicant Profile</h1>
+    <h2>{{ $user->first_name }} {{ $user->middle_name ?? '' }} {{ $user->last_name }}</h2>
+</div>
 
 <div class="section">
-    <p><span class="label">Name:</span>
-        {{ $user->first_name }}
-        {{ $user->middle_name ? substr($user->middle_name,0,1).'.' : '' }}
-        {{ $user->last_name }}
-        {{ $user->suffix ?? '' }}
-    </p>
-    <p><span class="label">Email:</span> {{ $user->email }}</p>
-    <p><span class="label">Contact:</span> {{ $user->contact_number }}</p>
-    <p><span class="label">Gender:</span> {{ ucfirst($user->gender) }}</p>
-    <p><span class="label">Birthdate:</span> {{ optional($user->birthdate)->format('M d, Y') }}</p>
+    <h2>Personal Information</h2>
+    <p><strong>Email:</strong> {{ $user->email }}</p>
+    <p><strong>Contact:</strong> {{ $user->contact_number }}</p>
+    <p><strong>Gender:</strong> {{ $user->gender }}</p>
+    <p><strong>Birthdate:</strong> {{ $user->birthdate }}</p>
     @if($user->address)
-        <p><span class="label">Address:</span>
-            {{
-              collect([
-                $user->address->street,
-                $user->address->street2,
-                $user->address->city,
-                $user->address->province,
-                $user->address->postal_code,
-                $user->address->country
-              ])->filter()->implode(', ')
-            }}
+        <p><strong>Address:</strong>
+            {{ $user->address->street ?? '' }},
+            {{ $user->address->city ?? '' }},
+            {{ $user->address->province ?? '' }}
         </p>
     @endif
 </div>
 
-{{-- Applications --}}
-@if($user->applications->count())
+@if($user->educations && $user->educations->count() > 0)
     <div class="section">
-        <p class="label">Applications:</p>
+        <h2>Education</h2>
         <table>
             <thead>
             <tr>
-                <th>Job</th><th>Status</th><th>Applied On</th>
+                <th>Degree</th>
+                <th>School</th>
+                <th>Year</th>
             </tr>
             </thead>
             <tbody>
-            @foreach($user->applications as $app)
+            @foreach($user->educations as $education)
                 <tr>
-                    <td>{{ $app->jobPost->job_title }}</td>
-                    <td>{{ ucfirst($app->status) }}</td>
-                    <td>{{ $app->created_at->format('M d, Y') }}</td>
+                    <td>{{ $education->degree }}</td>
+                    <td>{{ $education->school }}</td>
+                    <td>{{ $education->start_year }} - {{ $education->end_year ?? 'Present' }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -66,7 +57,65 @@
     </div>
 @endif
 
-{{-- Skills / Certifications / Education / Work / Requirements --}}
-{{-- You can copy from the previous Blade and just swap $applicant→$user and collection names --}}
+@if($user->workHistories && $user->workHistories->count() > 0)
+    <div class="section">
+        <h2>Work Experience</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Position</th>
+                <th>Company</th>
+                <th>Duration</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($user->workHistories as $work)
+                <tr>
+                    <td>{{ $work->position }}</td>
+                    <td>{{ $work->employer }}</td>
+                    <td>{{ $work->start_date }} - {{ $work->end_date ?? 'Present' }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+@endif
+
+@if($user->userSkills && $user->userSkills->count() > 0)
+    <div class="section">
+        <h2>Skills</h2>
+        <ul>
+            @foreach($user->userSkills as $userSkill)
+                <li>{{ $userSkill->skill->name ?? $userSkill->skill_name ?? 'Unnamed skill' }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if($user->applications && $user->applications->count() > 0)
+    <div class="section">
+        <h2>Applications</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Status</th>
+                <th>Applied Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($user->applications as $application)
+                <tr>
+                    <td>{{ $application->jobPost->job_title ?? 'N/A' }}</td>
+                    <td>{{ $application->jobPost->company ?? 'N/A' }}</td>
+                    <td>{{ ucfirst($application->status) }}</td>
+                    <td>{{ $application->created_at->format('M d, Y') }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+@endif
 </body>
 </html>
