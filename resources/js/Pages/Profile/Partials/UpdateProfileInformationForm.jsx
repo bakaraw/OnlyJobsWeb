@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -35,6 +36,7 @@ export default function UpdateProfileInformation({
         patch(route('profile.update'));
     };
 
+    console.log("Edit User: ", data);
     return (
         <section className={className}>
             <header>
