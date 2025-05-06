@@ -61,8 +61,8 @@ function CreateJobPostModal({ className, show, onClose }) {
         min_experience_years: "",
         status_id: "",
         degree_id: "",
-        skills: [],
-        requirements: []
+        skills: "",
+        requirements: ""
     });
 
     const fetchSkills = useCallback(
@@ -314,7 +314,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                     <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
                                 </div>
                             )}
-                            <InputError message={error.skills} />
+                            <InputError message={formErrors.skills} />
                         </div>
                         {suggestions.length > 0 && (
                             <ul className="absolute top-full left-0 right-0 z-50 bg-white border mt-1 rounded-md shadow-md max-h-48 overflow-y-auto">
