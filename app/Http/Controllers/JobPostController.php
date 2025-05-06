@@ -428,28 +428,28 @@ public function update(Request $request, $id)
         ]);
     }
 
-    public function exportPdf($id)
-    {
-        $user = User::select(
-            'id','first_name','last_name','middle_name','suffix',
-            'email','contact_number','birthdate','gender','address_id'
-        )
-            ->with([
-                'address',
-                'applications',
-                'applications.jobPost',
-                'applications.jobPost.requirements',
-                'requirements',
-                'educations',
-                'workHistories',
-                'certifications',
-                'userSkills.skill',
-            ])
-            ->findOrFail($id);
-
-        $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
-        return $pdf->download('applicant-details.pdf');
-    }
+//    public function exportPdf($id)
+//    {
+//        $user = User::select(
+//            'id','first_name','last_name','middle_name','suffix',
+//            'email','contact_number','birthdate','gender','address_id'
+//        )
+//            ->with([
+//                'address',
+//                'applications',
+//                'applications.jobPost',
+//                'applications.jobPost.requirements',
+//                'requirements',
+//                'educations',
+//                'workHistories',
+//                'certifications',
+//                'userSkills.skill',
+//            ])
+//            ->findOrFail($id);
+//
+//        $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
+//        return $pdf->download('applicant-details.pdf');
+//    }
     public function updateStatus(Request $request, $id)
     {
         $request->validate(['status_id' => 'required|exists:job_statuses,id']);
