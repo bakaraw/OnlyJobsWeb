@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class JobSeekerController extends Controller
 {
@@ -136,10 +137,10 @@ class JobSeekerController extends Controller
     /*}*/
     public function show(Request $request)
     {
-        $jobQuery = JobPost::with(['skills', 'requirements'])->latest();
+        $jobQuery = JobPost::with(['skills', 'requirements']);
         $searchTerm = $request->input('search');
 
-        // Apply filters to query before fetching data
+        // Filters
         if ($request->filled('experience')) {
             $expFilters = (array) $request->input('experience');
             $jobQuery->whereIn('min_experience_years', $expFilters);
@@ -150,32 +151,61 @@ class JobSeekerController extends Controller
             $jobQuery->whereIn('job_type', $jobTypes);
         }
 
-        if ($request->filled('search')) {
-            $searchTerm = $request->input('search');
+        if ($request->filled('salary')) {
+            $salary = $request->input('salary');
 
+            $minSalary = $salary['min'] ?? null;
+            $maxSalary = $salary['max'] ?? null;
+
+            if ($minSalary !== null) {
+                $jobQuery->where('max_salary', '>=', $minSalary); // must offer at least this much
+            }
+
+            if ($maxSalary !== null) {
+                $jobQuery->where('min_salary', '<=', $maxSalary); // must start no higher than this
+            }
+        }
+
+        if ($request->filled('location')) {
+            $location = $request->input('location');
+            $jobQuery->where('job_location', 'like', "%{$location}%");
+        }
+
+
+        if ($request->filled('search')) {
             $jobQuery->where(function ($query) use ($searchTerm) {
                 $query->where('job_title', 'like', "%{$searchTerm}%")
-                    ->orWhereHas('skills', function ($skillQuery) use ($searchTerm) {
-                        $skillQuery->where('skill_name', 'like', "%{$searchTerm}%");
-                    });
+                    ->orWhereHas('skills', fn($q) => $q->where('skill_name', 'like', "%{$searchTerm}%"));
             });
         }
+        if ($request->filled('sort_by')) {
+            $sortOrder = $request->input('sort_by'); // Could be 'newest' or 'oldest'
 
-        // Fetch jobs
-        $jobs = $jobQuery->get();
-        $user = null;
-
-        if (Auth::check()) {
-            $user = Auth::user();
-            // Score the jobs
-            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs($user, $jobs);
-            $jobs = $scoredJobs->sortByDesc('match_score')->take(10)->values();
+            if ($sortOrder == 'oldest') {
+                $jobQuery->oldest(); // Sort by oldest (ascending)
+            } else {
+                $jobQuery->latest(); // Sort by newest (descending)
+            }
         } else {
-            $jobs = $jobs->take(10)->values();
+            $jobQuery->latest(); // Default to sorting by newest if no sort is selected
         }
 
-        // Format for frontend
-        $formattedJobs = $jobs->map(function ($job) {
+        // Get all jobs
+        $jobs = $jobQuery->get();
+
+        // Score jobs if user is authenticated
+        if (Auth::check()) {
+            $scoredJobs = app('App\Services\JobMatcher')->scoreJobs(Auth::user(), $jobs);
+            $jobs = $scoredJobs->sortByDesc('match_score')->values(); // Sorted collection
+        }
+
+        // Manual pagination
+        $perPage = 10;
+        $page = (int) $request->input('page', 1);
+        $paginatedJobs = $jobs->forPage($page, $perPage);
+
+        // Format jobs
+        $formattedJobs = $paginatedJobs->map(function ($job) {
             return [
                 'id' => $job->id,
                 'job_title' => $job->job_title,
@@ -199,11 +229,33 @@ class JobSeekerController extends Controller
             ];
         });
 
+        // AJAX "Load More" JSON response
+        if ($request->wantsJson()) {
+            $totalJobs = $jobs->count();
+            $lastPage = (int) ceil($totalJobs / $perPage);
+
+            return response()->json([
+                'jobs' => array_values($formattedJobs->toArray()),
+                'meta' => [
+                    'current_page' => $page,
+                    'last_page' => $lastPage,
+                    'total' => $totalJobs,
+                    'per_page' => $perPage,
+                ],
+                'links' => [
+                    'next' => $page < $lastPage ? $request->url() . '?' . http_build_query(array_merge($request->all(), ['page' => $page + 1])) : null,
+                ]
+            ]);
+        }
+
+        // Initial Inertia render
         return Inertia::render('FindWork', [
-            'user' => $user,
+            'user' => Auth::user(),
             'jobs' => $formattedJobs,
-            'filters' => $request->only(['experience', 'job_type', 'search']),
+            'filters' => $request->only(['experience', 'job_type', 'search', 'salary', 'location', 'sort_by']),
             'search' => $searchTerm,
+            'hasMore' => $paginatedJobs->count() === $perPage,
+            'currentPage' => $page,
         ]);
     }
 

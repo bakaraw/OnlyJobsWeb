@@ -31,13 +31,17 @@ export default function NavBar() {
         //    experience,
         //    job_type,
         //});
+        //router.get('/find_work', {
+        //    search,
+        //    experience: filters?.experience || [],
+        //    job_type: filters?.job_type || [],
+        //}, {
+        //    preserveState: true,
+        //    preserveScroll: true,
+        //});
         router.get('/find_work', {
-            search,
-            experience: filters?.experience || [],
-            job_type: filters?.job_type || [],
-        }, {
-            preserveState: true,
-            preserveScroll: true,
+            ...filters,
+            search: search.trim(),
         });
     }
 

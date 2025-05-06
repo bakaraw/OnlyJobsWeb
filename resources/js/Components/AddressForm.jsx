@@ -6,7 +6,7 @@ import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
 
 export default function AddressForm({ className, data, setData, errors }) {
-
+    console.log("address form", data)
     return (
         <div className={className}>
             <div className='mt-4'>
