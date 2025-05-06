@@ -41,7 +41,7 @@ function CreateJobPostModal({ className, show, onClose }) {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
     const [adding, setAdding] = useState(false);
 
     const [searchRequirement, setSearchRequirement] = useState('');
@@ -49,6 +49,21 @@ function CreateJobPostModal({ className, show, onClose }) {
     const filteredRequirements = (requirements || []).filter((requirement) =>
         requirement.requirement_name.toLowerCase().includes(searchRequirement.toLowerCase())
     );
+    const [formErrors, setFormErrors] = useState({
+        job_title: "",
+        company: "",
+        job_description: "",
+        job_location: "",
+        job_type: "",
+        salary_type: "",
+        min_salary: "",
+        max_salary: "",
+        min_experience_years: "",
+        status_id: "",
+        degree_id: "",
+        skills: [],
+        requirements: []
+    });
 
     const fetchSkills = useCallback(
         debounce(async (search) => {
@@ -133,7 +148,8 @@ function CreateJobPostModal({ className, show, onClose }) {
                     onClose(); // close modal if needed
                 },
                 onError: (errors) => {
-                    console.error("Submission errors:", errors);
+                    setFormErrors(errors);
+                    console.error(errors.job_title);
                 },
             }
         );
@@ -157,7 +173,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                             value={data.job_title}
                             onChange={(e) => setData('job_title', e.target.value)}
                         />
-                        <InputError message={errors.job_title} />
+                        <InputError message={formErrors.job_title} />
                     </div>
                     <div className="mt-3">
                         <InputLabel value="Description" />
@@ -166,7 +182,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                             value={data.job_description}
                             onChange={(e) => setData('job_description', e.target.value)}
                         />
-                        <InputError message={errors.job_description} />
+                        <InputError message={formErrors.job_description} />
                     </div>
                     <div className="grid grid-cols-2 gap-3 mt-3">
                         <div className="col-span-1">
@@ -176,7 +192,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 value={data.company}
                                 onChange={(e) => setData('company', e.target.value)}
                             />
-                            <InputError />
+                            <InputError message={formErrors.company} />
                         </div>
                         <div className="col-span-1">
                             <InputLabel value="Location" />
@@ -185,7 +201,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 value={data.job_location}
                                 onChange={(e) => setData('job_location', e.target.value)}
                             />
-                            <InputError message={errors.job_location} />
+                            <InputError message={formErrors.job_location} />
                         </div>
                     </div>
                     <div className="grid grid-cols-3 mt-3 gap-3">
@@ -195,7 +211,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 className='w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-gray-500 mt-1'
                                 value={data.job_type}
                                 onChange={(e) => setData('job_type', e.target.value)}
-                                message={errors.job_type}
+                                message={formErrors.job_type}
                             >
                                 <option value="Full Time">Full Time</option>
                                 <option value="Part Time">Part Time</option>
@@ -205,7 +221,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 <option value="Remote">Remote</option>
                                 <option value="Freelance">Freelance</option>
                             </select>
-                            <InputError message={errors.job_type} />
+                            <InputError message={formErrors.job_type} />
                         </div>
                         <div className="col-span-1">
                             <InputLabel value="Required Education" />
@@ -222,7 +238,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                     ))
                                 }
                             </select>
-                            <InputError message={errors.degree_id} />
+                            <InputError message={formErrors.degree_id} />
                         </div>
                         <div className="col-span-1">
                             <InputLabel value="Required Experience" />
@@ -237,7 +253,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 <option value="3" >Intermediate  Level</option>
                                 <option value="5">Expert Level</option>
                             </select>
-                            <InputError message={errors.min_experience_years} />
+                            <InputError message={formErrors.min_experience_years} />
                         </div>
                     </div>
                     <div className="flex flex-col mt-4">
@@ -258,7 +274,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                         Range
                                     </option>
                                 </select>
-                                <InputError />
+                                <InputError message={formErrors.salary_type} />
                             </div>
                             <div className="col-span-2 mt-1">
                                 <TextInput
@@ -267,17 +283,18 @@ function CreateJobPostModal({ className, show, onClose }) {
                                     value={data.min_salary}
                                     onChange={(e) => setData('min_salary', e.target.value)}
                                 />
-                                <InputError message={errors.min_salary} />
+                                <InputError message={formErrors.min_salary} />
                             </div>
                             {
                                 data.salary_type !== "Fixed" && (<div className="col-span-2 mt-1">
                                     <TextInput
+                                        required
                                         className="mt-1 block w-full"
                                         placeholder="maximum"
                                         value={data.max_salary}
                                         onChange={(e) => setData('max_salary', e.target.value)}
                                     />
-                                    <InputError message={errors.max_salary} />
+                                    <InputError message={formErrors.max_salary} />
                                 </div>)
                             }
                         </div>
@@ -297,7 +314,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                     <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
                                 </div>
                             )}
-                            <InputError message={errors.skills} />
+                            <InputError message={error.skills} />
                         </div>
                         {suggestions.length > 0 && (
                             <ul className="absolute top-full left-0 right-0 z-50 bg-white border mt-1 rounded-md shadow-md max-h-48 overflow-y-auto">
@@ -359,7 +376,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                             }}
                             placeholder="Search or add new requirement"
                         />
-                        <InputError message={errors.requirements} />
+                        <InputError message={formErrors.requirements} />
                         {searchRequirement && (
                             <div className="absolute top-full left-0 bg-white border border-gray-300 rounded-md shadow-lg w-full max-h-60 overflow-y-auto z-50">
                                 {filteredRequirements.slice(0, 5).map((requirement) => (

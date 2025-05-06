@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
             'province' => 'required|string|max:255',
             'postal_code' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'contact_number' => 'required|string|regex:/^[0-9+\-\s]+$/|max:20',
+            'contact_number' => 'required|string|regex:/^[0-9+\-\s]+$/|max:20|unique:users',
             'email' => 'required|string|lowercase|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
