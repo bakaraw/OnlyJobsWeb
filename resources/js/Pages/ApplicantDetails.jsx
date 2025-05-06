@@ -37,23 +37,23 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
     const suffix = selectedApplicant.suffix || "";
 
 
-    // const handleExportPdf = async () => {
-    //     try {
-    //         const response = await axios.get(`/applicants/${selectedApplicant.id}/pdf`, { responseType: 'blob' });
-    //
-    //         // Create a blob URL and trigger download
-    //         const url = window.URL.createObjectURL(new Blob([response.data]));
-    //         const link = document.createElement('a');
-    //         link.href = url;
-    //         link.setAttribute('download', `user-${selectedApplicant.id}-profile.pdf`);
-    //         document.body.appendChild(link);
-    //         link.click();
-    //         link.remove();
-    //     } catch (err) {
-    //         console.error('PDF export failed', err);
-    //         alert('Failed to download PDF.');
-    //     }
-    // };
+    const handleExportPdf = async () => {
+        try {
+            const response = await axios.get(`/applicants/${selectedApplicant.id}/pdf`, { responseType: 'blob' });
+
+            // Create a blob URL and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `user-${selectedApplicant.id}-profile.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error('PDF export failed', err);
+            alert('Failed to download PDF.');
+        }
+    };
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -70,9 +70,9 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                     Back
                 </SecondaryButton>
 
-                {/*<SecondaryButton onClick={handleExportPdf}>*/}
-                {/*    Export PDF*/}
-                {/*</SecondaryButton>*/}
+                <SecondaryButton onClick={handleExportPdf}>
+                    Export PDF
+                </SecondaryButton>
 
 
 
