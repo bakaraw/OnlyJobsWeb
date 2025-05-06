@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
@@ -16,8 +16,15 @@ const handleDeleteJob = async (jobId) => {
     }
 };
 
-export default function JobList({ jobs, onJobSelect }) {
+const statusStyles = {
+    Active: 'bg-green-300 text-green-900',
+    Closed: 'bg-red-300 text-red-900',
+    'Temporary Closed': 'bg-yellow-300 text-yellow-900',
+    Updated: 'bg-blue-300 text-blue-900',
+};
 
+export default function JobList({ jobs, onJobSelect }) {
+    console.log("job_status: " + jobs.status?.name);
     return (
         <div className="w-full px-4">
             <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
@@ -35,8 +42,6 @@ export default function JobList({ jobs, onJobSelect }) {
                             <th className="py-3 px-4 text-center">Rejected</th>
                             <th className="py-3 px-4 text-center">Status</th>
                             <th className="py-3 px-4 text-center"></th>
-
-
                         </tr>
                     </thead>
                     <tbody>
@@ -59,20 +64,18 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4 text-center">{job.qualified_count}</td>
                                 <td className="py-3 px-4 text-center">{job.accepted_count}</td>
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>
-                                <td className="py-3 px-4 text-center">{job.status?.name}</td>
-
-
-
                                 <td className="py-3 px-4 text-center">
+                                    <span className={`text-xs font-semibold px-3 py-1 rounded-full inline-block ${statusStyles[job.status?.name]}`}>
+                                        {job.status?.name}
+                                    </span>
+                                </td>
+                                <td className="text-center">
                                     <div className="relative">
-
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleDeleteJob(job.id);
                                                 setOpenMenuJobId(null);
-
-
                                             }}
                                             className="text-red-500 hover:underline"
                                         >

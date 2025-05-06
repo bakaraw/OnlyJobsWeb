@@ -7,8 +7,9 @@ import ApplicantCard from "@/Components/Dashboard/Modal/ApplicantCard.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import ApplicantDetails from "@/Pages/ApplicantDetails.jsx";
+import AdminMessages from "./Admin/AdminMessages";
 
-export default function dashboard({ jobView, statuses, requirements , degrees,getJobPostData , jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({ jobView, statuses, requirements, degrees, getJobPostData, jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [selectedApplicantId, setSelectedApplicantId] = useState(null);
@@ -97,7 +98,7 @@ export default function dashboard({ jobView, statuses, requirements , degrees,ge
                         {/*</SecondaryButton>*/}
                         <JobDetails
                             edit_status={statuses}
-                            edit_requirements ={requirements}
+                            edit_requirements={requirements}
                             degrees={degrees}
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
@@ -105,6 +106,8 @@ export default function dashboard({ jobView, statuses, requirements , degrees,ge
 
                         />
                     </div>
+                ) : activeView === "messages" ? (
+                    <AdminMessages />
                 ) : (
                     <div>
                         {auth?.user ? (
