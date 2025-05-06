@@ -39,8 +39,15 @@ class JobPost extends Model
     public function requirements()
     {
         return $this->belongsToMany(Requirement::class, 'job_post_requirement', 'job_post_id', 'requirement_id')
+            ->select('job_post_education.education_id', 'job_post_education.education_level');
+    }
+
+    public function educations()
+    {
+        return $this->belongsToMany(JobEducation::class, 'job_post_education', 'job_post_id', 'requirement_id')
             ->select('requirements.requirement_id', 'requirements.requirement_name');
     }
+
 
     /*public function skills()*/
     /*{*/
