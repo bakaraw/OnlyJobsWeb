@@ -1,7 +1,9 @@
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
+import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
-export default function ApplicantDetails({ selectedApplicant, onClose }) {
+export default function ApplicantDetails({ selectedApplicant, onClose, onBack }) {
+
 
     console.log(selectedApplicant)
     if (!selectedApplicant) {
@@ -34,20 +36,46 @@ export default function ApplicantDetails({ selectedApplicant, onClose }) {
     const lastName = selectedApplicant.last_name || "";
     const suffix = selectedApplicant.suffix || "";
 
+
+    const handleExportPdf = async () => {
+        try {
+            const response = await axios.get(`/applicants/${selectedApplicant.id}/pdf`, { responseType: 'blob' });
+
+            // Create a blob URL and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `user-${selectedApplicant.id}-profile.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error('PDF export failed', err);
+            alert('Failed to download PDF.');
+        }
+    };
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <div>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">
                     {firstName}{" "}
                     {middleName ? middleName[0] + ". " : ""} {lastName}
                     {suffix ? ", " + suffix : ""}
                 </h2>
-                <DangerButton
-                    onClick={onClose}
-                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+
+                <SecondaryButton
+                    onClick={onBack}
+                    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
                 >
-                    Close
-                </DangerButton>
+                    Back
+                </SecondaryButton>
+
+                <SecondaryButton onClick={handleExportPdf}>
+                    Export PDF
+                </SecondaryButton>
+
+
+
             </div>
 
             {/* Personal Info */}
@@ -206,6 +234,7 @@ export default function ApplicantDetails({ selectedApplicant, onClose }) {
             )}
 
 
+
             {/* Work Experience */}
             {selectedApplicant.work_histories && selectedApplicant.work_histories.length > 0 && (
                 <div className="mb-6">
@@ -241,6 +270,41 @@ export default function ApplicantDetails({ selectedApplicant, onClose }) {
                 </div>
             )}
 
+            {/* Applications */}
+            {selectedApplicant.applications && selectedApplicant.applications.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Applications</h3>
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Job Title</th>
+                            <th className="py-2 px-4">Company</th>
+                            <th className="py-2 px-4">Date Applied</th>
+                            <th className="py-2 px-4">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {selectedApplicant.applications.map((application, index) => (
+                            <tr key={application.id || index} className="border-b">
+                                <td className="py-2 px-4">
+                                    {application.job_title || "N/A"}
+                                </td>
+                                <td className="py-2 px-4">{application.company || "N/A"}</td>
+                                <td className="py-2 px-4">
+                                    {application.application_date
+                                        ? new Date(application.application_date).toLocaleDateString()
+                                        : "N/A"}
+                                </td>
+                                <td className={`py-2 px-4 ${statusClasses[application.status?.toLowerCase()] || ''}`}>
+                                    {application.status || "Pending"}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
             {/* Requirements/Documents */}
             {selectedApplicant.requirements && selectedApplicant.requirements.length > 0 && (
                 <div className="mb-6">
@@ -267,6 +331,9 @@ export default function ApplicantDetails({ selectedApplicant, onClose }) {
                     </table>
                 </div>
             )}
+
+
         </div>
+
     );
 }

@@ -196,6 +196,13 @@ Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus'
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
+Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
+
+    Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+    Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+
+Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
 //        'auth' => [
