@@ -16,6 +16,7 @@ export default function FindWork() {
     const [jobList, setJobList] = useState(initialJobs);
     const [nextPage, setNextPage] = useState(hasMore ? currentPage + 1 : null);
     const [showMessages, setShowMessages] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { data, setData, get } = useForm({
         experience: filters?.experience || [],
@@ -40,6 +41,7 @@ export default function FindWork() {
     };
 
     useEffect(() => {
+        setLoading(true);
         get(route('find_work'), {
             preserveState: true,
             preserveScroll: true,
@@ -48,6 +50,7 @@ export default function FindWork() {
                 const newJobs = Array.isArray(page.props.jobs) ? page.props.jobs : [];
                 setJobList(newJobs);
                 setNextPage(page.props.hasMore ? page.props.currentPage + 1 : null);
+                setLoading(false);
             },
         });
     }, [data]);
@@ -170,7 +173,7 @@ export default function FindWork() {
                         </div>
                     )}
 
-                    {
+                    {loading === false ? (
                         jobList.length > 0 ? jobList.map((job) => (
                             <div key={job.id} className="mb-4">
                                 <JobCard job={job}>
@@ -191,9 +194,13 @@ export default function FindWork() {
                                 <p className='text-lg font-medium text-gray-600'>No jobs found</p>
                             </div>
                         )
-                    }
+                    ) : (
+                        <div className='flex items-center justify-center mt-44'>
+                            <div className="w-6 h-6 mr-3 border-4 border-t-transparent border-dark border-solid rounded-full animate-spin"></div>
+                        </div>
+                    )}
                     {
-                        nextPage && (
+                        !loading && nextPage && (
                             <div className="flex items-center justify-center mt-6">
                                 <PrimaryButton onClick={loadMore}>
                                     Load More Jobs

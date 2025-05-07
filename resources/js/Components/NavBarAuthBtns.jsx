@@ -10,12 +10,6 @@ export default function NavBarAuthBtns() {
     // Check if `auth` exists and contains a `user`
     const isAuthenticated = auth && auth.user;
 
-    // Logout handler for Inertia
-    const handleLogout = (e) => {
-        e.preventDefault();
-        router.post(route("logout"));
-    };
-
     return (
         <>
             {isAuthenticated ? (

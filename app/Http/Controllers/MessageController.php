@@ -14,10 +14,16 @@ class MessageController extends Controller
 {
     public function getConversations(Request $request)
     {
-        $conversations = Conversation::with(['job', 'messages'])  // Eager load job relationship
-            ->where('user_id', $request->user()->id)  // Example filter for current user
-            ->has('messages')
-            ->get();
+        if ($request->user()->id == 1) {
+            // Admin sees all conversations
+            $conversations = Conversation::with(['job', 'messages'])->has('messages')->get();
+        } else {
+            // Regular user sees only their own
+            $conversations = Conversation::with(['job', 'messages'])
+                ->where('user_id', $request->user()->id)
+                ->has('messages')
+                ->get();
+        }
 
         return response()->json($conversations);
     }
@@ -102,5 +108,14 @@ class MessageController extends Controller
 
         // Return the conversation with the messages including the 'fromUser' field
         return response()->json($conversation);
+    }
+
+    public function adminConversations()
+    {
+        $conversations = Conversation::with(['user', 'job', 'messages' => fn($q) => $q->latest()->take(1)])
+            ->has('messages')
+            ->get();
+
+        return response()->json($conversations);
     }
 }

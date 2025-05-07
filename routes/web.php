@@ -192,17 +192,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
-    Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
-    Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
+
+Route::middleware('auth')->prefix('admin/messages')->group(function () {
+    Route::get('/conversations', [MessageController::class, 'adminConversations']);
+    Route::get('/{id}', [MessageController::class, 'show']);
+    Route::post('/{id}', [MessageController::class, 'sendMessage']);
+});
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
 //        'auth' => [
