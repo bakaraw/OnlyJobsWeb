@@ -107,7 +107,9 @@ export default function dashboard({ jobView, statuses, requirements, degrees, ge
                         />
                     </div>
                 ) : activeView === "messages" ? (
-                    <AdminMessages />
+                    <AdminMessages
+                        onJobSelect={handleJobSelect}
+                    />
                 ) : (
                     <div>
                         {auth?.user ? (

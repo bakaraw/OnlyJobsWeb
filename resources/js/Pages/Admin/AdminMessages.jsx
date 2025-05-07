@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
 import { usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
-export default function AdminMessages() {
+export default function AdminMessages({ onJobSelect }) {
     const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -101,6 +102,24 @@ export default function AdminMessages() {
                         ? `Chat with ${selectedConversation.user.first_name} ${selectedConversation.user.last_name} about ${selectedConversation.job.job_title}`
                         : "Select a conversation"}
                 </div>
+                {selectedConversation && (
+                    <div className="px-4 py-3 border-b border-gray-200 bg-white text-sm text-gray-700 space-y-1">
+                        <div>
+                            <span className="font-medium">Job:</span>{" "}
+                            <button
+                                //href={`/job/${selectedConversation.job.id}`}
+                                onClick={() => onJobSelect(selectedConversation.job.id)}
+                                className="text-blue-600 hover:underline"
+                            >
+                                {selectedConversation.job.job_title}
+                            </button>
+                        </div>
+                        <div>
+                            <span className="font-medium">User:</span>{" "}
+                            {selectedConversation.user.first_name} {selectedConversation.user.last_name} ({selectedConversation.user.email})
+                        </div>
+                    </div>
+                )}
 
                 {/* Messages */}
                 <div className="flex-1 p-4 overflow-y-auto space-y-2">
