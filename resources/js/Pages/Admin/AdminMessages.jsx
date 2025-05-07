@@ -92,7 +92,6 @@ export default function AdminMessages({ onJobSelect }) {
                     </ul>
                 )}
             </div>
-
             {/* Chat Window */}
             <div className="w-2/3 flex flex-col">
                 {/* Header */}
