@@ -22,7 +22,7 @@ class CertificationController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'description' => 'required|string|max:255',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,pdf|max:10240',
         ]);
