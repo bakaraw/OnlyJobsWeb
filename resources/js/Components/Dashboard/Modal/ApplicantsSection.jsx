@@ -4,6 +4,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
+import {usePage} from "@inertiajs/react";
 
 
 export default function ApplicantsSection({ applicants }) {
@@ -11,11 +12,17 @@ export default function ApplicantsSection({ applicants }) {
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
 
+    const { props } = usePage();
+    const { statuses, degrees, requirements, skills } = props;
+
     const filteredApplicants = applicants.filter(
         (app) =>
             selectedStatus === "all" ||
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
+console.log('isers', applicants.degree_id)
+    console.log("degree", degrees)
+    console.log('applciant', applicants)
 
     const handleAccept = async (application) => {
         try {

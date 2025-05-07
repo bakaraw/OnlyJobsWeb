@@ -96,23 +96,17 @@ class DatabaseSeeder extends Seeder
 
         // creates degrees default data
         DB::table('degrees')->insert([
-            ['name' => 'Associate\'s'],
-            ['name' => 'Bachelor\'s'],
-            ['name' => 'Master\'s'],
-            ['name' => 'Doctorate'],
-            ['name' => 'Professional Degree'],
-            ['name' => 'Certificate'],
-            ['name' => 'High School Diploma'],
-            ['name' => 'Postgraduate Diploma'],
-            ['name' => 'Postdoctoral Degree'],
-            ['name' => 'Honorary Degree'],
-            ['name' => 'TESDA Certificate'],
-            ['name' => 'Technical Certificate'],
-            ['name' => 'Vocational Certificate'],
+            ['name' => 'Vocational'],
+            ['name' => 'Graduate'],
+            ['name' => 'Undergraduate'],
+            ['name' => 'High School'],
+            ['name' => 'Elementary'],
+            ['name' => 'Others'],
+
         ]);
 
 
-        DB::table('requirements')->insert([
+    DB::table('requirements')->insert([
             ['requirement_name' => 'Passport'],
             ['requirement_name' => 'NBI Clearance'],
             ['requirement_name' => 'Medical Certificate'],
@@ -123,13 +117,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // creates skills default data
-        $response = Http::get('https://gist.githubusercontent.com/fadziljusri/d72619739d1fa8b760ca8a8d89bb0c99/raw/21983ab748fed408a64e0437c0c84d52229c30e8/skills.json');
-        $skillset = $response->json();
 
-        foreach ($skillset as $skill_category) {
-            foreach ($skill_category as $skill) {
-                Skill::create(['skill_name' => $skill]);
-            }
-        }
     }
 }

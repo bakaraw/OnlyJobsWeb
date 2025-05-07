@@ -22,4 +22,14 @@ class Application extends Model
     {
         return $this->belongsTo(JobPost::class, "job_post_id");
     }
+
+    public function degree()
+    {
+        return $this->belongsTo(Degree::class);
+    }
+
+    public function educations() {
+        return $this->hasMany(Educations::class);
+    }
+
 }

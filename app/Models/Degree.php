@@ -15,4 +15,6 @@ class Degree extends Model
     {
         return $this->hasMany(JobPost::class, 'degree_id');
     }
+
+
 }

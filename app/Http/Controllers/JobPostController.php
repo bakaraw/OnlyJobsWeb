@@ -241,8 +241,17 @@ public function update(Request $request, $id)
         )
             ->with([
                 'user:id,first_name',
-                'jobPost:id,job_title'
+                'user.educations:id,user_id,education_level', // Load education data through user relationship
+                'jobPost:id,job_title,degree_id',
+                'jobPost.degree:id,name'
             ])
+            ->with([
+            ])
+
+
+//            ->with([
+//                'degrees:id,name',
+//            ])
             ->get();
 
         $jobs = JobPost::select(
