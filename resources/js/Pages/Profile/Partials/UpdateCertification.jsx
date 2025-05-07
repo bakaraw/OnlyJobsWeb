@@ -118,6 +118,7 @@ export default function UpdateCertification({ className }) {
                                     ))
                                 }
                             </select>
+                            <InputError message={errors.year} />
                         </div>
                     </div>
                     <div className="w-full">
@@ -128,6 +129,7 @@ export default function UpdateCertification({ className }) {
                             className="resize-y rounded-md border border-gray-300 p-2 w-full min-h-[100px]"
                         >
                         </textarea>
+                        <InputError message={errors.description} />
                     </div>
                     <div>
                         <InputLabel value="Attach File" />

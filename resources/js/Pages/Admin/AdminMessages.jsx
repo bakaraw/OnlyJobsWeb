@@ -14,7 +14,6 @@ export default function AdminMessages({ onJobSelect }) {
     const [loadingMessages, setLoadingMessages] = useState(false);
 
     const { auth } = usePage().props;
-    console.log("User: " + auth);
 
     useEffect(() => {
         axios.get("/admin/messages/conversations")
@@ -129,7 +128,7 @@ export default function AdminMessages({ onJobSelect }) {
                         Array.isArray(messages) && messages.map((msg) => (
                             <div
                                 key={msg.id}
-                                className={`max-w-xs px-4 py-2 rounded-full text-sm ${msg.sender_id == auth.user.id
+                                className={`w-fit px-4 py-2 rounded-full text-sm ${msg.sender_id == auth.user.id
                                     ? "bg-primary text-white self-end ml-auto"
                                     : "bg-gray-200 text-gray-800"
                                     }`}
