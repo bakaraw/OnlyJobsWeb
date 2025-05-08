@@ -3,7 +3,7 @@ import MessageInput from './MessageInput';
 import { Link, usePage } from "@inertiajs/react";
 import { Loader2 } from 'lucide-react';
 
-export default function ChatWindow({ conversation, onSend, onClose, loading }) {
+export default function ChatWindow({ conversation, onSend, onClose, loading, fetchConversations }) {
     const { auth } = usePage().props;
 
     return (

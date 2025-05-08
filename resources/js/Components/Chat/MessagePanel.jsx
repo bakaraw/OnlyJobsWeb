@@ -49,24 +49,7 @@ export default function MessagePanel({ onClose, conversation }) {
         };
     }, [onClose]);
 
-    useEffect(() => {
-        if (selectedConversation?.id) {
-            setLoadingMessages(true); // Start loading messages
-
-            axios.get(`/conversations/${selectedConversation.id}`, { withCredentials: true })
-                .then((response) => {
-                    setSelectedConversation(response.data); // No need to map 'fromUser' in the frontend anymore
-                })
-                .catch((error) => {
-                    console.error("Error fetching selected conversation:", error);
-                })
-                .finally(() => {
-                    setLoadingMessages(false); // Stop loading
-                });
-        }
-    }, [selectedConversation?.id]);
-
-    useEffect(() => {
+    const fetchConversations = () => {
         setLoadingConversation(true);
         axios.get('/conversations')
             .then((response) => {
@@ -77,54 +60,172 @@ export default function MessagePanel({ onClose, conversation }) {
             })
             .finally(() => {
                 setLoadingConversation(false);
-            })
-            ;
+            });
+    }
+
+    //useEffect(() => {
+    //    if (selectedConversation?.id) {
+    //        setLoadingMessages(true); // Start loading messages
+    //
+    //        axios.get(`/conversations/${selectedConversation.id}`, { withCredentials: true })
+    //            .then((response) => {
+    //                setSelectedConversation(response.data); // No need to map 'fromUser' in the frontend anymore
+    //            })
+    //            .catch((error) => {
+    //                console.error("Error fetching selected conversation:", error);
+    //            })
+    //            .finally(() => {
+    //                setLoadingMessages(false); // Stop loading
+    //            });
+    //    }
+    //}, [selectedConversation?.id]);
+    //useEffect(() => {
+    //    if (!selectedConversation?.id) return;
+    //
+    //    const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+    //
+    //    channel.listen('MessageSent', (e) => {
+    //        const incomingMsg = {
+    //            id: e.id,
+    //            text: e.text,
+    //            fromUser: e.sender_id === auth.user.id, // or check sender_id
+    //        };
+    //
+    //        setSelectedConversation((prev) => ({
+    //            ...prev,
+    //            messages: [...prev.messages, incomingMsg],
+    //        }));
+    //
+    //        setConversations((prevConvs) =>
+    //            prevConvs.map((conv) =>
+    //                conv.id === selectedConversation.id
+    //                    ? {
+    //                        ...conv,
+    //                        messages: [...(conv.messages || []), incomingMsg],
+    //                    }
+    //                    : conv
+    //            )
+    //        );
+    //    });
+    //
+    //    return () => {
+    //        channel.stopListening('MessageSent');
+    //        window.Echo.leave(`conversations.${selectedConversation.id}`);
+    //    };
+    //}, [selectedConversation?.id]);
+    //
+    //useEffect(() => {
+    //    fetchConversations();
+    //}, []);
+    //
+    //const onSend = async (messageText) => {
+    //    try {
+    //        if (!selectedConversation?.id) {
+    //            throw new Error("No conversation selected.");
+    //        }
+    //
+    //        const response = await axios.post(
+    //            `/conversations/${selectedConversation.id}/send`,
+    //            { text: messageText },
+    //            { withCredentials: true }
+    //        );
+    //
+    //        const newMsg = response.data;
+    //
+    //        // Update selected conversation's messages
+    //        setSelectedConversation((prev) => ({
+    //            ...prev,
+    //            messages: [...prev.messages, {
+    //                id: newMsg.id,
+    //                text: newMsg.text,
+    //                fromUser: true,
+    //            }],
+    //        }));
+    //
+    //        // Also update the conversations list
+    //        setConversations((prevConvs) =>
+    //            prevConvs.map((conv) =>
+    //                conv.id === selectedConversation.id
+    //                    ? {
+    //                        ...conv,
+    //                        messages: [...(conv.messages || []), {
+    //                            id: newMsg.id,
+    //                            text: newMsg.text,
+    //                            fromUser: true,
+    //                        }],
+    //                    }
+    //                    : conv
+    //            )
+    //        );
+    //    } catch (error) {
+    //        console.error("Failed to send message:", error);
+    //    }
+    //};
+
+    useEffect(() => {
+        const fetchConversations = async () => {
+            try {
+                setLoadingConversation(true);
+                const response = await axios.get('/conversations');
+
+                // Inject fromUser into each message based on sender_id
+                const conversationsWithFromUser = response.data.map(conv => ({
+                    ...conv,
+                    messages: conv.messages?.map(msg => ({
+                        ...msg,
+                        fromUser: msg.sender_id === auth.user.id
+                    })) || []
+                }));
+
+                setConversations(conversationsWithFromUser);
+            } catch (error) {
+                console.error("Error fetching conversations:", error);
+            } finally {
+                setLoadingConversation(false);
+            }
+        };
+
+        fetchConversations();
     }, []);
+
+    useEffect(() => {
+        if (!selectedConversation?.id) return;
+
+        const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+
+        channel.listen('MessageSent', (e) => {
+            const incomingMsg = {
+                id: e.id,
+                text: e.text,
+                fromUser: e.sender_id === auth.user.id,
+            };
+
+            setSelectedConversation((prev) => ({
+                ...prev,
+                messages: prev.messages ? [...prev.messages, incomingMsg] : [incomingMsg],
+            }));
+        });
+
+        return () => {
+            channel.stopListening('MessageSent');
+            window.Echo.leave(`conversations.${selectedConversation.id}`);
+        };
+    }, [selectedConversation?.id]);  // Ensure selectedConversation is valid
 
     const onSend = async (messageText) => {
         try {
-            if (!selectedConversation?.id) {
-                throw new Error("No conversation selected.");
-            }
+            if (!selectedConversation?.id) throw new Error("No conversation selected.");
 
-            const response = await axios.post(
+            await axios.post(
                 `/conversations/${selectedConversation.id}/send`,
                 { text: messageText },
                 { withCredentials: true }
             );
 
-            const newMsg = response.data;
-
-            // Update selected conversation's messages
-            setSelectedConversation((prev) => ({
-                ...prev,
-                messages: [...prev.messages, {
-                    id: newMsg.id,
-                    text: newMsg.text,
-                    fromUser: true,
-                }],
-            }));
-
-            // Also update the conversations list
-            setConversations((prevConvs) =>
-                prevConvs.map((conv) =>
-                    conv.id === selectedConversation.id
-                        ? {
-                            ...conv,
-                            messages: [...(conv.messages || []), {
-                                id: newMsg.id,
-                                text: newMsg.text,
-                                fromUser: true,
-                            }],
-                        }
-                        : conv
-                )
-            );
         } catch (error) {
             console.error("Failed to send message:", error);
         }
     };
-
 
     return (
         <div className="fixed inset-0 z-40 pointer-events-none">
@@ -147,6 +248,7 @@ export default function MessagePanel({ onClose, conversation }) {
                     onSend={onSend}
                     onClose={onClose}
                     loading={loadingMessages}
+                    fetchConversations={fetchConversations}
                 />
             </motion.div>
         </div>
