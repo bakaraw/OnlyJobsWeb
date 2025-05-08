@@ -22,6 +22,7 @@ class JobPost extends Model
         'requirement',
         'skills',
         'company',
+        'slot',
         'user_id',
         'views',
         'salary_type'

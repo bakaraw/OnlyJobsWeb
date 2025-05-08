@@ -97,28 +97,7 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
                                 </td>
                                 <td className="py-3 px-4">sample</td>
 
-                                {/*<td className="py-3 px-4 text-center">*/}
-                                {/*    {user.applications && user.applications.length > 0 ? (*/}
-                                {/*        // <div className="flex flex-col space-y-1">*/}
-                                {/*        //     {user.applications.map(app => (*/}
-                                {/*        //         <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>*/}
-                                {/*        //         {app.job_post && app.job_post.job_title}:*/}
-                                {/*        //             {app.status.charAt(0).toUpperCase() + app.status.slice(1)}*/}
-                                {/*        //         </span>*/}
-                                {/*        //     ))}*/}
-                                {/*        // </div>*/}
-                                {/*    ) : (*/}
-                                {/*        <span className="text-gray-500">-</span>*/}
-                                {/*    )}*/}
-                                {/*</td>*/}
-                                {/*<td className="py-3 px-4 text-center">*/}
-                                {/*    <SecondaryButton*/}
-                                {/*        onClick={() => toggleUserDetails(user.id)}*/}
-                                {/*        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"*/}
-                                {/*    >*/}
-                                {/*        {expandedUser === user.id ? "Hide Details" : "View Details"}*/}
-                                {/*    </SecondaryButton>*/}
-                                {/*</td>*/}
+
                             </tr>
                         ))}
                         </tbody>

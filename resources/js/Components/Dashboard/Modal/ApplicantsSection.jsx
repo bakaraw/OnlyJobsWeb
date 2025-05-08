@@ -42,21 +42,16 @@ export default function ApplicantsSection({ applicants }) {
     const job_degrees = applicants.map(job => job.job_post.degree?.name);
     const user_degrees = applicants.map(app => app.user.educations?.[0]?.education_level);
 
+    const applicantSkills = applicants.map(app => app.user.user_skills?.[0]?.skill_name);
+    const jobSkill = applicants.map(app => app.job_post.skills?.[0]?.skill_name);
+
+    const skillsMet = applicantSkills.length === jobSkill.length && applicantSkills
+        .every((val, i) => val === jobSkill[i]);
 
 
     const educationMet = meetsEducationRequirement(job_degrees, user_degrees);
 
-    const skillsMet = (applicants) => {
-        const jobSkills = applicants.job_post.skills?.map(skill => skill.skill_name) || [];
-        const userSkills = applicants.user.user_skills?.map(skill => skill.skill_name) || [];
 
-        return jobSkills.every(jobSkill =>
-            userSkills.some(userSkill => userSkill === jobSkill)
-        );
-
-    }
-
-    console.log('edu', educationMet)
 
     const handleAccept = async (application) => {
         try {
@@ -64,6 +59,8 @@ export default function ApplicantsSection({ applicants }) {
             let confirmMsg;
             let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
 
+            if (application.status === "Pending") {
+                confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
 
                 if (!educationMet && !skillsMet) {
                     message += "education level and skills requirements.";
@@ -72,15 +69,18 @@ export default function ApplicantsSection({ applicants }) {
                 } else if (!skillsMet) {
                     message += "skills requirements.";
                 }
-
                 message += " Do you still want to proceed?";
                 confirmMsg = message;
 
+                if (!confirm(confirmMsg)) return;
+                endpoint = "/applicants/qualified";
 
-                if (application.status === "Pending") {
-                    confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-                    if (!confirm(confirmMsg)) return;
-                    endpoint = "/applicants/qualified";
+
+                //
+                // if (application.status === "Pending") {
+                //     confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
+                //     if (!confirm(confirmMsg)) return;
+                //     endpoint = "/applicants/qualified";
 
                     }
                 if (application.status === "Qualified") {

@@ -18,6 +18,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         job_location = "N/A",
         company = "",
         views = 'N/A',
+        slot = 'N/A',
         salary_type = "",
         min_salary = "",
         max_salary = "",
@@ -30,6 +31,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
     console.log('sd', job_details)
     console.log('sd', job_details.degree)
+    console.log("slot", job_details.slot);
     console.log('sst', job_details.status)
 
     const [isEditing, setIsEditing] = useState(false);
@@ -53,6 +55,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         job_description: job_details.job_description || "N/A",
         job_location: job_details.job_location || "N/A",
         company: job_details.company || "N/A",
+        slot: job_details.slot || "N/A",
         salary_type: job_details.salary_type || "N/A",
         min_salary: job_details.min_salary || "N/A",
         max_salary: job_details.max_salary || "N/A",
@@ -185,6 +188,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 job_description: form.job_description,
                 job_location: form.job_location,
                 company: form.company,
+                slot: form.slot,
                 salary_type: form.salary_type,
                 min_salary: form.min_salary,
                 max_salary: form.max_salary,
@@ -205,6 +209,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                         job_description: res.data.job.job_description || form.job_description,
                         job_location: res.data.job.job_location || form.job_location,
                         company: res.data.job.company || form.company,
+                        slot: res.data.job.slot || form.slot,
                         salary_type: res.data.job.salary_type || form.salary_type,
                         min_salary: res.data.job.min_salary || form.min_salary,
                         max_salary: res.data.job.max_salary || form.max_salary,
@@ -612,6 +617,11 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                             <div className="mb-4">
                                 <p className="font-semibold">Education:</p>
                                 <p className="text-gray-600">{job_details.degree?.name || 'N/A'}</p>
+                            </div>
+
+                            <div className="mb-4">
+                                <p className="font-semibold">Slots:</p>
+                                <p className="text-gray-600">{job_details.slot || 'N/A'}</p>
                             </div>
 
                             {/*{status && (*/}

@@ -59,6 +59,7 @@ class JobPostController extends Controller
             'status_id'            => 'nullable|exists:job_statuses,id',
             'degree_id'            => 'nullable|exists:degrees,id',
             'views'                => 'nullable|integer',
+            'slot'                => 'nullable|integer',
             'requirements'         => 'nullable|array',
             'requirements.*'       => 'exists:requirements,requirement_id',
             'skills'               => 'nullable|array',
@@ -140,6 +141,7 @@ public function update(Request $request, $id)
         'status_id'            => 'nullable|exists:job_statuses,id',
         'degree_id'            => 'nullable|exists:degrees,id',
         'views'                => 'nullable',
+        'slot'                => 'nullable| integer',
 
         'requirements'          => 'nullable|array',
         'requirements.*'        => 'exists:requirements,requirement_id',
@@ -265,6 +267,7 @@ public function update(Request $request, $id)
             'job_location',
             'job_type',
             'created_at',
+            'slot',
             'company',
             'views',
             'status_id'
@@ -419,6 +422,7 @@ public function update(Request $request, $id)
                 'job_description',
                 'job_location',
                 'job_type',
+                'slot',
                 'salary_type',
                 'min_salary',
                 'max_salary',
