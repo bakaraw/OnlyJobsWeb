@@ -12,6 +12,7 @@ export default function AdminMessages({ onJobSelect }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [loadingConversations, setLoadingConversations] = useState(true);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [sendMessageLoading, setSendMessageLoading] = useState(false);
 
     const { auth } = usePage().props;
 
@@ -26,7 +27,7 @@ export default function AdminMessages({ onJobSelect }) {
             .finally(() => setLoadingConversations(false));
     }, []);
 
-    // Fetch messages when a conversation is selected
+    //Fetch messages when a conversation is selected
     useEffect(() => {
         if (!selectedConversation) return;
         setLoadingMessages(true);
@@ -37,17 +38,84 @@ export default function AdminMessages({ onJobSelect }) {
             })
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
+    //
+    //useEffect(() => {
+    //    if (!selectedConversation || typeof window.Echo === 'undefined') {
+    //        console.error("Echo is not initialized");
+    //        return;
+    //    }
+    //
+    //    const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+    //
+    //    channel.listen('MessageSent', (e) => {
+    //        setMessages((prev) => [...prev, { ...e, fromAdmin: false }]);
+    //    });
+    //
+    //    return () => {
+    //        channel.stopListening('MessageSent');
+    //        window.Echo.leave(`conversations.${selectedConversation.id}`);
+    //    };
+    //}, [selectedConversation]);
 
+    useEffect(() => {
+        if (!selectedConversation || typeof window.Echo === 'undefined') {
+            console.error("Echo is not initialized");
+            return;
+        }
+
+        const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+
+        channel.listen('MessageSent', (e) => {
+            // Prevent adding the message if it's already in the state
+            setMessages((prev) => {
+                if (!prev.find((msg) => msg.id === e.id)) {
+                    return [...prev, { ...e, fromAdmin: false }];
+                }
+                return prev;
+            });
+        });
+
+        return () => {
+            channel.stopListening('MessageSent');
+            window.Echo.leave(`conversations.${selectedConversation.id}`);
+        };
+    }, [selectedConversation]);
+
+
+    //const handleSend = () => {
+    //    if (newMessage.trim() === "") return;
+    //    setSendMessageLoading(true);
+    //
+    //    axios.post(`/admin/messages/${selectedConversation.id}`, {
+    //        text: newMessage,
+    //    }).then((res) => {
+    //        setMessages((prev) => [...prev, { ...res.data, fromAdmin: true }]);
+    //        setNewMessage("");
+    //    }).finally(() => {
+    //        setSendMessageLoading(false);
+    //    });
+    //};
+    //
     const handleSend = () => {
         if (newMessage.trim() === "") return;
+        setSendMessageLoading(true);
 
         axios.post(`/admin/messages/${selectedConversation.id}`, {
             text: newMessage,
         }).then((res) => {
-            setMessages((prev) => [...prev, { ...res.data, fromAdmin: true }]);
+            // Check if message already exists in the state to prevent duplicates
+            setMessages((prev) => {
+                if (!prev.find((msg) => msg.id === res.data.id)) {
+                    return [...prev, { ...res.data, fromAdmin: true }];
+                }
+                return prev;
+            });
             setNewMessage("");
+        }).finally(() => {
+            setSendMessageLoading(false);
         });
     };
+
 
     const filteredConversations = conversations.filter((conv) =>
         conv.user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -127,7 +195,7 @@ export default function AdminMessages({ onJobSelect }) {
                         Array.isArray(messages) && messages.map((msg) => (
                             <div
                                 key={msg.id}
-                                className={`w-fit px-4 py-2 rounded-full text-sm ${msg.sender_id == auth.user.id
+                                className={`w-fit max-w-xs px-4 py-2 break-words overflow-auto rounded-lg text-sm ${msg.sender_id == auth.user.id
                                     ? "bg-primary text-white self-end ml-auto"
                                     : "bg-gray-200 text-gray-800"
                                     }`}
@@ -151,6 +219,7 @@ export default function AdminMessages({ onJobSelect }) {
                         <PrimaryButton
                             className="text-sm px-4 py-2 rounded-lg"
                             onClick={handleSend}
+                            disabled={sendMessageLoading}
                         >
                             Send
                         </PrimaryButton>

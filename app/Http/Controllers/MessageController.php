@@ -8,6 +8,8 @@ use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Models\JobPost;
+use App\Events\MessageSent;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class MessageController extends Controller
@@ -36,31 +38,68 @@ class MessageController extends Controller
         return response()->json($messages);
     }
 
+    /*public function sendMessage(Request $request, $conversationId)*/
+    /*{*/
+    /*    // Validate the request data*/
+    /*    $request->validate([*/
+    /*        'text' => 'required|string',*/
+    /*    ]);*/
+    /**/
+    /*    // Get the conversation or fail with 404*/
+    /*    $conversation = Conversation::findOrFail($conversationId);*/
+    /**/
+    /*    // Optional: Check if the user is a participant of the conversation*/
+    /*    // (assuming you have such logic)*/
+    /*    // if (!$conversation->participants->contains($request->user()->id)) {*/
+    /*    //     return response()->json(['error' => 'Unauthorized'], 403);*/
+    /*    // }*/
+    /**/
+    /*    // Create a new message*/
+    /*    $message = Message::create([*/
+    /*        'conversation_id' => $conversation->id,*/
+    /*        'sender_id' => auth()->id(),  // This requires authentication middleware*/
+    /*        'text' => $request->text,*/
+    /*    ]);*/
+    /**/
+    /*    broadcast(new MessageSent($message))->toOthers();*/
+    /**/
+    /*    return response()->json($message, 201);*/
+    /*}*/
     public function sendMessage(Request $request, $conversationId)
     {
+        // Log request data for debugging
+        Log::info('Request Data:', $request->all());
+
         // Validate the request data
         $request->validate([
             'text' => 'required|string',
         ]);
 
-        // Get the conversation or fail with 404
-        $conversation = Conversation::findOrFail($conversationId);
+        try {
+            // Get the conversation or fail with 404
+            $conversation = Conversation::findOrFail($conversationId);
 
-        // Optional: Check if the user is a participant of the conversation
-        // (assuming you have such logic)
-        // if (!$conversation->participants->contains($request->user()->id)) {
-        //     return response()->json(['error' => 'Unauthorized'], 403);
-        // }
+            // Log the conversation for debugging
+            Log::info('Conversation:', $conversation->toArray());
 
-        // Create a new message
-        $message = Message::create([
-            'conversation_id' => $conversation->id,
-            'sender_id' => $request->user()->id,  // This requires authentication middleware
-            'text' => $request->text,
-        ]);
+            // Create a new message
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => auth()->id(),
+                'text' => $request->text,
+            ]);
 
-        return response()->json($message, 201);
+            // Broadcast the message
+            broadcast(new MessageSent($message))->toOthers();
+
+            return response()->json($message, 201);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Error sending message:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
     }
+
 
     // Method to create a new conversation (if it doesn't exist)
     public function createConversation(Request $request, $jobId)

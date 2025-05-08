@@ -29,7 +29,7 @@ export default function ConversationList({ conversations, selected, onSelect, lo
                                 {conv.messages?.[conv.messages.length - 1]?.text || 'No messages yet'}
                             </p>
                             <span className="ml-2 whitespace-nowrap">
-                                {conv.messages?.length > 0
+                                {conv.messages?.length > 0 && conv.messages[conv.messages.length - 1]?.created_at
                                     ? formatDistanceToNow(new Date(conv.messages[conv.messages.length - 1].created_at), { addSuffix: true })
                                     : ''}
                             </span>
