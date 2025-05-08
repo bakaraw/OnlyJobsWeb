@@ -37,16 +37,76 @@ export default function AdminMessages({ onJobSelect }) {
     }, []);
 
     //Fetch messages when a conversation is selected
+    //useEffect(() => {
+    //    if (!selectedConversation) return;
+    //    setLoadingMessages(true);
+    //    axios.get(`/admin/messages/${selectedConversation.id}`)
+    //        .then((res) => {
+    //            console.log("Fetched messages:", res.data);
+    //            setMessages(res.data.messages);
+    //
+    //            // 👇 Optimistically update read_at in conversations list
+    //            setConversations((prevConvs) =>
+    //                prevConvs.map((conv) => {
+    //                    if (conv.id === selectedConversation.id) {
+    //                        const updated = { ...conv };
+    //                        if (updated.messages?.[0]) {
+    //                            updated.messages[0].read_at = new Date().toISOString();
+    //                        }
+    //                        return updated;
+    //                    }
+    //                    return conv;
+    //                })
+    //            );
+    //        })
+    //        .finally(() => setLoadingMessages(false));
+    //
+    //}, [selectedConversation]);
+
+    //useEffect(() => {
+    //    if (!selectedConversation) return;
+    //    setLoadingMessages(true);
+    //    axios.get(`/admin/messages/${selectedConversation.id}`)
+    //        .then((res) => {
+    //            setMessages(res.data.messages);
+    //            // Refresh conversations to reflect read status
+    //            return axios.get("/admin/messages/conversations");
+    //        })
+    //        .then((res) => setConversations(res.data))
+    //        .finally(() => setLoadingMessages(false));
+    //}, [selectedConversation]);
+
     useEffect(() => {
         if (!selectedConversation) return;
+
         setLoadingMessages(true);
-        axios.get(`/admin/messages/${selectedConversation.id}`)
+
+        // 🔹 Step 1: Mark messages as read (this will update read_at on the server)
+        axios.post(`/admin/messages/${selectedConversation.id}/mark-read`)
+            .then(() => {
+                // 🔹 Step 2: Fetch messages after marking as read
+                return axios.get(`/admin/messages/${selectedConversation.id}`);
+            })
             .then((res) => {
-                console.log("Fetched messages:", res.data);
                 setMessages(res.data.messages);
+
+                // 🔹 Step 3: Optimistically update read_at in conversation list
+                setConversations((prevConvs) =>
+                    prevConvs.map((conv) => {
+                        if (conv.id === selectedConversation.id) {
+                            const updated = { ...conv };
+                            if (updated.messages?.[0]) {
+                                updated.messages[0].read_at = new Date().toISOString();
+                            }
+                            return updated;
+                        }
+                        return conv;
+                    })
+                );
             })
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
+
 
     useEffect(() => {
         if (!selectedConversation || typeof window.Echo === 'undefined') {
@@ -130,9 +190,9 @@ export default function AdminMessages({ onJobSelect }) {
                                             : ""}
                                     </p>
                                 </div>
-                                {conv.unread_count > 0 && (
+                                {conv.messages?.[0]?.read_at === null && (
                                     <span className="text-xs text-blue-500 font-semibold">
-                                        {conv.unread_count} new
+                                        new
                                     </span>
                                 )}
                             </li>

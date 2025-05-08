@@ -128,6 +128,38 @@ export default function MessagePanel({ onClose, conversation }) {
         }
     };
 
+    const handleSelectConversation = async (conv) => {
+        setSelectedConversation(conv);
+
+        // Update read_at only if the last message is from another user and unread
+        const lastMsg = conv.messages?.[conv.messages.length - 1];
+        const isUnread = lastMsg && !lastMsg.read_at && lastMsg.sender_id !== auth.user.id;
+
+        if (isUnread) {
+            try {
+                await axios.post(`/conversations/${conv.id}/mark-read`);
+
+                // Update local state
+                setConversations((prevConvs) =>
+                    prevConvs.map((c) => {
+                        if (c.id === conv.id) {
+                            const updated = { ...c };
+                            const last = updated.messages?.[updated.messages.length - 1];
+                            if (last) {
+                                last.read_at = new Date().toISOString();
+                            }
+                            return updated;
+                        }
+                        return c;
+                    })
+                );
+            } catch (error) {
+                console.error("Failed to mark as read:", error);
+            }
+        }
+    };
+
+
     return (
         <div className="fixed inset-0 z-40 pointer-events-none">
             <motion.div
@@ -141,7 +173,7 @@ export default function MessagePanel({ onClose, conversation }) {
                 <ConversationList
                     conversations={conversations}
                     selected={selectedConversation}
-                    onSelect={setSelectedConversation}
+                    onSelect={handleSelectConversation}
                     loading={loadingConversation}
                 />
                 <ChatWindow

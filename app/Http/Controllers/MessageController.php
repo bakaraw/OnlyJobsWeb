@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\JobPost;
 use App\Events\MessageSent;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
+use App\Events\MessagesRead;
 use App\Models\User;
 
 class MessageController extends Controller
@@ -17,24 +19,36 @@ class MessageController extends Controller
     public function getConversations(Request $request)
     {
         if ($request->user()->id == 1) {
-            // Admin sees all conversations
-            $conversations = Conversation::with(['job', 'messages'])->has('messages')->get();
+            $conversations = Conversation::with(['job', 'messages'])
+                ->has('messages')
+                ->withCount(['messages as unread_count' => function ($query) {
+                    $query->where('is_read', false)
+                        ->where('sender_id', '!=', auth()->id());
+                }])
+
+                ->get();
         } else {
-            // Regular user sees only their own
             $conversations = Conversation::with(['job', 'messages'])
                 ->where('user_id', $request->user()->id)
+                ->withCount(['messages as unread_count' => function ($query) {
+                    $query->where('is_read', false)
+                        ->where('sender_id', '!=', auth()->id());
+                }])
                 ->has('messages')
                 ->get();
         }
-
         return response()->json($conversations);
     }
 
     public function getMessages($conversationId)
     {
-        // Get all messages in a conversation
-        $messages = Message::where('conversation_id', $conversationId)->get();
+        $userId = auth()->id();
+        Message::where('conversation_id', $conversationId)
+            ->where('sender_id', '!=', $userId)
+            ->where('read_at', null)
+            ->update(['read_at' => Carbon::now()]);
 
+        $messages = Message::where('conversation_id', $conversationId)->get();
         return response()->json($messages);
     }
 
@@ -129,20 +143,30 @@ class MessageController extends Controller
 
     public function show($id, Request $request)
     {
-        // Get the current user's ID
         $userId = $request->user()->id;
 
-        // Retrieve the conversation along with the related job and messages
+        // Retrieve the conversation with job and messages
         $conversation = Conversation::with(['job', 'messages'])->find($id);
 
-        // If the conversation is not found, return a 404 error
         if (!$conversation) {
             return response()->json(['error' => 'Conversation not found'], 404);
         }
 
-        // Add 'fromUser' to each message
+        // Mark unread messages from other users as read
+        $unreadMessages = $conversation->messages->filter(function ($message) use ($userId) {
+            return $message->sender_id !== $userId && is_null($message->read_at);
+        });
+
+        if ($unreadMessages->isNotEmpty()) {
+            Message::whereIn('id', $unreadMessages->pluck('id'))
+                ->update(['read_at' => Carbon::now()]);
+
+            event(new MessagesRead($conversation->id, $unreadMessages));
+        }
+
+        // Add 'fromUser' flag to each message
         $conversation->messages->each(function ($message) use ($userId) {
-            $message->fromUser = $message->sender_id === $userId; // Check if the sender is the current user
+            $message->fromUser = $message->sender_id === $userId;
         });
 
         // Return the conversation with the messages including the 'fromUser' field
@@ -156,5 +180,32 @@ class MessageController extends Controller
             ->get();
 
         return response()->json($conversations);
+    }
+
+    public function markAsRead($conversationId)
+    {
+        $userId = auth()->id();
+
+        Message::where('conversation_id', $conversationId)
+            ->where('sender_id', '!=', $userId)
+            ->whereNull('read_at')
+            ->update(['read_at' => Carbon::now()]);
+
+        return response()->json(['status' => 'marked']);
+    }
+
+    public function markAsReadJobSeeker(Conversation $conversation)
+    {
+        $userId = auth()->id();
+
+        // Mark latest unread messages from others as read
+        $conversation->messages()
+            ->where('read_at', null)
+            ->where('sender_id', '!=', $userId)
+            ->latest()
+            ->limit(1)
+            ->update(['read_at' => now()]);
+
+        return response()->noContent();
     }
 }

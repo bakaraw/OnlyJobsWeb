@@ -43,6 +43,7 @@ class MessageSent implements ShouldBroadcastNow
             'sender_id' => $this->message->sender_id,
             'fromUser' => $this->message->sender_id === auth()->id(),
             'created_at' => $this->message->created_at->toISOString(),
+            'read_at' => $this->message->read_at ? $this->message->read_at->toISOString() : null,
         ];
     }
 }
