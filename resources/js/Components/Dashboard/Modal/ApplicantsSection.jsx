@@ -20,26 +20,74 @@ export default function ApplicantsSection({ applicants }) {
             selectedStatus === "all" ||
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
-console.log('isers', applicants.degree_id)
+    console.log('isers', applicants.degree_id)
     console.log("degree", degrees)
+
     console.log('applciant', applicants)
+
+
+    const educationLevel = {
+        'Graduate': 5,
+        'Undergraduate': 4,
+        'Vocational': 3,
+        'High School': 2,
+        'Elementary': 1,
+    };
+    const meetsEducationRequirement = (userLevel, requiredLevel) => {
+        const userRank = educationLevel[userLevel] || 0;
+        const requiredRank = educationLevel[requiredLevel] || 0;
+        return userRank >= requiredRank;
+    };
+
+    const job_degrees = applicants.map(job => job.job_post.degree?.name);
+    const user_degrees = applicants.map(app => app.user.educations?.[0]?.education_level);
+
+    const job_skill = applicants.map(sk => sk.job_post.skills?.map(skill => skill.skill_name));
+    const user_skill = applicants.map(usk => usk.user.user_skills?.map(skill => skill.skill_name));
+
+    // const job_requirements =  applicants.map(rq => rq.job_post.requirements?.map(requirement => requirement.requirement_name));
+    // const user_requirement = applicants.map(usk => usk.user.user_skills?.map(skill => skill.skill_name));
+
+
+    const educationMet = meetsEducationRequirement(user_degrees, job_degrees);
+    const skillsMet = job_skill === user_skill;
 
     const handleAccept = async (application) => {
         try {
             let endpoint;
             let confirmMsg;
+            let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
 
-            if (application.status === "Pending") {
-                confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-                if (!confirm(confirmMsg)) return;
-                endpoint = "/applicants/qualified";
-            } else if (application.status === "Qualified") {
-                confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
-                if (!confirm(confirmMsg)) return;
-                endpoint = "/applicants/accepted";
-            } else {
-                return;
-            }
+            if (educationMet || skillsMet) {
+
+                if (!educationMet && !skillsMet) {
+                    message += "Education level and Skills requirements.";
+                } else if (!educationMet) {
+                    message += "Education level requirements.";
+                } else if (!skillsMet) {
+                    message += "Skills requirements.";
+                }
+
+                message += " Do you still want to proceed?";
+                confirmMsg = message;
+
+
+                if (application.status === "Pending") {
+                    if (!confirm(confirmMsg)) return;
+                    endpoint = "/applicants/qualified";
+
+                    }
+                if (application.status === "Qualified") {
+                            confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
+                            if (!confirm(confirmMsg)) return;
+                            endpoint = "/applicants/accepted";
+                        } else {
+                            return;
+                        }
+
+                }
+
+
 
             const response = await axios.post(endpoint, { application_id: application.id });
             if (response.data.success) {
