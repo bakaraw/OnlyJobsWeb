@@ -27,11 +27,11 @@ export default function ApplicantsSection({ applicants }) {
 
 
     const educationLevel = {
-        'Graduate': 5,
-        'Undergraduate': 4,
-        'Vocational': 3,
-        'High School': 2,
-        'Elementary': 1,
+        'Graduate': 1,
+        'Undergraduate': 2,
+        'Vocational': 4,
+        'High School': 4,
+        'Elementary': 5,
     };
     const meetsEducationRequirement = (userLevel, requiredLevel) => {
         const userRank = educationLevel[userLevel] || 0;
@@ -42,15 +42,21 @@ export default function ApplicantsSection({ applicants }) {
     const job_degrees = applicants.map(job => job.job_post.degree?.name);
     const user_degrees = applicants.map(app => app.user.educations?.[0]?.education_level);
 
-    const job_skill = applicants.map(sk => sk.job_post.skills?.map(skill => skill.skill_name));
-    const user_skill = applicants.map(usk => usk.user.user_skills?.map(skill => skill.skill_name));
-
-    // const job_requirements =  applicants.map(rq => rq.job_post.requirements?.map(requirement => requirement.requirement_name));
-    // const user_requirement = applicants.map(usk => usk.user.user_skills?.map(skill => skill.skill_name));
 
 
-    const educationMet = meetsEducationRequirement(user_degrees, job_degrees);
-    const skillsMet = job_skill === user_skill;
+    const educationMet = meetsEducationRequirement(job_degrees, user_degrees);
+
+    const skillsMet = (applicants) => {
+        const jobSkills = applicants.job_post.skills?.map(skill => skill.skill_name) || [];
+        const userSkills = applicants.user.user_skills?.map(skill => skill.skill_name) || [];
+
+        return jobSkills.every(jobSkill =>
+            userSkills.some(userSkill => userSkill === jobSkill)
+        );
+
+    }
+
+    console.log('edu', educationMet)
 
     const handleAccept = async (application) => {
         try {
@@ -58,14 +64,13 @@ export default function ApplicantsSection({ applicants }) {
             let confirmMsg;
             let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
 
-            if (educationMet || skillsMet) {
 
                 if (!educationMet && !skillsMet) {
-                    message += "Education level and Skills requirements.";
+                    message += "education level and skills requirements.";
                 } else if (!educationMet) {
-                    message += "Education level requirements.";
+                    message += "education level requirements.";
                 } else if (!skillsMet) {
-                    message += "Skills requirements.";
+                    message += "skills requirements.";
                 }
 
                 message += " Do you still want to proceed?";
@@ -73,6 +78,7 @@ export default function ApplicantsSection({ applicants }) {
 
 
                 if (application.status === "Pending") {
+                    confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
                     if (!confirm(confirmMsg)) return;
                     endpoint = "/applicants/qualified";
 
@@ -85,7 +91,6 @@ export default function ApplicantsSection({ applicants }) {
                             return;
                         }
 
-                }
 
 
 

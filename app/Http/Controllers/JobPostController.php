@@ -240,7 +240,7 @@ public function update(Request $request, $id)
             'created_at',
         )
             ->with([
-                'user:id,first_name',
+                'user:id,first_name,last_name',
                 'user.educations:id,user_id,education_level',
                 'user.userSkills:user_id,skill_id,skill_name',
                 'jobPost',
