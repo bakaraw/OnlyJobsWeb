@@ -7,6 +7,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import MessageButton from '@/Components/MessageButton';
+import ApplicationModal from "@/Components/Applicant/ApplicationModal.jsx";
 
 const JobDescriptionCard = ({ jobDescription, className }) => (
     <div className={" " + className}>
@@ -149,8 +150,9 @@ export default function JobView() {
     const { auth } = usePage().props;
     const [showMessages, setShowMessages] = useState(false);
     const [conversation, setConversation] = useState(null);
+    const [showApplyModal, setShowApplyModal] = useState(false);
 
-
+    console.log("jobview", jobview)
     const handleSendMessage = async (message) => {
         try {
             if (!conversation || !conversation.id) {
@@ -211,7 +213,7 @@ export default function JobView() {
                                 <PrimaryButton
 
                                     className='min-w-32 flex items-center justify-center'
-                                    onClick={() => handleApply(jobview.id)}
+                                    onClick={() => setShowApplyModal(true)}
                                 >
                                     Apply
                                 </PrimaryButton>
@@ -236,6 +238,13 @@ export default function JobView() {
                 conversation={conversation}
                 onClick={() => setShowMessages(true)}
                 onClose={() => setShowMessages(false)}
+            />
+            <ApplicationModal
+                isOpen={showApplyModal}
+                onClose={() => setShowApplyModal(false)}
+                onApply={() => handleApply(jobview.id)}
+                job={jobview}
+                user={auth.user}
             />
         </MainPageLayout>
     );
