@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
 import { usePage } from "@inertiajs/react";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link } from "@inertiajs/react";
 
 export default function AdminMessages({ onJobSelect }) {
@@ -15,6 +16,14 @@ export default function AdminMessages({ onJobSelect }) {
     const [sendMessageLoading, setSendMessageLoading] = useState(false);
 
     const { auth } = usePage().props;
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
 
     useEffect(() => {
         axios.get("/admin/messages/conversations")
@@ -38,24 +47,6 @@ export default function AdminMessages({ onJobSelect }) {
             })
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
-    //
-    //useEffect(() => {
-    //    if (!selectedConversation || typeof window.Echo === 'undefined') {
-    //        console.error("Echo is not initialized");
-    //        return;
-    //    }
-    //
-    //    const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
-    //
-    //    channel.listen('MessageSent', (e) => {
-    //        setMessages((prev) => [...prev, { ...e, fromAdmin: false }]);
-    //    });
-    //
-    //    return () => {
-    //        channel.stopListening('MessageSent');
-    //        window.Echo.leave(`conversations.${selectedConversation.id}`);
-    //    };
-    //}, [selectedConversation]);
 
     useEffect(() => {
         if (!selectedConversation || typeof window.Echo === 'undefined') {
@@ -81,21 +72,6 @@ export default function AdminMessages({ onJobSelect }) {
         };
     }, [selectedConversation]);
 
-
-    //const handleSend = () => {
-    //    if (newMessage.trim() === "") return;
-    //    setSendMessageLoading(true);
-    //
-    //    axios.post(`/admin/messages/${selectedConversation.id}`, {
-    //        text: newMessage,
-    //    }).then((res) => {
-    //        setMessages((prev) => [...prev, { ...res.data, fromAdmin: true }]);
-    //        setNewMessage("");
-    //    }).finally(() => {
-    //        setSendMessageLoading(false);
-    //    });
-    //};
-    //
     const handleSend = () => {
         if (newMessage.trim() === "") return;
         setSendMessageLoading(true);
@@ -115,7 +91,6 @@ export default function AdminMessages({ onJobSelect }) {
             setSendMessageLoading(false);
         });
     };
-
 
     const filteredConversations = conversations.filter((conv) =>
         conv.user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -147,8 +122,13 @@ export default function AdminMessages({ onJobSelect }) {
                                     }`}
                             >
                                 <div className="font-medium">{conv.user.first_name} {conv.user.last_name} - {conv.job.job_title}</div>
-                                <div className="text-sm text-gray-600 truncate">
-                                    {conv.messages?.[0]?.text || "No messages yet"}
+                                <div className="flex text-sm text-gray-600">
+                                    <p className="truncate">{conv.messages?.[0]?.text || "No messages yet"}</p>
+                                    <p className="ml-auto">
+                                        {conv.messages?.[0]?.created_at
+                                            ? formatDistanceToNow(parseISO(conv.messages[0].created_at), { addSuffix: true })
+                                            : ""}
+                                    </p>
                                 </div>
                                 {conv.unread_count > 0 && (
                                     <span className="text-xs text-blue-500 font-semibold">
@@ -161,7 +141,7 @@ export default function AdminMessages({ onJobSelect }) {
                 )}
             </div>
             {/* Chat Window */}
-            <div className="w-2/3 flex flex-col">
+            <div className="w-2/3 h-screen flex flex-col">
                 {/* Header */}
                 <div className="px-4 py-3 font-semibold text-gray-700 bg-gray-50 border-b border-gray-200">
                     {selectedConversation
@@ -195,7 +175,7 @@ export default function AdminMessages({ onJobSelect }) {
                         Array.isArray(messages) && messages.map((msg) => (
                             <div
                                 key={msg.id}
-                                className={`w-fit max-w-xs px-4 py-2 break-words overflow-auto rounded-lg text-sm ${msg.sender_id == auth.user.id
+                                className={`w-fit max-w-xs px-4 py-2 break-words overflow-y-auto rounded-lg text-sm ${msg.sender_id == auth.user.id
                                     ? "bg-primary text-white self-end ml-auto"
                                     : "bg-gray-200 text-gray-800"
                                     }`}
@@ -204,6 +184,7 @@ export default function AdminMessages({ onJobSelect }) {
                             </div>
                         ))
                     )}
+                    <div ref={messagesEndRef} />
                 </div>
                 {/* Input */}
                 {selectedConversation && (

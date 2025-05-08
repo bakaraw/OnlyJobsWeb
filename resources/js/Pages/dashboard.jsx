@@ -49,7 +49,7 @@ export default function dashboard({ jobView, statuses, requirements, degrees, ge
             {/* Sidebar Component */}
             <Sidebar auth={auth} setActiveView={setActiveView} />
 
-            <div className="flex-1 p-6">
+            <div className="flex-1">
                 {activeView === "dashboard" ? (
                     <DashboardContent
                         jobs={jobs}

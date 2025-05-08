@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import MessageInput from './MessageInput';
 import { Link, usePage } from "@inertiajs/react";
 import { Loader2 } from 'lucide-react';
 
 export default function ChatWindow({ conversation, onSend, onClose, loading, fetchConversations }) {
     const { auth } = usePage().props;
+
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [conversation?.messages]);
 
     return (
         <div className="w-2/3 p-4 flex flex-col">
@@ -22,12 +30,14 @@ export default function ChatWindow({ conversation, onSend, onClose, loading, fet
                         {conversation?.messages?.map((msg) => (
                             <div key={msg.id} className={`flex ${msg.fromUser ? 'justify-end' : 'justify-start'} transition-all duration-150`}>
                                 <div
-                                    className={`inline-block px-4 py-2 rounded ${msg.fromUser ? 'bg-primary text-white' : 'bg-gray-200'}`}
+                                    className={`inline-block break-words w-fit max-w-xs px-4 py-2 rounded ${msg.fromUser ? 'bg-primary text-white' : 'bg-gray-200'}`}
+
                                 >
                                     {msg.text}
                                 </div>
                             </div>
                         ))}
+                        <div ref={messagesEndRef} />
                     </div>
                 ) : (
                     <div className='flex-1 overflow-y-auto space-y-2 mb-4 items-center'>
