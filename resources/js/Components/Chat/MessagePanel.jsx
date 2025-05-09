@@ -49,6 +49,15 @@ export default function MessagePanel({ onClose, conversation }) {
         };
     }, [onClose]);
 
+    const sortConversations = (convs) => {
+        return convs.sort((a, b) => {
+            const aTime = new Date(a.messages?.[a.messages.length - 1]?.created_at || 0).getTime();
+            const bTime = new Date(b.messages?.[b.messages.length - 1]?.created_at || 0).getTime();
+            return bTime - aTime; // Newest first
+        });
+    };
+
+
     const fetchConversations = () => {
         setLoadingConversation(true);
         axios.get('/conversations')
@@ -69,7 +78,6 @@ export default function MessagePanel({ onClose, conversation }) {
                 setLoadingConversation(true);
                 const response = await axios.get('/conversations');
 
-                // Inject fromUser into each message based on sender_id
                 const conversationsWithFromUser = response.data.map(conv => ({
                     ...conv,
                     messages: conv.messages?.map(msg => ({
@@ -78,8 +86,9 @@ export default function MessagePanel({ onClose, conversation }) {
                     })) || []
                 }));
 
-                setConversations(conversationsWithFromUser);
+                setConversations(sortConversations(conversationsWithFromUser));
             } catch (error) {
+
                 console.error("Error fetching conversations:", error);
             } finally {
                 setLoadingConversation(false);
@@ -117,11 +126,31 @@ export default function MessagePanel({ onClose, conversation }) {
         try {
             if (!selectedConversation?.id) throw new Error("No conversation selected.");
 
-            await axios.post(
-                `/conversations/${selectedConversation.id}/send`,
-                { text: messageText },
-                { withCredentials: true }
-            );
+            //await axios.post(
+            //    `/conversations/${selectedConversation.id}/send`,
+            //    { text: messageText },
+            //    { withCredentials: true }
+            //);
+
+            await axios.post(`/conversations/${selectedConversation.id}/send`, { text: messageText });
+
+            // Optimistically update conversations
+            const newMsg = {
+                id: Date.now(), // Temporary ID
+                text: messageText,
+                fromUser: true,
+                created_at: new Date().toISOString(),
+            };
+
+            setConversations((prev) => {
+                const updated = prev.map(conv => {
+                    if (conv.id === selectedConversation.id) {
+                        return { ...conv, messages: [...(conv.messages || []), newMsg] };
+                    }
+                    return conv;
+                });
+                return sortConversations(updated);
+            });
 
         } catch (error) {
             console.error("Failed to send message:", error);

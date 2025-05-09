@@ -181,6 +181,7 @@ Route::middleware('auth')->group(function () {
     /*Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message*/
     Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
     Route::post('/conversations/{conversation}/mark-read', [MessageController::class, 'markAsReadJobSeeker']);
+    Route::get('conversation/unread-count', [MessageController::class, 'unreadCount']);
 
     Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');

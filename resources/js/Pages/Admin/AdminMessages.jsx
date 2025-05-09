@@ -23,18 +23,34 @@ export default function AdminMessages({ onJobSelect }) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
-
-
+    //
+    //
+    //useEffect(() => {
+    //    axios.get("/admin/messages/conversations")
+    //        .then((res) => {
+    //            setConversations(res.data);
+    //            if (res.data.length > 0) {
+    //                setSelectedConversation(res.data[0]);
+    //            }
+    //        })
+    //        .finally(() => setLoadingConversations(false));
+    //}, []);
     useEffect(() => {
         axios.get("/admin/messages/conversations")
             .then((res) => {
-                setConversations(res.data);
-                if (res.data.length > 0) {
-                    setSelectedConversation(res.data[0]);
+                const sorted = res.data.sort((a, b) => {
+                    const dateA = new Date(a.messages?.[0]?.created_at || 0);
+                    const dateB = new Date(b.messages?.[0]?.created_at || 0);
+                    return dateB - dateA; // earliest to oldest
+                });
+                setConversations(sorted);
+                if (sorted.length > 0) {
+                    setSelectedConversation(sorted[0]);
                 }
             })
             .finally(() => setLoadingConversations(false));
     }, []);
+
 
     //Fetch messages when a conversation is selected
     //useEffect(() => {
@@ -107,6 +123,55 @@ export default function AdminMessages({ onJobSelect }) {
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
 
+    useEffect(() => {
+        if (typeof window.Echo === 'undefined') {
+            console.error("Echo is not initialized");
+            return;
+        }
+
+        const globalChannel = window.Echo.private('admin.conversations');
+
+        globalChannel.listen('NewConversationStarted', (e) => {
+            setConversations((prevConvs) => {
+                const exists = prevConvs.find((conv) => conv.id === e.conversation.id);
+                if (!exists) {
+                    const updated = [e.conversation, ...prevConvs];
+                    return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+                }
+                return prevConvs;
+            });
+        });
+
+        return () => {
+            window.Echo.leave('private-admin.conversations');
+        };
+    }, []);
+    const fetchConversations = async () => {
+        try {
+            const response = await axios.get('/admin/messages/conversations');
+            const sortedConversations = response.data.sort((a, b) => {
+                const dateA = new Date(a.messages?.[0]?.created_at || 0);
+                const dateB = new Date(b.messages?.[0]?.created_at || 0);
+                return dateB - dateA; // Sort from latest to oldest
+            });
+            setConversations(sortedConversations);
+        } catch (error) {
+            console.error('Error fetching conversations:', error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchConversations(); // initial load
+
+        const interval = setInterval(() => {
+            fetchConversations();
+        }, 5000); // every 5 seconds
+
+        return () => clearInterval(interval); // cleanup on unmount
+    }, []);
+
+
 
     useEffect(() => {
         if (!selectedConversation || typeof window.Echo === 'undefined') {
@@ -116,15 +181,35 @@ export default function AdminMessages({ onJobSelect }) {
 
         const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
 
+        //channel.listen('MessageSent', (e) => {
+        //    // Prevent adding the message if it's already in the state
+        //    setMessages((prev) => {
+        //        if (!prev.find((msg) => msg.id === e.id)) {
+        //            return [...prev, { ...e, fromAdmin: false }];
+        //        }
+        //        return prev;
+        //    });
+        //});
         channel.listen('MessageSent', (e) => {
-            // Prevent adding the message if it's already in the state
             setMessages((prev) => {
                 if (!prev.find((msg) => msg.id === e.id)) {
                     return [...prev, { ...e, fromAdmin: false }];
                 }
                 return prev;
             });
+
+            // 🟡 Update conversation list
+            setConversations((prevConvs) => {
+                const updated = prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? { ...conv, messages: [{ ...e }] }
+                        : conv
+                );
+                return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+            });
         });
+
+
 
         return () => {
             channel.stopListening('MessageSent');
@@ -139,17 +224,31 @@ export default function AdminMessages({ onJobSelect }) {
         axios.post(`/admin/messages/${selectedConversation.id}`, {
             text: newMessage,
         }).then((res) => {
-            // Check if message already exists in the state to prevent duplicates
+            const newMsg = { ...res.data, fromAdmin: true };
+
             setMessages((prev) => {
-                if (!prev.find((msg) => msg.id === res.data.id)) {
-                    return [...prev, { ...res.data, fromAdmin: true }];
+                if (!prev.find((msg) => msg.id === newMsg.id)) {
+                    return [...prev, newMsg];
                 }
                 return prev;
             });
+
+            // 🟡 Update the conversation list
+            setConversations((prevConvs) => {
+                const updated = prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? { ...conv, messages: [newMsg] }
+                        : conv
+                );
+                // Re-sort the list so the updated conversation moves to top
+                return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+            });
+
             setNewMessage("");
         }).finally(() => {
             setSendMessageLoading(false);
         });
+
     };
 
     const filteredConversations = conversations.filter((conv) =>
@@ -160,16 +259,7 @@ export default function AdminMessages({ onJobSelect }) {
         <div className="flex h-full bg-white rounded-lg shadow overflow-hidden">
             {/* Sidebar for Conversations */}
             <div className="w-1/3 p-4 overflow-y-auto border-r border-gray-200">
-                <h2 className="text-lg font-semibold mb-4">Conversations</h2>
-
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full mb-4 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-
+                <h2 className="text-xl font-semibold mb-4">Inbox</h2>
                 {loadingConversations ? (
                     <p className="text-sm text-gray-500">Loading...</p>
                 ) : (

@@ -12,6 +12,8 @@ use App\Events\MessageSent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use App\Events\MessagesRead;
+use App\Events\NewConversationStarted;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class MessageController extends Controller
@@ -137,6 +139,8 @@ class MessageController extends Controller
             'job_id' => $jobId, // Associate the conversation with the job
         ]);
 
+        event(new NewConversationStarted($conversation));
+
         // Return the created conversation with a 201 status
         return response()->json($conversation, 201);
     }
@@ -203,9 +207,57 @@ class MessageController extends Controller
             ->where('read_at', null)
             ->where('sender_id', '!=', $userId)
             ->latest()
-            ->limit(1)
             ->update(['read_at' => now()]);
 
         return response()->noContent();
+    }
+
+    /*public function unreadCount()*/
+    /*{*/
+    /*    $userId = auth()->id();*/
+    /**/
+    /*    $conversations = Conversation::where('user_id', $userId)*/
+    /*        ->withCount([*/
+    /*            'messages as unread_messages_count' => function ($query) use ($userId) {*/
+    /*                $query->whereNull('read_at')*/
+    /*                    ->where('sender_id', '!=', $userId);*/
+    /*            }*/
+    /*        ])->get();*/
+    /**/
+    /*    return response()->json($conversations);*/
+    /*}*/
+    /*public function unreadCount()*/
+    /*{*/
+    /*    $userId = auth()->id();*/
+    /**/
+    /*    $unreadCount = Message::whereNull('read_at')*/
+    /*        ->where('sender_id', '!=', $userId)*/
+    /*        ->whereHas('conversation', function ($query) use ($userId) {*/
+    /*            $query->where('user_id', $userId);*/
+    /*        })->count();*/
+    /**/
+    /*    return response()->json(['unread_count' => $unreadCount]);*/
+    /*}*/
+
+    public function unreadCount()
+    {
+        $userId = auth()->id();
+
+        // Fetch conversations with unread message counts
+        $conversations = Conversation::where('user_id', $userId)
+            ->withCount([
+                'messages as unread_messages_count' => function ($query) use ($userId) {
+                    $query->whereNull('read_at')
+                        ->where('sender_id', '!=', $userId);
+                }
+            ])
+            ->get();
+
+        // Calculate the total unread count
+        $totalUnreadCount = $conversations->sum('unread_messages_count');
+
+        return response()->json([
+            'unread_count' => $totalUnreadCount,
+        ]);
     }
 }
