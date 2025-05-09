@@ -24,7 +24,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
     console.log("skills", selectedApplicant.user_skills);
     console.log("selected", selectedApplicant);
 
-
     const statusClasses = {
         accepted: "text-green-600",
         rejected: "text-red-600",
@@ -288,12 +287,18 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                         {selectedApplicant.applications.map((application, index) => (
                             <tr key={application.id || index} className="border-b">
                                 <td className="py-2 px-4">
-                                    {application.job_title || "N/A"}
+                                    {application.job_post.job_title || "N/A"}
                                 </td>
-                                <td className="py-2 px-4">{application.company || "N/A"}</td>
+                                <td className="py-2 px-4">{application.job_post.company || "N/A"}</td>
                                 <td className="py-2 px-4">
-                                    {application.application_date
-                                        ? new Date(application.application_date).toLocaleDateString()
+                                    {application.job_post.created_at
+                                        ? (() => {
+                                            const date = new Date(application.job_post.created_at);
+                                            const month = date.toLocaleString('default', { month: 'long' });
+                                            const day = String(date.getDate()).padStart(2, '0');
+                                            const year = date.getFullYear();
+                                            return `${month} ${day} ${year}`;
+                                        })()
                                         : "N/A"}
                                 </td>
                                 <td className={`py-2 px-4 ${statusClasses[application.status?.toLowerCase()] || ''}`}>

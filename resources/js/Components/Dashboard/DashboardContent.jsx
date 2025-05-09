@@ -8,6 +8,9 @@ import { Link } from '@inertiajs/react';
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Modal from "../Modal.jsx";
+import {  Line } from "react-chartjs-2";
+
+
 
 import {
     Chart as ChartJS,
@@ -19,7 +22,10 @@ import {
     BarElement,
     Title,
     Tooltip as ChartTooltip,
-    Legend as ChartLegend
+    Legend as ChartLegend,
+    PointElement,
+    LineElement
+
 } from "chart.js";
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
@@ -31,7 +37,8 @@ import SecondaryButton from "@/Components/SecondaryButton.jsx";
 ChartJS.register(
     ArcElement, Tooltip, Legend,
     CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend,
-    ChartDataLabels
+    ChartDataLabels, PointElement, LineElement,
+
 );
 export default function DashboardContent({
     auth,
@@ -39,25 +46,21 @@ export default function DashboardContent({
     applicants,
     totalViews,
     totalUsers,
-    totalJob, jobView
+    totalJob,jobView
 
 }) {
-
-    // function toggleUserDetails(id) {
-    //
-    //     if (expandedUser === userId) {
-    //         setExpandedUser(null);
-    //     } else {
-    //         setExpandedUser(userId);
-    //     }
-    //
-    // }
 
     const [showDetails, setShowDetails] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState("all");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+
+
+
+
 
     const filteredApplicants = selectedStatus === "all"
         ? applicants
@@ -96,6 +99,8 @@ export default function DashboardContent({
     };
 
 
+
+
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -110,13 +115,12 @@ export default function DashboardContent({
             </div>
 
             <div className="space-y-6">
-                {/*    <div className="flex-grow flex items-end">*/}
-                {/*        <Bar*/}
-                {/*            data={chartData}*/}
-                {/*            options={{*/}
-                {/*                responsive: true,*/}
-                {/*                maintainAspectRatio: false,*/}
-                {/*            }}*/}
+                {/*<DashboardCard className="border rounded-lg shadow p-4 bg-white">*/}
+                {/*    <h2 className="text-xl font-semibold mb-4">Daily Views Activity</h2>*/}
+                {/*    <div style={{ height: '300px' }}>*/}
+                {/*        <Line*/}
+                {/*            data={lineChartData}*/}
+                {/*            options={lineChartOptions}*/}
                 {/*        />*/}
                 {/*    </div>*/}
                 {/*</DashboardCard>*/}
@@ -143,9 +147,9 @@ export default function DashboardContent({
                     </DashboardCard>
                     <div className="space-y-2.5">
                         <div className="text-center">
-                        <SecondaryButton onClick={() => setIsModalOpen(true)}>
+                        <PrimaryButton onClick={() => setIsModalOpen(true)}>
                             + Create
-                        </SecondaryButton>
+                        </PrimaryButton>
                         </div>
                         <CreateJobPostModal
                             show={isModalOpen}
@@ -215,8 +219,15 @@ export default function DashboardContent({
                                             </div>
                                         </td>
                                         <td className="py-2 px-4">{application.job_post?.job_title || 'Unknown Job'}</td>
-                                        <td className="py-2 px-4">{new Date(application.created_at).toLocaleDateString()}</td>
-                                        <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
+                                        <td className="py-2 px-4">
+                                            {application.created_at ? (() => {
+                                                const date = new Date(application.created_at);
+                                                const month = date.toLocaleString('default', { month: 'long' });
+                                                const day = String(date.getDate()).padStart(2, '0');
+                                                const year = date.getFullYear();
+                                                return `${month} ${day} ${year}`;
+                                            })() : 'N/A'}
+                                        </td>                                        <td className="py-2 px-4">{application.status || 'Unknown Status'}</td>
                                         <td className="py-2 px-4 capitalize">{application.remarks}</td>
                                     </tr>
                                 ))}

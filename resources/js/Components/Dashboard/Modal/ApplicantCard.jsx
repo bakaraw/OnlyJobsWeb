@@ -36,6 +36,8 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
 
 
 
+
+
     const filteredUsers = users.filter(user => {
         if (selectedStatus === "all") return true;
         return user.applications && user.applications.some(app =>

@@ -356,7 +356,8 @@ public function update(Request $request, $id)
                         'id',
                         'job_title',
                         'job_type',
-                        'company'
+                        'company',
+                        'created_at'
                     );
                 },
 
