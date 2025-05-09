@@ -51,16 +51,16 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                 <div className="flex flex-col md:flex-row overflow-y-auto p-6">
                     {/* Left Column - Job Information */}
                     <div className="flex-1 pr-0 md:pr-4 mb-6 md:mb-0">
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-dark mb-2">Skills Required</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {job.skills?.map((skill) => (
-                                    <span key={skill.skill_id} className="bg-gray-100 text-dark px-3 py-1 rounded-full text-sm">
-                                        {skill.skill_name}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
+                    {/*    <div className="mb-6">*/}
+                    {/*        <h3 className="text-lg font-semibold text-dark mb-2">Skills Required</h3>*/}
+                    {/*        <div className="flex flex-wrap gap-2">*/}
+                    {/*            {job.skills?.map((skill) => (*/}
+                    {/*                <span key={skill.skill_id} className="bg-gray-100 text-dark px-3 py-1 rounded-full text-sm">*/}
+                    {/*                    {skill.skill_name}*/}
+                    {/*                </span>*/}
+                    {/*            ))}*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
                         <div className="mb-6 rounded-lg p-6 shadow-sm bg-white">
                             <dt className="text-lg font-semibold text-dark">Documents</dt>
 
@@ -132,7 +132,7 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                             {job.degree && job.degree.name && (
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Degree
+                                        Education 
                                     </label>
                                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                         <div className="space-y-1 text-center">

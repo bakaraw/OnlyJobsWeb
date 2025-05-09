@@ -22,6 +22,7 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
     console.log("certi", selectedApplicant.certifications);
     console.log("skills", selectedApplicant.user_skills);
     console.log("skills", selectedApplicant.user_skills);
+    console.log("selected", selectedApplicant);
 
 
     const statusClasses = {
