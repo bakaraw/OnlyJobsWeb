@@ -11,6 +11,7 @@ export default function MessageButton({ show, onClick, onClose, conversation }) 
         const fetchUnreadCount = async () => {
             try {
                 const response = await axios.get('/conversation/unread-count');
+                console.log('UnreadCount: ', response.data);
                 setUnreadCount(response.data.unread_count);
             } catch (error) {
                 console.error("Failed to fetch unread count", error);
@@ -18,10 +19,7 @@ export default function MessageButton({ show, onClick, onClose, conversation }) 
         };
 
         fetchUnreadCount();
-
-        // Optional: Polling for unread count (every 10 seconds)
         const interval = setInterval(fetchUnreadCount, 10000);
-
         return () => clearInterval(interval);
     }, []);
 

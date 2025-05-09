@@ -212,33 +212,6 @@ class MessageController extends Controller
         return response()->noContent();
     }
 
-    /*public function unreadCount()*/
-    /*{*/
-    /*    $userId = auth()->id();*/
-    /**/
-    /*    $conversations = Conversation::where('user_id', $userId)*/
-    /*        ->withCount([*/
-    /*            'messages as unread_messages_count' => function ($query) use ($userId) {*/
-    /*                $query->whereNull('read_at')*/
-    /*                    ->where('sender_id', '!=', $userId);*/
-    /*            }*/
-    /*        ])->get();*/
-    /**/
-    /*    return response()->json($conversations);*/
-    /*}*/
-    /*public function unreadCount()*/
-    /*{*/
-    /*    $userId = auth()->id();*/
-    /**/
-    /*    $unreadCount = Message::whereNull('read_at')*/
-    /*        ->where('sender_id', '!=', $userId)*/
-    /*        ->whereHas('conversation', function ($query) use ($userId) {*/
-    /*            $query->where('user_id', $userId);*/
-    /*        })->count();*/
-    /**/
-    /*    return response()->json(['unread_count' => $unreadCount]);*/
-    /*}*/
-
     public function unreadCount()
     {
         $userId = auth()->id();
@@ -259,5 +232,36 @@ class MessageController extends Controller
         return response()->json([
             'unread_count' => $totalUnreadCount,
         ]);
+    }
+
+    public function unreadCountAdmin()
+    {
+        $adminId = auth()->id();
+
+        try {
+            // Fetch conversations where admin has unread messages
+            $conversations = Conversation::withCount([
+                'messages as unread_messages_count' => function ($query) use ($adminId) {
+                    $query->whereNull('read_at')
+                        ->where('sender_id', '!=', $adminId);
+                }
+            ])
+                ->whereHas('messages', function ($query) use ($adminId) {
+                    $query->whereNull('read_at')
+                        ->where('sender_id', '!=', $adminId);
+                })
+                ->get();
+
+            $totalUnreadCount = $conversations->sum('unread_messages_count');
+
+            return response()->json([
+                'unread_count' => $totalUnreadCount,
+                'message' => $totalUnreadCount > 0 ? 'Unread messages found' : 'No conversations with unread messages',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

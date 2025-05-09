@@ -2,9 +2,30 @@ import React, { useState } from "react";
 import { Package } from "lucide-react";
 import DangerButton from "@/Components/DangerButton.jsx";
 import { router } from "@inertiajs/react";
+import { useEffect } from "react";
 
 export default function Sidebar({ auth, setActiveView }) {
 
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Fetch initial unread count when component mounts
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const response = await axios.get('messages/unread-count');
+                setUnreadCount(response.data.unread_count);
+            } catch (error) {
+                console.error("Failed to fetch unread count", error);
+            }
+        };
+
+        fetchUnreadCount();
+
+        // Optional: Polling for unread count (every 10 seconds)
+        const interval = setInterval(fetchUnreadCount, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
@@ -50,12 +71,17 @@ export default function Sidebar({ auth, setActiveView }) {
                             🤵🏻 Applicants
                         </button>
                     </li>
-                    <li>
+                    <li className="relative">
                         <button
                             onClick={() => setActiveView("messages")}
                             className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
                         >
-                            💬   Messages
+                            💬 Messages
+                            {unreadCount > 0 && (
+                                <span className="absolute right-4 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {unreadCount}
+                                </span>
+                            )}
                         </button>
                     </li>
                 </ul>

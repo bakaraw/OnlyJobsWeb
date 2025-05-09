@@ -23,18 +23,38 @@ export default function AdminMessages({ onJobSelect }) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
-    //
-    //
-    //useEffect(() => {
-    //    axios.get("/admin/messages/conversations")
-    //        .then((res) => {
-    //            setConversations(res.data);
-    //            if (res.data.length > 0) {
-    //                setSelectedConversation(res.data[0]);
-    //            }
-    //        })
-    //        .finally(() => setLoadingConversations(false));
-    //}, []);
+
+    const markMessagesAsRead = (conversationId) => {
+        if (!conversationId) return;
+
+        // Optimistically update in the conversations list
+        setConversations(prevConvs =>
+            prevConvs.map(conv => {
+                if (conv.id === conversationId) {
+                    const updated = { ...conv };
+                    if (updated.messages?.[0]) {
+                        updated.messages[0].read_at = new Date().toISOString();
+                    }
+                    return updated;
+                }
+                return conv;
+            })
+        );
+
+        // Update in the messages list
+        setMessages(prevMessages =>
+            prevMessages.map(msg => {
+                if (!msg.read_at && msg.sender_id !== auth.user.id) {
+                    return { ...msg, read_at: new Date().toISOString() };
+                }
+                return msg;
+            })
+        );
+
+        // Call the API endpoint
+        axios.post(`/admin/messages/${conversationId}/mark-read`);
+    };
+
     useEffect(() => {
         axios.get("/admin/messages/conversations")
             .then((res) => {
@@ -50,18 +70,22 @@ export default function AdminMessages({ onJobSelect }) {
             })
             .finally(() => setLoadingConversations(false));
     }, []);
-
-
-    //Fetch messages when a conversation is selected
+    //
     //useEffect(() => {
     //    if (!selectedConversation) return;
+    //
     //    setLoadingMessages(true);
-    //    axios.get(`/admin/messages/${selectedConversation.id}`)
+    //
+    //    // 🔹 Step 1: Mark messages as read (this will update read_at on the server)
+    //    axios.post(`/admin/messages/${selectedConversation.id}/mark-read`)
+    //        .then(() => {
+    //            // 🔹 Step 2: Fetch messages after marking as read
+    //            return axios.get(`/admin/messages/${selectedConversation.id}`);
+    //        })
     //        .then((res) => {
-    //            console.log("Fetched messages:", res.data);
     //            setMessages(res.data.messages);
     //
-    //            // 👇 Optimistically update read_at in conversations list
+    //            // 🔹 Step 3: Optimistically update read_at in conversation list
     //            setConversations((prevConvs) =>
     //                prevConvs.map((conv) => {
     //                    if (conv.id === selectedConversation.id) {
@@ -76,49 +100,21 @@ export default function AdminMessages({ onJobSelect }) {
     //            );
     //        })
     //        .finally(() => setLoadingMessages(false));
-    //
     //}, [selectedConversation]);
-
-    //useEffect(() => {
-    //    if (!selectedConversation) return;
-    //    setLoadingMessages(true);
-    //    axios.get(`/admin/messages/${selectedConversation.id}`)
-    //        .then((res) => {
-    //            setMessages(res.data.messages);
-    //            // Refresh conversations to reflect read status
-    //            return axios.get("/admin/messages/conversations");
-    //        })
-    //        .then((res) => setConversations(res.data))
-    //        .finally(() => setLoadingMessages(false));
-    //}, [selectedConversation]);
+    // Simplify your conversation selection effect
 
     useEffect(() => {
         if (!selectedConversation) return;
 
         setLoadingMessages(true);
 
-        // 🔹 Step 1: Mark messages as read (this will update read_at on the server)
-        axios.post(`/admin/messages/${selectedConversation.id}/mark-read`)
-            .then(() => {
-                // 🔹 Step 2: Fetch messages after marking as read
-                return axios.get(`/admin/messages/${selectedConversation.id}`);
-            })
+        // Mark messages as read first
+        markMessagesAsRead(selectedConversation.id);
+
+        // Then fetch messages
+        axios.get(`/admin/messages/${selectedConversation.id}`)
             .then((res) => {
                 setMessages(res.data.messages);
-
-                // 🔹 Step 3: Optimistically update read_at in conversation list
-                setConversations((prevConvs) =>
-                    prevConvs.map((conv) => {
-                        if (conv.id === selectedConversation.id) {
-                            const updated = { ...conv };
-                            if (updated.messages?.[0]) {
-                                updated.messages[0].read_at = new Date().toISOString();
-                            }
-                            return updated;
-                        }
-                        return conv;
-                    })
-                );
             })
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
@@ -160,7 +156,6 @@ export default function AdminMessages({ onJobSelect }) {
         }
     };
 
-
     useEffect(() => {
         fetchConversations(); // initial load
 
@@ -171,26 +166,46 @@ export default function AdminMessages({ onJobSelect }) {
         return () => clearInterval(interval); // cleanup on unmount
     }, []);
 
-
+    //useEffect(() => {
+    //    if (!selectedConversation || typeof window.Echo === 'undefined') {
+    //        console.error("Echo is not initialized");
+    //        return;
+    //    }
+    //
+    //    const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+    //    channel.listen('MessageSent', (e) => {
+    //        setMessages((prev) => {
+    //            if (!prev.find((msg) => msg.id === e.id)) {
+    //                return [...prev, { ...e, fromAdmin: false }];
+    //            }
+    //            return prev;
+    //        });
+    //
+    //        setConversations((prevConvs) => {
+    //            const updated = prevConvs.map((conv) =>
+    //                conv.id === selectedConversation.id
+    //                    ? { ...conv, messages: [{ ...e }] }
+    //                    : conv
+    //            );
+    //            return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+    //        });
+    //    });
+    //
+    //    return () => {
+    //        channel.stopListening('MessageSent');
+    //        window.Echo.leave(`conversations.${selectedConversation.id}`);
+    //    };
+    //}, [selectedConversation]);
 
     useEffect(() => {
-        if (!selectedConversation || typeof window.Echo === 'undefined') {
-            console.error("Echo is not initialized");
-            return;
-        }
+        if (!selectedConversation || typeof window.Echo === 'undefined') return;
 
         const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
 
-        //channel.listen('MessageSent', (e) => {
-        //    // Prevent adding the message if it's already in the state
-        //    setMessages((prev) => {
-        //        if (!prev.find((msg) => msg.id === e.id)) {
-        //            return [...prev, { ...e, fromAdmin: false }];
-        //        }
-        //        return prev;
-        //    });
-        //});
         channel.listen('MessageSent', (e) => {
+            // Mark messages as read when receiving new ones
+            markMessagesAsRead(selectedConversation.id);
+
             setMessages((prev) => {
                 if (!prev.find((msg) => msg.id === e.id)) {
                     return [...prev, { ...e, fromAdmin: false }];
@@ -198,18 +213,17 @@ export default function AdminMessages({ onJobSelect }) {
                 return prev;
             });
 
-            // 🟡 Update conversation list
             setConversations((prevConvs) => {
                 const updated = prevConvs.map((conv) =>
                     conv.id === selectedConversation.id
                         ? { ...conv, messages: [{ ...e }] }
                         : conv
                 );
-                return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+                return updated.sort((a, b) =>
+                    new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at)
+                );
             });
         });
-
-
 
         return () => {
             channel.stopListening('MessageSent');

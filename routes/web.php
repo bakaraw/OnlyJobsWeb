@@ -19,6 +19,7 @@ use App\Http\Controllers\LightcastController;
 use App\Http\Controllers\UserSkillsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Models\Message;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -211,6 +212,8 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/{id}', [MessageController::class, 'show']);
     Route::post('/{id}', [MessageController::class, 'sendMessage']);
     Route::post('/{conversation}/mark-read', [MessageController::class, 'markAsRead']);
+    Route::get('/unread-count', [MessageController::class, 'unreadCountAdmin'])
+        ->name('admin.messages.unread-count');
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
