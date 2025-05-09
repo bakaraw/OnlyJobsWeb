@@ -136,7 +136,8 @@ const JobCompanyCard = ({ JobCompany, className }) => (
 const handleApply = (jobId) => {
     router.post(`/jobs/${jobId}/apply`, {}, {
         onSuccess: () => {
-            //alert('You have successfully applied!');
+            alert('You have successfully applied!');
+
         },
         onError: (errors) => {
             alert(errors.message || 'There was an error applying to the job.');
@@ -147,12 +148,14 @@ const handleApply = (jobId) => {
 
 export default function JobView() {
     const { jobview } = usePage().props;
+
     const { auth } = usePage().props;
     const [showMessages, setShowMessages] = useState(false);
     const [conversation, setConversation] = useState(null);
     const [showApplyModal, setShowApplyModal] = useState(false);
 
-    console.log("jobview", jobview)
+    console.log("jobview", jobview);
+    console.log("jobview applications:", jobview.applications.map(app => app.user_id));
     const handleSendMessage = async (message) => {
         try {
             if (!conversation || !conversation.id) {
@@ -210,13 +213,24 @@ export default function JobView() {
                                 </button>)
                             }
                             <div className="ml-5">
-                                <PrimaryButton
-
-                                    className='min-w-32 flex items-center justify-center'
-                                    onClick={() => setShowApplyModal(true)}
-                                >
-                                    Apply
-                                </PrimaryButton>
+                                {auth.user && jobview.applications.some(app => app.user_id === auth.user.id) ? (
+                                    <span
+                                        className="text-gray-500 py-2 px-4 border border-gray-300 rounded-lg cursor-pointer"
+                                        onClick={() => setShowApplyModal(true)}
+                                    >
+                                    Application
+                                </span>
+                                ) : (
+                                    <PrimaryButton
+                                        className='min-w-32 flex items-center justify-center'
+                                        onClick={() => {
+                                            setShowApplyModal(true);
+                                            handleApply(jobview.id);
+                                        }}
+                                    >
+                                        Apply
+                                    </PrimaryButton>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -229,6 +243,7 @@ export default function JobView() {
                 <SkillsCard skills={jobview.skills} />
 
                 <RequirementsCard requirements={jobview.requirements} />
+
 
                 <JobCompanyCard JobCompany={jobview.company} />
             </ContentLayout>

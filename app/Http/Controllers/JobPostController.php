@@ -410,7 +410,7 @@ public function update(Request $request, $id)
 
         $job = JobPost::with([
             'skills',
-//            'requirements:requirement_id,requirement_name',
+            'requirements:requirement_id,requirement_name',
             'degree',
             'status',
             'applications.user:id,first_name,last_name',

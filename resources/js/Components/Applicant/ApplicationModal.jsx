@@ -8,30 +8,44 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
 
     console.log('job', job)
     console.log('user', user)
-
+    console.log('stat', job.applications?.[0]?.status);
     const handleFileChange = (e) => {
         console.log('Files selected:', e.target.files);
     };
 
+    const statusStyles = {
+        Accepted: 'bg-green-300 text-green-900',
+        Qualified: 'bg-blue-300 text-blue-900',
+        Pending: 'bg-yellow-300 text-yellow-900',
+        Rejected: 'bg-red-300 text-red-900',
+    };
+
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="4xl">
-            <div className="bg-white rounded-lg shadow-lg w-full max-h-[80vh] overflow-hidden flex flex-col">
 
                 <div className="p-6 border-b border-gray-200">
+                    {job.applications?.[0]?.status ? (
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[job.applications[0].status]}`}>
+                                {job.applications[0].status}
+                            </span>
+                    ) : (
+                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
+                                No Status
+                            </span>
+                    )}
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">Job Application</h2>
-                        <div className="flex space-x-2">
+                        <h1 className="text-2xl font-bold">{job.job_title}  {job.company}</h1>
 
-                            <SecondaryButton onClick={onClose}>
-                                Close
-                            </SecondaryButton>
-                        </div>
+
+
+                        <SecondaryButton onClick={onClose}>
+                            Close
+                        </SecondaryButton>
                     </div>
 
-                    <p className="text-gray-600 mt-1">
-                        Job Title: <span className="font-semibold">{job.job_title}  {job.company} </span>
-                    </p>
-                </div>
+                    </div>
+
+
 
                 {/* Content */}
                 <div className="flex flex-col md:flex-row overflow-y-auto p-6">
@@ -47,23 +61,44 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                                 ))}
                             </div>
                         </div>
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-dark mb-2">Required Education</h3>
-                            <p className="text-gray-600">{job.degree?.name || 'Not specified'}</p>
+                        <div className="mb-6 rounded-lg p-6 shadow-sm bg-white">
+                            <dt className="text-lg font-semibold text-dark">Documents</dt>
+
+
+                            <dl className="grid grid-cols-1 gap-6">
+                                <div>
+
+                                    <dt className="text-lg  text-dark">Education</dt>
+                                    <dd className="mt-1 text-gray-600 leading-relaxed">
+                                        {job.degree?.name || 'Not specified'}
+                                    </dd>
+                                </div>
+
+                                <div>
+                                    <dt className="text-lg  text-dark">Requirements</dt>
+                                    <dd className="mt-1">
+                                        {job.requirements?.length > 0 ? (
+                                            <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                                                {job.requirements.map((req) => (
+                                                    <li key={req.requirement_id}>{req.requirement_name}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-gray-600">No requirements specified</p>
+                                        )}
+                                    </dd>
+                                </div>
+                            </dl>
                         </div>
-
-
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-dark mb-2">Requirements</h3>
-                            <ul className="list-disc ml-5 text-gray-700">
-                                {job.requirements?.map((req) => (
-                                    <li key={req.requirement_id} className="text-gray-600">{req.requirement_name}</li>
-                                ))}
-                            </ul>
+                        <div>
+                            <dt className="text-lg font-semibold text-dark">Company Remarks on you: </dt>
+                            <dd className="mt-1 text-gray-600 leading-relaxed">
+                                {job.applications?.[0]?.remarks || "Not yet"}
+                            </dd>
                         </div>
-
-
                     </div>
+
+
 
                     <div className="flex-1 pl-0 md:pl-4 md:border-l border-gray-200">
                         <div className="bg-gray-50 rounded-lg p-3">
@@ -164,7 +199,6 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                         Submit Application
                     </PrimaryButton>
                 </div>
-            </div>
         </Modal>
     );
 }

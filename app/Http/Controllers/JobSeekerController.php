@@ -50,6 +50,8 @@ class JobSeekerController extends Controller
             'requirements:requirement_id,requirement_name',
             'degree',
             'status',
+            'applications.user:id,first_name,last_name',
+            'applications:id,job_post_id,user_id,status,remarks,created_at,updated_at'
         ])
             ->select(
                 'id',
