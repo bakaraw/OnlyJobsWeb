@@ -52,12 +52,71 @@ export default function ApplicantsSection({ applicants }) {
 
     const educationMet = meetsEducationRequirement(job_degrees, user_degrees);
 
+    const [modalProps, setModalProps] = useState({
+        show: false,
+        type: "success",
+        message: "",
+        onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
+        onConfirm: null,
+    });
+    const closeModal = () => {
+        setModalProps(prev => ({ ...prev, show: false }));
+    };
+
+    const handleAccept = async (application, educationMet, skillsMet, processApplication) => {
+        let endpoint;
+        let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
+
+        if (application.status === "Pending") {
+            if (!educationMet && !skillsMet) {
+                message += "education level and skills requirements.";
+            } else if (!educationMet) {
+                message += "education level requirements.";
+            } else if (!skillsMet) {
+                message += "skills requirements.";
+            }
+            message += " Do you still want to proceed?";
+
+            setModalProps({
+                show: true,
+                type: "warning",
+                message,
+                onClose: closeModal,
+                onConfirm: async () => {
+                    endpoint = "/applicants/qualified";
+                    await processApplication(endpoint, application);
+                    closeModal();
+                }
+            });
+            return;
+        }
+
+        if (application.status === "Qualified") {
+            setModalProps({
+                show: true,
+                type: "success",
+                message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
+                onClose: closeModal,
+                onConfirm: async () => {
+                    endpoint = "/applicants/accepted";
+                    await processApplication(endpoint, application);
+                    closeModal();
+                }
+            });
+            return;
+        }
+    };
+
+
     // const handleAccept = async (application) => {
     //     try {
     //         let endpoint;
+    //         let confirmMsg;
     //         let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
     //
     //         if (application.status === "Pending") {
+    //             confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
+    //
     //             if (!educationMet && !skillsMet) {
     //                 message += "education level and skills requirements.";
     //             } else if (!educationMet) {
@@ -66,98 +125,38 @@ export default function ApplicantsSection({ applicants }) {
     //                 message += "skills requirements.";
     //             }
     //             message += " Do you still want to proceed?";
+    //             confirmMsg = message;
     //
-    //             // Show warning in MessageModal
-    //             MessageModal.show({
-    //                 title: "Warning",
-    //                 message: message,
-    //                 type: "warning",
-    //                 onConfirm: async () => {
-    //                     endpoint = "/applicants/qualified";
-    //                     await processApplication(endpoint, application);
-    //                 },
-    //             });
-    //             return;
-    //         }
+    //             if (!confirm(confirmMsg)) return;
+    //             endpoint = "/applicants/qualified";
     //
-    //         if (application.status === "Qualified") {
-    //             // Show success modal
-    //             MessageModal.show({
-    //                 title: "Success",
-    //                 message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
-    //                 type: "success",
-    //                 onConfirm: async () => {
-    //                     endpoint = "/applicants/accepted";
-    //                     await processApplication(endpoint, application);
-    //                 },
-    //             });
-    //             return;
+    //
+    //             //
+    //             // if (application.status === "Pending") {
+    //             //     confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
+    //             //     if (!confirm(confirmMsg)) return;
+    //             //     endpoint = "/applicants/qualified";
+    //
+    //                 }
+    //             if (application.status === "Qualified") {
+    //                         confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
+    //                         if (!confirm(confirmMsg)) return;
+    //                         endpoint = "/applicants/accepted";
+    //                     } else {
+    //                         return;
+    //                     }
+    //
+    //
+    //
+    //
+    //         const response = await axios.post(endpoint, { application_id: application.id });
+    //         if (response.data.success) {
+    //             window.location.reload();
     //         }
     //     } catch (error) {
     //         console.error("Error updating application status:", error);
     //     }
     // };
-
-    const processApplication = async (endpoint, application) => {
-        try {
-            const response = await axios.post(endpoint, { application_id: application.id });
-            if (response.data.success) {
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error processing application:", error);
-        }
-    };
-
-    const handleAccept = async (application) => {
-        try {
-            let endpoint;
-            let confirmMsg;
-            let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
-
-            if (application.status === "Pending") {
-                confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-
-                if (!educationMet && !skillsMet) {
-                    message += "education level and skills requirements.";
-                } else if (!educationMet) {
-                    message += "education level requirements.";
-                } else if (!skillsMet) {
-                    message += "skills requirements.";
-                }
-                message += " Do you still want to proceed?";
-                confirmMsg = message;
-
-                if (!confirm(confirmMsg)) return;
-                endpoint = "/applicants/qualified";
-
-
-                //
-                // if (application.status === "Pending") {
-                //     confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-                //     if (!confirm(confirmMsg)) return;
-                //     endpoint = "/applicants/qualified";
-
-                    }
-                if (application.status === "Qualified") {
-                            confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
-                            if (!confirm(confirmMsg)) return;
-                            endpoint = "/applicants/accepted";
-                        } else {
-                            return;
-                        }
-
-
-
-
-            const response = await axios.post(endpoint, { application_id: application.id });
-            if (response.data.success) {
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error updating application status:", error);
-        }
-    };
 
     const handleReject = async (application) => {
         try {
@@ -325,6 +324,24 @@ export default function ApplicantsSection({ applicants }) {
                     No {selectedStatus !== 'all' ? selectedStatus : ''} applicants available.
                 </p>
             )}
+            <MessageModal
+                show={modalProps.show}
+                type={modalProps.type}
+                message={modalProps.message}
+                onClose={modalProps.onClose}
+            />
+            {modalProps.show && modalProps.onConfirm && (
+                <div className="mt-2 ml-4">
+                    <button
+                        onClick={modalProps.onConfirm}
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    >
+                        Confirm
+                    </button>
+                </div>
+            )}
+
         </DashboardCard>
+
     );
 }
