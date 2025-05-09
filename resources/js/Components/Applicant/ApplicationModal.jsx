@@ -33,17 +33,15 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                                 No Status
                             </span>
                     )}
-                    <div className="flex justify-between items-center mb-4">
-                        <h1 className="text-2xl font-bold">{job.job_title}  {job.company}</h1>
-
-
+                    <div className="flex justify-between  mb-4">
+                        <h1 className="text-2xl font-bold">Job Title: {job.job_title} </h1>
 
                         <SecondaryButton onClick={onClose}>
                             Close
                         </SecondaryButton>
                     </div>
 
-                    </div>
+                </div>
 
 
 
@@ -62,17 +60,16 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                     {/*        </div>*/}
                     {/*    </div>*/}
                         <div className="mb-6 rounded-lg p-6 shadow-sm bg-white">
-                            <dt className="text-lg font-semibold text-dark">Documents</dt>
 
 
                             <dl className="grid grid-cols-1 gap-6">
-                                <div>
+                                {/*<div>*/}
 
-                                    <dt className="text-lg  text-dark">Education</dt>
-                                    <dd className="mt-1 text-gray-600 leading-relaxed">
-                                        {job.degree?.name || 'Not specified'}
-                                    </dd>
-                                </div>
+                                {/*    <dt className="text-lg  text-dark">Education</dt>*/}
+                                {/*    <dd className="mt-1 text-gray-600 leading-relaxed">*/}
+                                {/*        {job.degree?.name || 'Not specified'}*/}
+                                {/*    </dd>*/}
+                                {/*</div>*/}
 
                                 <div>
                                     <dt className="text-lg  text-dark">Requirements</dt>
@@ -93,7 +90,7 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                         <div>
                             <dt className="text-lg font-semibold text-dark">Company Remarks on you: </dt>
                             <dd className="mt-1 text-gray-600 leading-relaxed">
-                                {job.applications?.[0]?.remarks || "Not yet"}
+                                {job.applications?.[0]?.remarks || "None"}
                             </dd>
                         </div>
                     </div>
@@ -129,30 +126,30 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                                 </div>
                             )}
 
-                            {job.degree && job.degree.name && (
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Education 
-                                    </label>
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div className="space-y-1 text-center">
-                                            <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            <div className="flex text-sm text-gray-600">
-                                                <label htmlFor="degree-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                                    <span>Upload files</span>
-                                                    <input id="degree-upload" name="degree-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />
-                                                </label>
-                                                <p className="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                (PDF, DOC, JPG up to 100MB each)
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            {/*{job.degree && job.degree.name && (*/}
+                            {/*    <div className="mb-4">*/}
+                            {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
+                            {/*            Education */}
+                            {/*        </label>*/}
+                            {/*        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">*/}
+                            {/*            <div className="space-y-1 text-center">*/}
+                            {/*                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">*/}
+                            {/*                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />*/}
+                            {/*                </svg>*/}
+                            {/*                <div className="flex text-sm text-gray-600">*/}
+                            {/*                    <label htmlFor="degree-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">*/}
+                            {/*                        <span>Upload files</span>*/}
+                            {/*                        <input id="degree-upload" name="degree-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />*/}
+                            {/*                    </label>*/}
+                            {/*                    <p className="pl-1">or drag and drop</p>*/}
+                            {/*                </div>*/}
+                            {/*                <p className="text-xs text-gray-500">*/}
+                            {/*                    (PDF, DOC, JPG up to 100MB each)*/}
+                            {/*                </p>*/}
+                            {/*            </div>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*)}*/}
 
                             {job.certificates && job.certificates.length > 0 && (
                                 <div className="mb-4">
@@ -183,7 +180,12 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                 </div>
 
                 {/* Footer with Action Buttons */}
-                <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
+            <div className="p-6 border-t border-gray-200 flex justify-between space-x-3">
+                <div className="mb-4">
+                    About The Company:
+                    <h1 className="text-2xl font-bold">{job.company}</h1>
+                </div>
+                <div className="flex space-x-3">
                     <button
                         className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800"
                         onClick={onClose}
@@ -199,6 +201,7 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
                         Submit Application
                     </PrimaryButton>
                 </div>
+            </div>
         </Modal>
     );
 }

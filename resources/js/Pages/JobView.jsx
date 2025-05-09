@@ -6,8 +6,9 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import MessageButton from '@/Components/MessageButton';
+import MessageModal from '@/Components/MessageModal';
 import ApplicationModal from "@/Components/Applicant/ApplicationModal.jsx";
+import MessageButton from "@/Components/MessageButton.jsx";
 
 const JobDescriptionCard = ({ jobDescription, className }) => (
     <div className={" " + className}>
@@ -133,18 +134,7 @@ const JobCompanyCard = ({ JobCompany, className }) => (
     </div>
 );
 
-const handleApply = (jobId) => {
-    router.post(`/jobs/${jobId}/apply`, {}, {
-        onSuccess: () => {
-            alert('You have successfully applied!');
 
-        },
-        onError: (errors) => {
-            alert(errors.message || 'There was an error applying to the job.');
-        },
-        preserveScroll: true
-    });
-};
 
 export default function JobView() {
     const { jobview } = usePage().props;
@@ -156,6 +146,29 @@ export default function JobView() {
 
     console.log("jobview", jobview);
     console.log("jobview applications:", jobview.applications.map(app => app.user_id));
+
+    const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+    const handleApply = (jobId) => {
+        router.post(`/jobs/${jobId}/apply`, {}, {
+            onSuccess: () => {
+                setNotification({
+                    show: true,
+                    message: 'You have successfully applied!',
+                    type: 'success'
+                });
+            },
+            onError: (errors) => {
+                setNotification({
+                    show: true,
+                    message: errors.message || 'There was an error applying to the job.',
+                    type: 'error'
+                });
+            },
+            preserveScroll: true,
+            only: [] // Prevents a full reload
+        });
+    };
+
     const handleSendMessage = async (message) => {
         try {
             if (!conversation || !conversation.id) {
@@ -224,7 +237,6 @@ export default function JobView() {
                                     <PrimaryButton
                                         className='min-w-32 flex items-center justify-center'
                                         onClick={() => {
-                                            setShowApplyModal(true);
                                             handleApply(jobview.id);
                                         }}
                                     >
@@ -261,6 +273,13 @@ export default function JobView() {
                 job={jobview}
                 user={auth.user}
             />
+            <MessageModal
+                show={notification.show}
+                type={notification.type}
+                message={notification.message}
+                onClose={() => setNotification({ show: false, message: '', type: '' })}
+            />
+
         </MainPageLayout>
     );
 }

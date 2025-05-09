@@ -5,6 +5,7 @@ import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
 import {usePage} from "@inertiajs/react";
+import MessageModal from "@/Components/MessageModal.jsx";
 
 
 export default function ApplicantsSection({ applicants }) {
@@ -51,7 +52,62 @@ export default function ApplicantsSection({ applicants }) {
 
     const educationMet = meetsEducationRequirement(job_degrees, user_degrees);
 
+    // const handleAccept = async (application) => {
+    //     try {
+    //         let endpoint;
+    //         let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
+    //
+    //         if (application.status === "Pending") {
+    //             if (!educationMet && !skillsMet) {
+    //                 message += "education level and skills requirements.";
+    //             } else if (!educationMet) {
+    //                 message += "education level requirements.";
+    //             } else if (!skillsMet) {
+    //                 message += "skills requirements.";
+    //             }
+    //             message += " Do you still want to proceed?";
+    //
+    //             // Show warning in MessageModal
+    //             MessageModal.show({
+    //                 title: "Warning",
+    //                 message: message,
+    //                 type: "warning",
+    //                 onConfirm: async () => {
+    //                     endpoint = "/applicants/qualified";
+    //                     await processApplication(endpoint, application);
+    //                 },
+    //             });
+    //             return;
+    //         }
+    //
+    //         if (application.status === "Qualified") {
+    //             // Show success modal
+    //             MessageModal.show({
+    //                 title: "Success",
+    //                 message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
+    //                 type: "success",
+    //                 onConfirm: async () => {
+    //                     endpoint = "/applicants/accepted";
+    //                     await processApplication(endpoint, application);
+    //                 },
+    //             });
+    //             return;
+    //         }
+    //     } catch (error) {
+    //         console.error("Error updating application status:", error);
+    //     }
+    // };
 
+    const processApplication = async (endpoint, application) => {
+        try {
+            const response = await axios.post(endpoint, { application_id: application.id });
+            if (response.data.success) {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error processing application:", error);
+        }
+    };
 
     const handleAccept = async (application) => {
         try {
