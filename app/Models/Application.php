@@ -16,10 +16,21 @@ class Application extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+
     }
 
     public function jobPost()
     {
         return $this->belongsTo(JobPost::class, "job_post_id");
     }
+
+    public function degree()
+    {
+        return $this->belongsTo(Degree::class);
+    }
+
+    public function educations() {
+        return $this->hasMany(Educations::class);
+    }
+
 }

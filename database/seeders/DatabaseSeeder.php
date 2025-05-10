@@ -96,19 +96,13 @@ class DatabaseSeeder extends Seeder
 
         // creates degrees default data
         DB::table('degrees')->insert([
-            ['name' => 'Associate\'s'],
-            ['name' => 'Bachelor\'s'],
-            ['name' => 'Master\'s'],
-            ['name' => 'Doctorate'],
-            ['name' => 'Professional Degree'],
-            ['name' => 'Certificate'],
-            ['name' => 'High School Diploma'],
-            ['name' => 'Postgraduate Diploma'],
-            ['name' => 'Postdoctoral Degree'],
-            ['name' => 'Honorary Degree'],
-            ['name' => 'TESDA Certificate'],
-            ['name' => 'Technical Certificate'],
-            ['name' => 'Vocational Certificate'],
+            ['name' => 'Vocational'],
+            ['name' => 'Graduate'],
+            ['name' => 'Undergraduate'],
+            ['name' => 'High School'],
+            ['name' => 'Elementary'],
+            ['name' => 'Others'],
+
         ]);
 
 
@@ -120,16 +114,17 @@ class DatabaseSeeder extends Seeder
             ['requirement_name' => 'OEC'],
             ['requirement_name' => 'PDOS Certificate'],
             ['requirement_name' => 'TESDA Certificate'],
+            ['requirement_name' => 'Barangay Clearance'],
+            ['requirement_name' => 'Government Issued ID (e.g., Driver’s License, SSS, or PhilHealth ID)'],
+            ['requirement_name' => 'Police Clearance'],
+            ['requirement_name' => 'Tax Identification Number (TIN)'],
+            ['requirement_name' => 'Voter’s ID'],
+            ['requirement_name' => 'Immigration Clearance '],
+            ['requirement_name' => 'Photocopy of Birth Certificate'],
+            ['requirement_name' => '3 Recent Passport-sized Photos'],
+            ['requirement_name' => 'Work Visa'],
         ]);
-
         // creates skills default data
-        $response = Http::get('https://gist.githubusercontent.com/fadziljusri/d72619739d1fa8b760ca8a8d89bb0c99/raw/21983ab748fed408a64e0437c0c84d52229c30e8/skills.json');
-        $skillset = $response->json();
 
-        foreach ($skillset as $skill_category) {
-            foreach ($skill_category as $skill) {
-                Skill::create(['skill_name' => $skill]);
-            }
-        }
     }
 }

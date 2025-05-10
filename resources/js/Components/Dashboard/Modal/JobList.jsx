@@ -24,7 +24,7 @@ const statusStyles = {
 };
 
 export default function JobList({ jobs, onJobSelect }) {
-    console.log("job_status: " + jobs.status?.name);
+    console.log("joblistwithslot: ", jobs);
     return (
         <div className="w-full px-4">
             <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
@@ -37,6 +37,7 @@ export default function JobList({ jobs, onJobSelect }) {
                             <th className="py-3 px-4">Type</th>
                             <th className="py-3 px-4 text-center">Views</th>
                             <th className="py-3 px-4 text-center">Applicants</th>
+                            <th className="py-3 px-4 text-center">Slots</th>
                             <th className="py-3 px-4 text-center">Qualified</th>
                             <th className="py-3 px-4 text-center">Hired</th>
                             <th className="py-3 px-4 text-center">Rejected</th>
@@ -61,6 +62,7 @@ export default function JobList({ jobs, onJobSelect }) {
                                 <td className="py-3 px-4">{job.job_type}</td>
                                 <td className="py-3 px-4 text-center">{job.views || 0}</td>
                                 <td className="py-3 px-4 text-center">{job.applications_count}</td>
+                                <td className="py-3 px-4 text-center">{job.slot}</td>
                                 <td className="py-3 px-4 text-center">{job.qualified_count}</td>
                                 <td className="py-3 px-4 text-center">{job.accepted_count}</td>
                                 <td className="py-3 px-4 text-center">{job.rejected_count}</td>

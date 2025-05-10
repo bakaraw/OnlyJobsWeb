@@ -22,7 +22,20 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
 
     // Filter applicants based on selected status
 
-    console.log(onApplicantSelect)
+    console.log('users',users)
+
+
+
+
+    const statusStyles = {
+        Accepted: 'bg-green-300 text-green-900',
+        Qualified: 'bg-blue-300 text-blue-900',
+        Pending: 'bg-yellow-300 text-yellow-900',
+        Rejected: 'bg-red-300 text-red-900',
+    };
+
+
+
     const filteredUsers = users.filter(user => {
         if (selectedStatus === "all") return true;
         return user.applications && user.applications.some(app =>
@@ -30,12 +43,6 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
         );
     });
 
-    const statusClasses = {
-        accepted: 'text-green-600',
-        rejected: 'text-red-600',
-        qualified: 'text-blue-600',
-        pending: 'text-yellow-600'
-    };
 
     return (
         <div className="w-full px-4">
@@ -65,8 +72,7 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
                             <th className="py-3 px-4">Email</th>
                             <th className="py-3 px-4">Contact</th>
                             <th className="py-3 px-4">Applied Jobs</th>
-                            <th className="py-3 px-4">Visited Jobs</th>
-                            <th className="py-3 px-4 text-center">Status</th>
+                            <th className="py-3 px-4 text-center">Application Status</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -95,30 +101,25 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
                                         <span className="text-gray-500">No jobs applied</span>
                                     )}
                                 </td>
-                                <td className="py-3 px-4">sample</td>
+                                <td className="py-3 px-4 text-center">
+                                    {user.applications && user.applications.length > 0 ? (
+                                        <div className="flex flex-wrap justify-center gap-1">
+                                            {user.applications.map((app, i) => (
+                                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[app.status.charAt(0).toUpperCase() + app.status.slice(1)]}`}>
+                                                {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                            </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
+                                    No Status
+                                </span>
+                                    )}
+                                </td>
 
-                                {/*<td className="py-3 px-4 text-center">*/}
-                                {/*    {user.applications && user.applications.length > 0 ? (*/}
-                                {/*        // <div className="flex flex-col space-y-1">*/}
-                                {/*        //     {user.applications.map(app => (*/}
-                                {/*        //         <span key={app.id} className={statusClasses[app.status.toLowerCase()] || 'text-yellow-600'}>*/}
-                                {/*        //         {app.job_post && app.job_post.job_title}:*/}
-                                {/*        //             {app.status.charAt(0).toUpperCase() + app.status.slice(1)}*/}
-                                {/*        //         </span>*/}
-                                {/*        //     ))}*/}
-                                {/*        // </div>*/}
-                                {/*    ) : (*/}
-                                {/*        <span className="text-gray-500">-</span>*/}
-                                {/*    )}*/}
-                                {/*</td>*/}
-                                {/*<td className="py-3 px-4 text-center">*/}
-                                {/*    <SecondaryButton*/}
-                                {/*        onClick={() => toggleUserDetails(user.id)}*/}
-                                {/*        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"*/}
-                                {/*    >*/}
-                                {/*        {expandedUser === user.id ? "Hide Details" : "View Details"}*/}
-                                {/*    </SecondaryButton>*/}
-                                {/*</td>*/}
+
+
+
                             </tr>
                         ))}
                         </tbody>

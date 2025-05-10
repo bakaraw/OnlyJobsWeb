@@ -29,6 +29,7 @@ function CreateJobPostModal({ className, show, onClose }) {
         max_salary: "",
         min_experience_years: "1",
         status_id: "1",
+        slot: "",
         degree_id: "",
         skills: [],
         requirements: []
@@ -60,6 +61,7 @@ function CreateJobPostModal({ className, show, onClose }) {
         max_salary: "",
         min_experience_years: "",
         status_id: "",
+        slot: "",
         degree_id: "",
         skills: "",
         requirements: ""
@@ -166,15 +168,19 @@ function CreateJobPostModal({ className, show, onClose }) {
                     </button>
                 </div>
                 <form className="w-full mt-4" onSubmit={submit}>
-                    <div className="">
-                        <InputLabel value="Job Title" />
-                        <TextInput
-                            className="mt-1 block w-full"
-                            value={data.job_title}
-                            onChange={(e) => setData('job_title', e.target.value)}
-                        />
-                        <InputError message={formErrors.job_title} />
+                    <div>
+                        <div className="">
+                            <InputLabel value="Job Title" />
+                            <TextInput
+                                className="mt-1 block w-full"
+                                value={data.job_title}
+                                onChange={(e) => setData('job_title', e.target.value)}
+                            />
+                            <InputError message={formErrors.job_title} />
+                        </div>
+
                     </div>
+
                     <div className="mt-3">
                         <InputLabel value="Description" />
                         <textarea
@@ -184,8 +190,8 @@ function CreateJobPostModal({ className, show, onClose }) {
                         />
                         <InputError message={formErrors.job_description} />
                     </div>
-                    <div className="grid grid-cols-2 gap-3 mt-3">
-                        <div className="col-span-1">
+                    <div className="grid grid-cols-5 gap-3 mt-3">
+                        <div className="col-span-4">
                             <InputLabel value="Company" />
                             <TextInput
                                 className="mt-1 block w-full"
@@ -194,15 +200,25 @@ function CreateJobPostModal({ className, show, onClose }) {
                             />
                             <InputError message={formErrors.company} />
                         </div>
-                        <div className="col-span-1">
-                            <InputLabel value="Location" />
-                            <TextInput
-                                className="mt-1 block w-full"
-                                value={data.job_location}
-                                onChange={(e) => setData('job_location', e.target.value)}
-                            />
-                            <InputError message={formErrors.job_location} />
-                        </div>
+
+                            <div className="col-span-1">
+                                <InputLabel value="Slots" />
+                                <TextInput
+                                    className="mt-1 block w-full"
+                                    value={data.slot}
+                                    onChange={(e) => setData('slot', e.target.value)}
+                                />
+                                <InputError message={formErrors.slot} />
+                            </div>
+                    </div>
+                    <div className="col-span-1 mt-3">
+                        <InputLabel value="Location" />
+                        <TextInput
+                            className="mt-1 block w-full"
+                            value={data.job_location}
+                            onChange={(e) => setData('job_location', e.target.value)}
+                        />
+                        <InputError message={formErrors.job_location} />
                     </div>
                     <div className="grid grid-cols-3 mt-3 gap-3">
                         <div className="col-span-1">
@@ -223,6 +239,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                             </select>
                             <InputError message={formErrors.job_type} />
                         </div>
+
                         <div className="col-span-1">
                             <InputLabel value="Required Education" />
                             <select

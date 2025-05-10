@@ -22,6 +22,7 @@ class JobPost extends Model
         'requirement',
         'skills',
         'company',
+        'slot',
         'user_id',
         'views',
         'salary_type'
@@ -41,6 +42,13 @@ class JobPost extends Model
         return $this->belongsToMany(Requirement::class, 'job_post_requirement', 'job_post_id', 'requirement_id')
             ->select('requirements.requirement_id', 'requirements.requirement_name');
     }
+//
+//    public function educations()
+//    {
+//        return $this->belongsToMany(JobEducation::class, 'job_post_education', 'job_post_id', 'requirement_id')
+//            ->select('requirements.requirement_id', 'requirements.requirement_name');
+//    }
+
 
     /*public function skills()*/
     /*{*/
@@ -65,5 +73,9 @@ class JobPost extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function jobPostRequirement()
+    {
+        return $this->belongsTo(RequirementUser::class);
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('max_salary', 10, 2)->nullable();
             $table->integer('min_experience_years');
             $table->string('company');
+            $table->integer('slot');
 
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('degree_id')->nullable();

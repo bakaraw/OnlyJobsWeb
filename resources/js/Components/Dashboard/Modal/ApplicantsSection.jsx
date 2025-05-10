@@ -4,12 +4,18 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
+import {usePage} from "@inertiajs/react";
+import ConfirmModal from "@/Components/ConfirmModal.jsx";
+import MessageButton from "@/Components/MessageButton.jsx";
 
 
-export default function ApplicantsSection({ applicants }) {
+export default function ApplicantsSection({applicants}) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
+
+    const {props} = usePage();
+    const {statuses, degrees, requirements, skills} = props;
 
     const filteredApplicants = applicants.filter(
         (app) =>
@@ -17,26 +23,116 @@ export default function ApplicantsSection({ applicants }) {
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
 
+    console.log('applicants', applicants);
+
+    const educationLevel = {
+        'Graduate': 1,
+        'Undergraduate': 2,
+        'Vocational': 3,
+        'High School': 4,
+        'Elementary': 5,
+    };
+
+    // Check if applicant meets education requirement
+    const meetsEducationRequirement = (applicantLevel, requiredLevel) => {
+        const applicantRank = educationLevel[applicantLevel] || 0;
+        const requiredRank = educationLevel[requiredLevel] || 0;
+        return applicantRank <= requiredRank; // Lower rank is higher education
+    };
+
+    // Check if applicant has the required skills
+    const meetsSkillsRequirement = (applicantSkills, jobSkills) => {
+        if (!applicantSkills || !jobSkills || applicantSkills.length === 0 || jobSkills.length === 0) {
+            return false;
+        }
+
+        // Check if applicant has at least one of the required skills
+        return jobSkills.some(jobSkill =>
+            applicantSkills.some(appSkill =>
+                appSkill.skill_name.toLowerCase() === jobSkill.skill_name.toLowerCase()
+            )
+        );
+    };
+
+    const [modalProps, setModalProps] = useState({
+        show: false,
+        type: "success",
+        message: "",
+        onClose: () => setModalProps((prev) => ({...prev, show: false})),
+        onConfirm: true,
+    });
+
+    const closeModal = () => {
+        setModalProps(prev => ({...prev, show: false}));
+    };
+
     const handleAccept = async (application) => {
         try {
-            let endpoint;
-            let confirmMsg;
-
             if (application.status === "Pending") {
-                confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-                if (!confirm(confirmMsg)) return;
-                endpoint = "/applicants/qualified";
-            } else if (application.status === "Qualified") {
-                confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
-                if (!confirm(confirmMsg)) return;
-                endpoint = "/applicants/accepted";
-            } else {
-                return;
-            }
+                const applicantEducationLevel = application.user.educations?.[0]?.education_level;
+                const requiredEducationLevel = application.job_post.degree?.name;
+                const applicantSkills = application.user.user_skills || [];
+                const jobSkills = application.job_post.skills || [];
 
-            const response = await axios.post(endpoint, { application_id: application.id });
-            if (response.data.success) {
-                window.location.reload();
+                const educationMet = meetsEducationRequirement(applicantEducationLevel, requiredEducationLevel);
+                const skillsMet = meetsSkillsRequirement(applicantSkills, jobSkills);
+
+                console.log('Education Met:', educationMet, 'Skills Met:', skillsMet);
+                console.log('Applicant Education:', applicantEducationLevel, 'Required:', requiredEducationLevel);
+
+                let msg = "";
+
+                if (!educationMet && !skillsMet) {
+                    msg = "Applicant does not meet education level and skills requirements.";
+                } else if (!educationMet) {
+                    msg = "Applicant does not meet education level requirements.";
+                } else if (!skillsMet) {
+                    msg = "Applicant does not meet skills requirements.";
+                }
+
+                if (msg) {
+                    msg += " Do you still want to proceed?";
+                    setModalProps({
+                        show: true,
+                        type: "warning",
+                        message: msg,
+                        onClose: closeModal,
+                        onConfirm: async () => {
+                            const response = await axios.post("/applicants/qualified", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        }
+                    });
+                    return; // Return early to prevent the code below from executing
+                } else {
+                    // If all requirements are met, just qualify without warning
+                    const response = await axios.post("/applicants/qualified", {
+                        application_id: application.id
+                    });
+                    if (response.data.success) {
+                        window.location.reload();
+                    }
+                }
+            } else if (application.status === "Qualified") {
+                setModalProps({
+                    show: true,
+                    type: "success",
+                    message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
+                    onClose: closeModal,
+                    onConfirm: async () => {
+                        const response = await axios.post("/applicants/accepted", {
+                            application_id: application.id
+                        });
+                        if (response.data.success) {
+                            window.location.reload();
+                        }
+                        closeModal();
+                    }
+                });
             }
         } catch (error) {
             console.error("Error updating application status:", error);
@@ -95,6 +191,16 @@ export default function ApplicantsSection({ applicants }) {
                     </SecondaryButton>
                 ))}
             </div>
+            {modalProps.show && modalProps.onConfirm && (
+                <div className="mt-2 ml-4">
+                    <PrimaryButton
+                        onClick={modalProps.onConfirm}
+                    >
+                        Proceed
+                    </PrimaryButton>
+                </div>
+            )}
+
 
             {filteredApplicants.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -139,7 +245,9 @@ export default function ApplicantsSection({ applicants }) {
                       </span>
                                     )}
                                 </td>
+
                                 <td className="py-2 px-4">
+
                                     {editingId === application.id ? (
                                         <div className="flex space-x-2">
                                             <PrimaryButton
@@ -196,8 +304,12 @@ export default function ApplicantsSection({ applicants }) {
                                                     Reject
                                                 </DangerButton>
                                             )}
+
                                         </div>
                                     )}
+
+                                </td>
+                                <td>
                                 </td>
                             </tr>
                         ))}
@@ -209,6 +321,15 @@ export default function ApplicantsSection({ applicants }) {
                     No {selectedStatus !== 'all' ? selectedStatus : ''} applicants available.
                 </p>
             )}
+            <ConfirmModal
+                show={modalProps.show}
+                type={modalProps.type}
+                message={modalProps.message}
+                onClose={modalProps.onClose}
+            />
+
+
         </DashboardCard>
+
     );
 }
