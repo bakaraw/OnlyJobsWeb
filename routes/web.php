@@ -19,7 +19,8 @@ use App\Http\Controllers\LightcastController;
 use App\Http\Controllers\UserSkillsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
-use App\Models\Message;
+use App\Http\Controllers\ContactController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -222,6 +223,9 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
 //        ],
 //    ]);
 //})->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::post('/contact', [ContactController::class, 'store']);
 
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
