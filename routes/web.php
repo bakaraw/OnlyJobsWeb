@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\ApplicationRequirementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\EducationController;
@@ -184,6 +185,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+    Route::post('/application/upload-requirements',[ ApplicationRequirementController::class, 'uploadRequirements'])->name('user-requirement');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

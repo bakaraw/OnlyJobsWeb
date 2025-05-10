@@ -1,212 +1,185 @@
-import React from 'react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import Modal from "@/Components/Modal.jsx";
-import SecondaryButton from "@/Components/SecondaryButton.jsx";
-import {usePage} from "@inertiajs/react";
+import React, { useState } from 'react'
+import { usePage } from '@inertiajs/react'
+import axios from 'axios'
+import Modal from '@/Components/Modal'
+import PrimaryButton from '@/Components/PrimaryButton'
+import SecondaryButton from '@/Components/SecondaryButton'
+import ConfirmModal from '@/Components/ConfirmModal'
 
-export default function ApplicationModal({ isOpen, onClose, onApply, job, user }) {
-    if (!isOpen) return null;
-    const { auth } = usePage().props;
+export default function ApplicationModal({ isOpen, onClose, onApply, job }) {
+    const { auth, csrf } = usePage().props
+    const [reqFiles, setReqFiles] = useState({})
+    const [errors, setErrors] = useState({})
+    const [uploading, setUploading] = useState(false)
+    const [notif, setNotif] = useState({ show: false, type: 'success', message: '', onConfirm: null })
 
-    console.log('job', job)
-    console.log('user', user)
-    console.log('stat', job.applications?.[0]?.status);
-    const handleFileChange = (e) => {
-        console.log('Files selected:', e.target.files);
-    };
+    if (!isOpen) return null
 
+    const handleFileChange = (reqId, e) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setReqFiles(f => ({ ...f, [reqId]: file }))
+            setErrors(err => { const e2 = { ...err }; delete e2[reqId]; return e2 })
+        }
+    }
+
+    const closeNotif = () => setNotif(s => ({ ...s, show: false }))
+
+    const submit = async e => {
+        e.preventDefault()
+        if (Object.keys(reqFiles).length === 0) {
+            return setNotif({
+                show: true,
+                type: 'error',
+                message: 'Please select at least one file.',
+                onConfirm: closeNotif
+            })
+        }
+
+        setUploading(true)
+        setErrors({})
+
+        const data = new FormData()
+        data.append('job_id', job.id)
+        data.append('user_id', auth.user.id)
+        // append each file under files[<requirement_id>]
+        Object.entries(reqFiles).forEach(([reqId, file]) => {
+            data.append(`files[${reqId}]`, file)
+        })
+
+        try {
+            const res = await axios.post('/application/upload-requirements', data, {
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                },
+            })
+
+            if (res.data.success) {
+                setNotif({
+                    show: true,
+                    type: 'success',
+                    message: 'Requirements uploaded successfully!',
+                    onConfirm: () => {
+                        onApply()
+                        onClose()
+                        closeNotif()
+                        setReqFiles({})
+                    }
+                })
+            }
+        } catch (err) {
+            const resp = err.response?.data
+            if (resp?.errors) {
+                // map Laravel’s files.0 => errors[0], etc.
+                const fieldErrors = {}
+                Object.keys(resp.errors).forEach(key => {
+                    const m = key.match(/files\.(\d+)/)
+                    if (m) fieldErrors[m[1]] = resp.errors[key][0]
+                })
+                setErrors(fieldErrors)
+            }
+
+            setNotif({
+                show: true,
+                type: 'error',
+                message: resp?.message || 'Upload failed.',
+                onConfirm: closeNotif
+            })
+        } finally {
+            setUploading(false)
+        }
+    }
+
+    // helper for showing existing status
+    const yourApp = job.applications?.find(a => a.user_id === auth.user.id)
     const statusStyles = {
         Accepted: 'bg-green-300 text-green-900',
         Qualified: 'bg-blue-300 text-blue-900',
         Pending: 'bg-yellow-300 text-yellow-900',
         Rejected: 'bg-red-300 text-red-900',
-    };
+    }
 
-// console.log(auth.user && job.applications[0].status.some(app => app.user_id === auth.user.id))
-        return (
-        <Modal show={isOpen} onClose={onClose} maxWidth="4xl">
-
-            <div className="p-6 border-b border-gray-200">
-                {auth.user && job.applications?.some(app => app.user_id === auth.user.id) ? (
-                    <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            statusStyles[job.applications.find(app => app.user_id === auth.user.id)?.status] || "bg-gray-300 text-gray-800"
-                        }`}
-                    >
-            {job.applications.find(app => app.user_id === auth.user.id)?.status || "No Status"}
-        </span>
-                ) : (
-                    <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
-            No Status
-        </span>
-                )}
-                <div className="flex justify-between mb-4">
-                    <h1 className="text-2xl font-bold">Job Title: {job.job_title} </h1>
-
-                    <SecondaryButton onClick={onClose}>
-                        Close
-                    </SecondaryButton>
-                </div>
-            </div>
-
-
-                {/* Content */}
-                <div className="flex flex-col md:flex-row overflow-y-auto p-6">
-                    {/* Left Column - Job Information */}
-                    <div className="flex-1 pr-0 md:pr-4 mb-6 md:mb-0">
-                    {/*    <div className="mb-6">*/}
-                    {/*        <h3 className="text-lg font-semibold text-dark mb-2">Skills Required</h3>*/}
-                    {/*        <div className="flex flex-wrap gap-2">*/}
-                    {/*            {job.skills?.map((skill) => (*/}
-                    {/*                <span key={skill.skill_id} className="bg-gray-100 text-dark px-3 py-1 rounded-full text-sm">*/}
-                    {/*                    {skill.skill_name}*/}
-                    {/*                </span>*/}
-                    {/*            ))}*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                        <div className="mb-6 rounded-lg p-6 shadow-sm bg-white">
-
-
-                            <dl className="grid grid-cols-1 gap-6">
-                                {/*<div>*/}
-
-                                {/*    <dt className="text-lg  text-dark">Education</dt>*/}
-                                {/*    <dd className="mt-1 text-gray-600 leading-relaxed">*/}
-                                {/*        {job.degree?.name || 'Not specified'}*/}
-                                {/*    </dd>*/}
-                                {/*</div>*/}
-
-                                <div>
-                                    <dt className="text-lg  text-dark">Requirements</dt>
-                                    <dd className="mt-1">
-                                        {job.requirements?.length > 0 ? (
-                                            <ul className="list-disc pl-5 space-y-1 text-gray-600">
-                                                {job.requirements.map((req) => (
-                                                    <li key={req.requirement_id}>{req.requirement_name}</li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p className="text-gray-600">No requirements specified</p>
-                                        )}
-                                    </dd>
-                                </div>
-                            </dl>
+    return (
+        <>
+            <Modal show={isOpen} onClose={onClose} maxWidth="4xl">
+                <form onSubmit={submit} encType="multipart/form-data">
+                    <div className="p-6 border-b">
+            <span className={`px-2 py-1 rounded-full text-sm font-medium ${ yourApp ? statusStyles[yourApp.status] : 'bg-gray-300 text-gray-800' }`}>
+              {yourApp?.status || 'No Status'}
+            </span>
+                        <div className="flex justify-between items-center mt-4">
+                            <h2 className="text-2xl font-bold">{job.job_title}</h2>
+                            <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                         </div>
+                    </div>
+
+                    <div className="p-6 flex flex-col md:flex-row gap-6">
+                        {/* Left: Requirements list */}
+                        <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2">Requirements</h3>
+                            {job.requirements?.length
+                                ? <ul className="list-disc pl-5 space-y-1">
+                                    {job.requirements.map(req => (
+                                        <li key={req.requirement_id}>{req.requirement_name}</li>
+                                    ))}
+                                </ul>
+                                : <p>No requirements specified.</p>
+                            }
+                            <div>
+                                <dt className="text-lg font-semibold text-dark">Company Remarks on you:</dt>
+                                <dd className="mt-1 text-gray-600 leading-relaxed">
+                                    {job.applications?.[0]?.remarks || "None"}
+                                </dd>
+                            </div>
+                        </div>
+
+                        {/* Right: File uploads */}
+                        <div className="flex-1 bg-gray-50 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold mb-4">Upload Documents</h3>
+                            {job.requirements?.map(req => (
+                                <div key={req.requirement_id} className="mb-4">
+                                    <label className="block text-sm font-medium mb-1">{req.requirement_name}</label>
+                                    <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        onChange={e => handleFileChange(req.requirement_id, e)}
+                                    />
+                                    {reqFiles[req.requirement_id] && (
+                                        <p className="text-xs text-green-600 mt-1">
+                                            Selected: {reqFiles[req.requirement_id].name}
+                                        </p>
+                                    )}
+                                    {errors[req.requirement_id] && (
+                                        <p className="text-xs text-red-600 mt-1">{errors[req.requirement_id]}</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="p-6 border-t flex justify-between items-center">
                         <div>
-                            <dt className="text-lg font-semibold text-dark">Company Remarks on you: </dt>
-                            <dd className="mt-1 text-gray-600 leading-relaxed">
-                                {job.applications?.[0]?.remarks || "None"}
-                            </dd>
+                            <h4 className="font-semibold">Company:</h4>
+                            <p>{job.company}</p>
+                        </div>
+                        <div className="space-x-2">
+                            <SecondaryButton type="button" onClick={onClose}>Cancel</SecondaryButton>
+                            <PrimaryButton type="submit" disabled={uploading}>
+                                {uploading ? 'Uploading…' : 'Submit Application'}
+                            </PrimaryButton>
                         </div>
                     </div>
+                </form>
+            </Modal>
 
-
-
-                    <div className="flex-1 pl-0 md:pl-4 md:border-l border-gray-200">
-                        <div className="bg-gray-50 rounded-lg p-3">
-                            <h3 className="text-lg font-semibold text-dark mb-4">Upload Documents</h3>
-
-                            {job.requirements && job.requirements.length > 0 && (
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Requirements
-                                    </label>
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div className="space-y-1 text-center">
-                                            <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            <div className="flex text-sm text-gray-600">
-                                                <label htmlFor="requirements-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                                    <span>Upload files</span>
-                                                    <input id="requirements-upload" name="requirements-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />
-                                                </label>
-                                                <p className="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                (PDF, DOC, JPG up to 100MB each)
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/*{job.degree && job.degree.name && (*/}
-                            {/*    <div className="mb-4">*/}
-                            {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-                            {/*            Education */}
-                            {/*        </label>*/}
-                            {/*        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">*/}
-                            {/*            <div className="space-y-1 text-center">*/}
-                            {/*                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">*/}
-                            {/*                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />*/}
-                            {/*                </svg>*/}
-                            {/*                <div className="flex text-sm text-gray-600">*/}
-                            {/*                    <label htmlFor="degree-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">*/}
-                            {/*                        <span>Upload files</span>*/}
-                            {/*                        <input id="degree-upload" name="degree-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />*/}
-                            {/*                    </label>*/}
-                            {/*                    <p className="pl-1">or drag and drop</p>*/}
-                            {/*                </div>*/}
-                            {/*                <p className="text-xs text-gray-500">*/}
-                            {/*                    (PDF, DOC, JPG up to 100MB each)*/}
-                            {/*                </p>*/}
-                            {/*            </div>*/}
-                            {/*        </div>*/}
-                            {/*    </div>*/}
-                            {/*)}*/}
-
-                            {job.certificates && job.certificates.length > 0 && (
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Certificate
-                                    </label>
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div className="space-y-1 text-center">
-                                            <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            <div className="flex text-sm text-gray-600">
-                                                <label htmlFor="certificate-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                                    <span>Upload files</span>
-                                                    <input id="certificate-upload" name="certificate-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />
-                                                </label>
-                                                <p className="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                (PDF, DOC, JPG up to 100MB each)
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Footer with Action Buttons */}
-            <div className="p-6 border-t border-gray-200 flex justify-between space-x-3">
-                <div className="mb-4">
-                    About The Company:
-                    <h1 className="text-2xl font-bold">{job.company}</h1>
-                </div>
-                <div className="flex space-x-3">
-                    <button
-                        className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </button>
-                    <PrimaryButton
-                        onClick={() => {
-                            onApply();
-                            onClose();
-                        }}
-                    >
-                        Submit Application
-                    </PrimaryButton>
-                </div>
-            </div>
-        </Modal>
-    );
+            <ConfirmModal
+                show={notif.show}
+                type={notif.type}
+                message={notif.message}
+                onClose={closeNotif}
+                onConfirm={notif.onConfirm}
+                confirmText="OK"
+            />
+        </>
+    )
 }

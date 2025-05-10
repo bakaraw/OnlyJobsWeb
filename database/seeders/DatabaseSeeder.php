@@ -106,7 +106,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-    DB::table('requirements')->insert([
+        DB::table('requirements')->insert([
             ['requirement_name' => 'Passport'],
             ['requirement_name' => 'NBI Clearance'],
             ['requirement_name' => 'Medical Certificate'],
@@ -114,8 +114,16 @@ class DatabaseSeeder extends Seeder
             ['requirement_name' => 'OEC'],
             ['requirement_name' => 'PDOS Certificate'],
             ['requirement_name' => 'TESDA Certificate'],
+            ['requirement_name' => 'Barangay Clearance'],
+            ['requirement_name' => 'Government Issued ID (e.g., Driver’s License, SSS, or PhilHealth ID)'],
+            ['requirement_name' => 'Police Clearance'],
+            ['requirement_name' => 'Tax Identification Number (TIN)'],
+            ['requirement_name' => 'Voter’s ID'],
+            ['requirement_name' => 'Immigration Clearance '],
+            ['requirement_name' => 'Photocopy of Birth Certificate'],
+            ['requirement_name' => '3 Recent Passport-sized Photos'],
+            ['requirement_name' => 'Work Visa'],
         ]);
-
         // creates skills default data
 
     }
