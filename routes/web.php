@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationRequirementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DocumentViewController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerController;
@@ -186,6 +187,20 @@ Route::middleware('auth')->group(function () {
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
     Route::post('/application/upload-requirements',[ ApplicationRequirementController::class, 'uploadRequirements'])->name('user-requirement');
+//    Route::get('applications/{application}/requirements', [RequirementController::class, 'index']);
+    Route::get('/applications/{applicationId}/requirements', [ApplicationRequirementController::class, 'getApplicationRequirements']);
+         // Use appropriate middleware for authentication
+
+// Get a specific requirement file
+//    Route::get('/requirements/{id}', [ApplicationRequirementController::class, 'getRequirementFile']);
+//
+//    Route::get('/document/{id}', [DocumentViewController::class, 'getDocument'])->name('document.view');
+//    Route::get('/application/{applicationId}/documents', [DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
+
+    Route::get('/document/{id}', [App\Http\Controllers\DocumentViewController::class, 'getDocument'])->name('document.view');
+    Route::get('/application/{applicationId}/documents', [App\Http\Controllers\DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
+    Route::get('/documents', [App\Http\Controllers\DocumentViewController::class, 'show'])->name('documents.show');
+    Route::post('/document/update-status', [App\Http\Controllers\DocumentStatusController::class, 'updateStatus'])->name('document.update-status');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -7,12 +7,18 @@ import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
 import {usePage} from "@inertiajs/react";
 import ConfirmModal from "@/Components/ConfirmModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
+import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsViewerModal.jsx";
+import DocumentViewerModal from "@/Components/Dashboard/Modal/DocumentViewModal.jsx";
 
 
 export default function ApplicantsSection({applicants}) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
+    const [documentModal, setDocumentModal] = useState({
+        show: false,
+        applicationId: null,
+    });
 
     const {props} = usePage();
     const {statuses, degrees, requirements, skills} = props;
@@ -23,6 +29,15 @@ export default function ApplicantsSection({applicants}) {
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
 
+    // Open document modal with specific application ID
+    const openDocumentModal = (applicationId) => {
+        setDocumentModal({ show: true, applicationId });
+    };
+
+    // Close document modal
+    const closeDocumentModal = () => {
+        setDocumentModal({ show: false, applicationId: null });
+    };
     console.log('applicants', applicants);
 
     const educationLevel = {
@@ -65,6 +80,7 @@ export default function ApplicantsSection({applicants}) {
     const closeModal = () => {
         setModalProps(prev => ({...prev, show: false}));
     };
+    const [viewerOpen, setViewerOpen] = useState(false)
 
     const handleAccept = async (application) => {
         try {
@@ -194,8 +210,7 @@ export default function ApplicantsSection({applicants}) {
             {modalProps.show && modalProps.onConfirm && (
                 <div className="mt-2 ml-4">
                     <PrimaryButton
-                        onClick={modalProps.onConfirm}
-                    >
+                        onClick={() => setViewerOpen(true)}                    >
                         Proceed
                     </PrimaryButton>
                 </div>
@@ -212,6 +227,8 @@ export default function ApplicantsSection({applicants}) {
                             <th className="py-2 px-4 text-left">Date Applied</th>
                             <th className="py-2 px-4 text-left">Remarks</th>
                             <th className="py-2 px-4 text-left">Actions</th>
+                            <th className="py-2 px-4 text-left">Documents</th>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -309,7 +326,10 @@ export default function ApplicantsSection({applicants}) {
                                     )}
 
                                 </td>
-                                <td>
+                                <td className="py-2 px-4">
+                                    <SecondaryButton onClick={() => openDocumentModal(application.id)}>
+                                        View Documents
+                                    </SecondaryButton>
                                 </td>
                             </tr>
                         ))}
@@ -327,7 +347,22 @@ export default function ApplicantsSection({applicants}) {
                 message={modalProps.message}
                 onClose={modalProps.onClose}
             />
-
+            {/*<RequirementsViewerModal*/}
+            {/*    show={documentModal.show}*/}
+            {/*    applicationId={documentModal.applicationId}*/}
+            {/*    onClose={closeDocumentModal}*/}
+            {/*/>*/}
+             <DocumentViewerModal
+                isOpen={documentModal.show}
+                onClose={closeDocumentModal}
+                applicationId={documentModal.applicationId} applicantInfo={documentModal.applicationId ? {
+                    name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name
+                    || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
+                    status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
+                    dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
+                    jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position"
+            } : null}
+                />
 
         </DashboardCard>
 
