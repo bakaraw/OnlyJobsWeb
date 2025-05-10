@@ -139,13 +139,12 @@ export default function DocumentViewerModal({
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="6xl">
             <div className="p-6 border-b">
+                <span className="text-2xl font-bold">Applicants Document</span>
                 <div className="flex justify-between items-center">
+                    {applicantInfo && (
                     <div className="flex flex-col">
-                        <h2 className="text-2xl font-bold">Document Viewer</h2>
-                        {applicantInfo && (
-                            <div className="mt-2">
                                 <p className="text-gray-600">
-                                    <span className="font-medium">{applicantInfo.name}</span> -
+                                    <span className="font-bold"> {applicantInfo.name}</span> -
                                     <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${getStatusColor(applicantInfo.status)}`}>
                                         {applicantInfo.status}
                                     </span>
@@ -153,9 +152,8 @@ export default function DocumentViewerModal({
                                 <p className="text-sm text-gray-500">
                                     Applied for: {applicantInfo.jobTitle} on {applicantInfo.dateApplied}
                                 </p>
-                            </div>
-                        )}
                     </div>
+                    )}
                     <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                 </div>
             </div>
@@ -170,15 +168,9 @@ export default function DocumentViewerModal({
                 ) : document ? (
                     <div className="flex flex-col space-y-4">
                         {/* Document metadata */}
-                        <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className=" text-center">
                             <h3 className="font-semibold text-lg">{document.requirement_name}</h3>
                             <p className="text-sm text-gray-600">
-                                File: {document.original_filename} •
-                                Status: <span className={`${
-                                document.status === 'approved' ? 'text-green-600' :
-                                    document.status === 'rejected' ? 'text-red-600' :
-                                        'text-yellow-600'
-                            }`}>{document.status}</span> •
                                 Uploaded: {document.created_at}
                             </p>
                         </div>
@@ -216,62 +208,48 @@ export default function DocumentViewerModal({
                         </div>
 
                         {/* Document action buttons */}
-                        <div className="flex justify-between items-center">
-                            <div>
-                                {document.status !== 'approved' && (
-                                    <PrimaryButton
-                                        type="button"
-                                        onClick={() => {
-                                            // In a real application, you would call an API to update the document status
-                                            alert("This would approve the document in a real implementation");
-                                        }}
-                                        className="bg-green-600 hover:bg-green-700"
-                                    >
-                                        Approve Document
-                                    </PrimaryButton>
-                                )}
-                            </div>
+                        <div className="flex justify-center items-center">
+
                             <a
                                 href={document.file_path}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-blue-600 hover:underline flex items-center gap-2"
+                                className="accent-white flex items-center gap-2"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Download
+                                <SecondaryButton>
+                                    Download
+                                </SecondaryButton>
                             </a>
                         </div>
 
                         {/* Navigation for multiple documents */}
                         {documents.length > 1 && (
                             <div className="flex justify-between items-center pt-4 border-t">
-                                <button
+                                <SecondaryButton
                                     onClick={goToPrevious}
                                     disabled={currentDocIndex === 0}
                                     className={`px-4 py-2 rounded ${
                                         currentDocIndex === 0
-                                            ? 'bg-gray-300 cursor-not-allowed'
-                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                            ? 'bg-red-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-orange-700 text-white hover:bg-gray-700'
                                     }`}
                                 >
                                     Previous
-                                </button>
+                                </SecondaryButton>
                                 <span>
                                     Document {currentDocIndex + 1} of {documents.length}
                                 </span>
-                                <button
+                                <SecondaryButton
                                     onClick={goToNext}
                                     disabled={currentDocIndex === documents.length - 1}
                                     className={`px-4 py-2 rounded ${
                                         currentDocIndex === documents.length - 1
-                                            ? 'bg-gray-300 cursor-not-allowed'
-                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                            ? 'bg-red-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-orange-700 text-white hover:bg-gray-700'
                                     }`}
                                 >
                                     Next
-                                </button>
+                                </SecondaryButton>
                             </div>
                         )}
                     </div>
@@ -280,14 +258,7 @@ export default function DocumentViewerModal({
                 )}
             </div>
 
-            <div className="p-6 border-t flex justify-end">
-                <PrimaryButton
-                    type="button"
-                    onClick={onClose}
-                >
-                    Close Viewer
-                </PrimaryButton>
-            </div>
+
         </Modal>
     )
 }

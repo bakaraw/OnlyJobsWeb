@@ -210,6 +210,7 @@ function CreateJobPostModal({ className, show, onClose }) {
                                 />
                                 <InputError message={formErrors.slot} />
                             </div>
+
                     </div>
                     <div className="col-span-1 mt-3">
                         <InputLabel value="Location" />

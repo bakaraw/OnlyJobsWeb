@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class JobPost extends Model
 {
     use HasFactory;
+    protected $attributes = [
+        'remaining' => 0,
+    ];
 
     protected $fillable = [
         'job_title',
@@ -23,6 +26,7 @@ class JobPost extends Model
         'skills',
         'company',
         'slot',
+        'remaining',
         'user_id',
         'views',
         'salary_type'
