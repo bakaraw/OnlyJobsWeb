@@ -20,6 +20,8 @@ use App\Http\Controllers\LightcastController;
 use App\Http\Controllers\UserSkillsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ContactController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -181,6 +183,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'getMessages']);  // Get messages for a specific conversation
     /*Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message*/
     Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
+    Route::post('/conversations/{conversation}/mark-read', [MessageController::class, 'markAsReadJobSeeker']);
+    Route::get('conversation/unread-count', [MessageController::class, 'unreadCount']);
 
     Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
@@ -217,6 +221,9 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/conversations', [MessageController::class, 'adminConversations']);
     Route::get('/{id}', [MessageController::class, 'show']);
     Route::post('/{id}', [MessageController::class, 'sendMessage']);
+    Route::post('/{conversation}/mark-read', [MessageController::class, 'markAsRead']);
+    Route::get('/unread-count', [MessageController::class, 'unreadCountAdmin'])->name('admin.messages.unread-count');
+    Route::get('/contact/show', [ContactController::class, 'showMessages']);
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
@@ -226,7 +233,11 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
 //    ]);
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
+
+Route::post('/contact', [ContactController::class, 'store']);
+
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
 
 // Third Party API
 Route::get('/skills', [LightcastController::class, 'fetchSkills']);
