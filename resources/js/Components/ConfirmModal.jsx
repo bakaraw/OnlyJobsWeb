@@ -1,7 +1,7 @@
-// resources/js/Components/MessageModal.jsx
+// resources/js/Components/ConfirmModal.jsx
 import React, { useEffect } from 'react';
 
-export default function MessageModal({
+export default function ConfirmModal({
                                          show = false,
                                          type = 'success',
                                          message = '',

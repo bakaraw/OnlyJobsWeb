@@ -2,9 +2,11 @@ import React from 'react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Modal from "@/Components/Modal.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import {usePage} from "@inertiajs/react";
 
 export default function ApplicationModal({ isOpen, onClose, onApply, job, user }) {
     if (!isOpen) return null;
+    const { auth } = usePage().props;
 
     console.log('job', job)
     console.log('user', user)
@@ -20,29 +22,32 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job, user }
         Rejected: 'bg-red-300 text-red-900',
     };
 
-    return (
+// console.log(auth.user && job.applications[0].status.some(app => app.user_id === auth.user.id))
+        return (
         <Modal show={isOpen} onClose={onClose} maxWidth="4xl">
 
-                <div className="p-6 border-b border-gray-200">
-                    {job.applications?.[0]?.status ? (
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[job.applications[0].status]}`}>
-                                {job.applications[0].status}
-                            </span>
-                    ) : (
-                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
-                                No Status
-                            </span>
-                    )}
-                    <div className="flex justify-between  mb-4">
-                        <h1 className="text-2xl font-bold">Job Title: {job.job_title} </h1>
+            <div className="p-6 border-b border-gray-200">
+                {auth.user && job.applications?.some(app => app.user_id === auth.user.id) ? (
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            statusStyles[job.applications.find(app => app.user_id === auth.user.id)?.status] || "bg-gray-300 text-gray-800"
+                        }`}
+                    >
+            {job.applications.find(app => app.user_id === auth.user.id)?.status || "No Status"}
+        </span>
+                ) : (
+                    <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
+            No Status
+        </span>
+                )}
+                <div className="flex justify-between mb-4">
+                    <h1 className="text-2xl font-bold">Job Title: {job.job_title} </h1>
 
-                        <SecondaryButton onClick={onClose}>
-                            Close
-                        </SecondaryButton>
-                    </div>
-
+                    <SecondaryButton onClick={onClose}>
+                        Close
+                    </SecondaryButton>
                 </div>
-
+            </div>
 
 
                 {/* Content */}

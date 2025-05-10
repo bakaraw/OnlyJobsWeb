@@ -385,6 +385,7 @@ public function update(Request $request, $id)
                 'max_salary',
                 'min_experience_years',
                 'company',
+                'slot',
                 'views',
                 'salary_type',
                 'status_id',

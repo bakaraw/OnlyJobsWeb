@@ -354,6 +354,13 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                         ))
                                     }
                                 </select>
+                                <InputLabel value="Slots" />
+                                <TextInput
+                                    className="mt-1 block w-20"
+                                    value={form.slot}
+                                    onChange={(e) => setForm('slot', e.target.value)}
+                                />
+
 
                             </div>
 

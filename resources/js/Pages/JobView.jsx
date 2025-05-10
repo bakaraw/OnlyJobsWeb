@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import MessageModal from '@/Components/MessageModal';
+import ConfirmModal from '@/Components/ConfirmModal.jsx';
 import ApplicationModal from "@/Components/Applicant/ApplicationModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
 
@@ -273,7 +273,7 @@ export default function JobView() {
                 job={jobview}
                 user={auth.user}
             />
-            <MessageModal
+            <ConfirmModal
                 show={notification.show}
                 type={notification.type}
                 message={notification.message}

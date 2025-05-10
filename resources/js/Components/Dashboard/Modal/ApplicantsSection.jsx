@@ -5,158 +5,147 @@ import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
 import {usePage} from "@inertiajs/react";
-import MessageModal from "@/Components/MessageModal.jsx";
+import ConfirmModal from "@/Components/ConfirmModal.jsx";
+import MessageButton from "@/Components/MessageButton.jsx";
 
 
-export default function ApplicantsSection({ applicants }) {
+export default function ApplicantsSection({applicants}) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
 
-    const { props } = usePage();
-    const { statuses, degrees, requirements, skills } = props;
+    const {props} = usePage();
+    const {statuses, degrees, requirements, skills} = props;
 
     const filteredApplicants = applicants.filter(
         (app) =>
             selectedStatus === "all" ||
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
-    console.log('isers', applicants.degree_id)
-    console.log("degree", degrees)
 
-    console.log('applciant', applicants)
-
+    console.log('applicants', applicants);
 
     const educationLevel = {
         'Graduate': 1,
         'Undergraduate': 2,
-        'Vocational': 4,
+        'Vocational': 3,
         'High School': 4,
         'Elementary': 5,
     };
-    const meetsEducationRequirement = (userLevel, requiredLevel) => {
-        const userRank = educationLevel[userLevel] || 0;
+
+    // Check if applicant meets education requirement
+    const meetsEducationRequirement = (applicantLevel, requiredLevel) => {
+        const applicantRank = educationLevel[applicantLevel] || 0;
         const requiredRank = educationLevel[requiredLevel] || 0;
-        return userRank >= requiredRank;
+        return applicantRank <= requiredRank; // Lower rank is higher education
     };
 
-    const job_degrees = applicants.map(job => job.job_post.degree?.name);
-    const user_degrees = applicants.map(app => app.user.educations?.[0]?.education_level);
+    // Check if applicant has the required skills
+    const meetsSkillsRequirement = (applicantSkills, jobSkills) => {
+        if (!applicantSkills || !jobSkills || applicantSkills.length === 0 || jobSkills.length === 0) {
+            return false;
+        }
 
-    const applicantSkills = applicants.map(app => app.user.user_skills?.[0]?.skill_name);
-    const jobSkill = applicants.map(app => app.job_post.skills?.[0]?.skill_name);
-
-    const skillsMet = applicantSkills.length === jobSkill.length && applicantSkills
-        .every((val, i) => val === jobSkill[i]);
-
-
-    const educationMet = meetsEducationRequirement(job_degrees, user_degrees);
+        // Check if applicant has at least one of the required skills
+        return jobSkills.some(jobSkill =>
+            applicantSkills.some(appSkill =>
+                appSkill.skill_name.toLowerCase() === jobSkill.skill_name.toLowerCase()
+            )
+        );
+    };
 
     const [modalProps, setModalProps] = useState({
         show: false,
         type: "success",
         message: "",
-        onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
-        onConfirm: null,
+        onClose: () => setModalProps((prev) => ({...prev, show: false})),
+        onConfirm: true,
     });
+
     const closeModal = () => {
-        setModalProps(prev => ({ ...prev, show: false }));
+        setModalProps(prev => ({...prev, show: false}));
     };
 
-    const handleAccept = async (application, educationMet, skillsMet, processApplication) => {
-        let endpoint;
-        let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
+    const handleAccept = async (application) => {
+        try {
+            if (application.status === "Pending") {
+                // Get the applicant's education level from their first education record
+                const applicantEducationLevel = application.user.educations?.[0]?.education_level;
 
-        if (application.status === "Pending") {
-            if (!educationMet && !skillsMet) {
-                message += "education level and skills requirements.";
-            } else if (!educationMet) {
-                message += "education level requirements.";
-            } else if (!skillsMet) {
-                message += "skills requirements.";
+                // Get the required education level from the job post
+                const requiredEducationLevel = application.job_post.degree?.name;
+
+                // Get the applicant's skills
+                const applicantSkills = application.user.user_skills || [];
+
+                // Get the job's required skills
+                const jobSkills = application.job_post.skills || [];
+
+                // Check if applicant meets education and skills requirements
+                const educationMet = meetsEducationRequirement(applicantEducationLevel, requiredEducationLevel);
+                const skillsMet = meetsSkillsRequirement(applicantSkills, jobSkills);
+
+                console.log('Education Met:', educationMet, 'Skills Met:', skillsMet);
+                console.log('Applicant Education:', applicantEducationLevel, 'Required:', requiredEducationLevel);
+
+                let msg = "";
+
+                if (!educationMet && !skillsMet) {
+                    msg = "Applicant does not meet education level and skills requirements.";
+                } else if (!educationMet) {
+                    msg = "Applicant does not meet education level requirements.";
+                } else if (!skillsMet) {
+                    msg = "Applicant does not meet skills requirements.";
+                }
+
+                if (msg) {
+                    msg += " Do you still want to proceed?";
+                    setModalProps({
+                        show: true,
+                        type: "warning",
+                        message: msg,
+                        onClose: closeModal,
+                        onConfirm: async () => {
+                            const response = await axios.post("/applicants/qualified", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        }
+                    });
+                    return; // Return early to prevent the code below from executing
+                } else {
+                    // If all requirements are met, just qualify without warning
+                    const response = await axios.post("/applicants/qualified", {
+                        application_id: application.id
+                    });
+                    if (response.data.success) {
+                        window.location.reload();
+                    }
+                }
+            } else if (application.status === "Qualified") {
+                setModalProps({
+                    show: true,
+                    type: "success",
+                    message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
+                    onClose: closeModal,
+                    onConfirm: async () => {
+                        const response = await axios.post("/applicants/accepted", {
+                            application_id: application.id
+                        });
+                        if (response.data.success) {
+                            window.location.reload();
+                        }
+                        closeModal();
+                    }
+                });
             }
-            message += " Do you still want to proceed?";
-
-            setModalProps({
-                show: true,
-                type: "warning",
-                message,
-                onClose: closeModal,
-                onConfirm: async () => {
-                    endpoint = "/applicants/qualified";
-                    await processApplication(endpoint, application);
-                    closeModal();
-                }
-            });
-            return;
-        }
-
-        if (application.status === "Qualified") {
-            setModalProps({
-                show: true,
-                type: "success",
-                message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
-                onClose: closeModal,
-                onConfirm: async () => {
-                    endpoint = "/applicants/accepted";
-                    await processApplication(endpoint, application);
-                    closeModal();
-                }
-            });
-            return;
+        } catch (error) {
+            console.error("Error updating application status:", error);
         }
     };
-
-
-    // const handleAccept = async (application) => {
-    //     try {
-    //         let endpoint;
-    //         let confirmMsg;
-    //         let message = `Applicant ${application.user.first_name} ${application.user.last_name} does not meet `;
-    //
-    //         if (application.status === "Pending") {
-    //             confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-    //
-    //             if (!educationMet && !skillsMet) {
-    //                 message += "education level and skills requirements.";
-    //             } else if (!educationMet) {
-    //                 message += "education level requirements.";
-    //             } else if (!skillsMet) {
-    //                 message += "skills requirements.";
-    //             }
-    //             message += " Do you still want to proceed?";
-    //             confirmMsg = message;
-    //
-    //             if (!confirm(confirmMsg)) return;
-    //             endpoint = "/applicants/qualified";
-    //
-    //
-    //             //
-    //             // if (application.status === "Pending") {
-    //             //     confirmMsg = `Are you sure you want to qualify ${application.user.first_name} ${application.user.last_name}?`;
-    //             //     if (!confirm(confirmMsg)) return;
-    //             //     endpoint = "/applicants/qualified";
-    //
-    //                 }
-    //             if (application.status === "Qualified") {
-    //                         confirmMsg = `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`;
-    //                         if (!confirm(confirmMsg)) return;
-    //                         endpoint = "/applicants/accepted";
-    //                     } else {
-    //                         return;
-    //                     }
-    //
-    //
-    //
-    //
-    //         const response = await axios.post(endpoint, { application_id: application.id });
-    //         if (response.data.success) {
-    //             window.location.reload();
-    //         }
-    //     } catch (error) {
-    //         console.error("Error updating application status:", error);
-    //     }
-    // };
 
     const handleReject = async (application) => {
         try {
@@ -210,6 +199,16 @@ export default function ApplicantsSection({ applicants }) {
                     </SecondaryButton>
                 ))}
             </div>
+            {modalProps.show && modalProps.onConfirm && (
+                <div className="mt-2 ml-4">
+                    <PrimaryButton
+                        onClick={modalProps.onConfirm}
+                    >
+                        Proceed
+                    </PrimaryButton>
+                </div>
+            )}
+
 
             {filteredApplicants.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -254,7 +253,9 @@ export default function ApplicantsSection({ applicants }) {
                       </span>
                                     )}
                                 </td>
+
                                 <td className="py-2 px-4">
+
                                     {editingId === application.id ? (
                                         <div className="flex space-x-2">
                                             <PrimaryButton
@@ -311,8 +312,12 @@ export default function ApplicantsSection({ applicants }) {
                                                     Reject
                                                 </DangerButton>
                                             )}
+
                                         </div>
                                     )}
+
+                                </td>
+                                <td>
                                 </td>
                             </tr>
                         ))}
@@ -324,22 +329,13 @@ export default function ApplicantsSection({ applicants }) {
                     No {selectedStatus !== 'all' ? selectedStatus : ''} applicants available.
                 </p>
             )}
-            <MessageModal
+            <ConfirmModal
                 show={modalProps.show}
                 type={modalProps.type}
                 message={modalProps.message}
                 onClose={modalProps.onClose}
             />
-            {modalProps.show && modalProps.onConfirm && (
-                <div className="mt-2 ml-4">
-                    <button
-                        onClick={modalProps.onConfirm}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
-                        Confirm
-                    </button>
-                </div>
-            )}
+
 
         </DashboardCard>
 
