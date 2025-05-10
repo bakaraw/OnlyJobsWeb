@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('company');
             $table->integer('slot');
             $table->integer('remaining');
+            $table->integer('slot');
 
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('degree_id')->nullable();

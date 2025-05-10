@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
 import { usePage } from "@inertiajs/react";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link } from "@inertiajs/react";
 
 export default function AdminMessages({ onJobSelect }) {
@@ -12,41 +13,193 @@ export default function AdminMessages({ onJobSelect }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [loadingConversations, setLoadingConversations] = useState(true);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [sendMessageLoading, setSendMessageLoading] = useState(false);
 
     const { auth } = usePage().props;
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
+    const markMessagesAsRead = (conversationId) => {
+        if (!conversationId) return;
+
+        // Optimistically update in the conversations list
+        setConversations(prevConvs =>
+            prevConvs.map(conv => {
+                if (conv.id === conversationId) {
+                    const updated = { ...conv };
+                    if (updated.messages?.[0]) {
+                        updated.messages[0].read_at = new Date().toISOString();
+                    }
+                    return updated;
+                }
+                return conv;
+            })
+        );
+
+        // Update in the messages list
+        setMessages(prevMessages =>
+            prevMessages.map(msg => {
+                if (!msg.read_at && msg.sender_id !== auth.user.id) {
+                    return { ...msg, read_at: new Date().toISOString() };
+                }
+                return msg;
+            })
+        );
+
+        // Call the API endpoint
+        axios.post(`/admin/messages/${conversationId}/mark-read`);
+    };
 
     useEffect(() => {
         axios.get("/admin/messages/conversations")
             .then((res) => {
-                setConversations(res.data);
-                if (res.data.length > 0) {
-                    setSelectedConversation(res.data[0]);
+                const sorted = res.data.sort((a, b) => {
+                    const dateA = new Date(a.messages?.[0]?.created_at || 0);
+                    const dateB = new Date(b.messages?.[0]?.created_at || 0);
+                    return dateB - dateA; // earliest to oldest
+                });
+                setConversations(sorted);
+                if (sorted.length > 0) {
+                    setSelectedConversation(sorted[0]);
                 }
             })
             .finally(() => setLoadingConversations(false));
     }, []);
 
-    // Fetch messages when a conversation is selected
     useEffect(() => {
         if (!selectedConversation) return;
+
         setLoadingMessages(true);
+
+        // Mark messages as read first
+        markMessagesAsRead(selectedConversation.id);
+
+        // Then fetch messages
         axios.get(`/admin/messages/${selectedConversation.id}`)
             .then((res) => {
-                console.log("Fetched messages:", res.data);
                 setMessages(res.data.messages);
             })
             .finally(() => setLoadingMessages(false));
     }, [selectedConversation]);
 
+    useEffect(() => {
+        if (typeof window.Echo === 'undefined') {
+            console.error("Echo is not initialized");
+            return;
+        }
+
+        const globalChannel = window.Echo.private('admin.conversations');
+
+        globalChannel.listen('NewConversationStarted', (e) => {
+            setConversations((prevConvs) => {
+                const exists = prevConvs.find((conv) => conv.id === e.conversation.id);
+                if (!exists) {
+                    const updated = [e.conversation, ...prevConvs];
+                    return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+                }
+                return prevConvs;
+            });
+        });
+
+        return () => {
+            window.Echo.leave('private-admin.conversations');
+        };
+    }, []);
+    const fetchConversations = async () => {
+        try {
+            const response = await axios.get('/admin/messages/conversations');
+            const sortedConversations = response.data.sort((a, b) => {
+                const dateA = new Date(a.messages?.[0]?.created_at || 0);
+                const dateB = new Date(b.messages?.[0]?.created_at || 0);
+                return dateB - dateA; // Sort from latest to oldest
+            });
+            setConversations(sortedConversations);
+        } catch (error) {
+            console.error('Error fetching conversations:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchConversations(); // initial load
+
+        const interval = setInterval(() => {
+            fetchConversations();
+        }, 5000); // every 5 seconds
+
+        return () => clearInterval(interval); // cleanup on unmount
+    }, []);
+
+    useEffect(() => {
+        if (!selectedConversation || typeof window.Echo === 'undefined') return;
+
+        const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
+
+        channel.listen('MessageSent', (e) => {
+            // Mark messages as read when receiving new ones
+            markMessagesAsRead(selectedConversation.id);
+
+            setMessages((prev) => {
+                if (!prev.find((msg) => msg.id === e.id)) {
+                    return [...prev, { ...e, fromAdmin: false }];
+                }
+                return prev;
+            });
+
+            setConversations((prevConvs) => {
+                const updated = prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? { ...conv, messages: [{ ...e }] }
+                        : conv
+                );
+                return updated.sort((a, b) =>
+                    new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at)
+                );
+            });
+        });
+
+        return () => {
+            channel.stopListening('MessageSent');
+            window.Echo.leave(`conversations.${selectedConversation.id}`);
+        };
+    }, [selectedConversation]);
+
     const handleSend = () => {
         if (newMessage.trim() === "") return;
+        setSendMessageLoading(true);
 
         axios.post(`/admin/messages/${selectedConversation.id}`, {
             text: newMessage,
         }).then((res) => {
-            setMessages((prev) => [...prev, { ...res.data, fromAdmin: true }]);
+            const newMsg = { ...res.data, fromAdmin: true };
+
+            setMessages((prev) => {
+                if (!prev.find((msg) => msg.id === newMsg.id)) {
+                    return [...prev, newMsg];
+                }
+                return prev;
+            });
+
+            // 🟡 Update the conversation list
+            setConversations((prevConvs) => {
+                const updated = prevConvs.map((conv) =>
+                    conv.id === selectedConversation.id
+                        ? { ...conv, messages: [newMsg] }
+                        : conv
+                );
+                // Re-sort the list so the updated conversation moves to top
+                return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
+            });
+
             setNewMessage("");
+        }).finally(() => {
+            setSendMessageLoading(false);
         });
+
     };
 
     const filteredConversations = conversations.filter((conv) =>
@@ -57,16 +210,7 @@ export default function AdminMessages({ onJobSelect }) {
         <div className="flex h-full bg-white rounded-lg shadow overflow-hidden">
             {/* Sidebar for Conversations */}
             <div className="w-1/3 p-4 overflow-y-auto border-r border-gray-200">
-                <h2 className="text-lg font-semibold mb-4">Conversations</h2>
-
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full mb-4 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-
+                <h2 className="text-xl font-semibold mb-4">Inbox</h2>
                 {loadingConversations ? (
                     <p className="text-sm text-gray-500">Loading...</p>
                 ) : (
@@ -79,12 +223,17 @@ export default function AdminMessages({ onJobSelect }) {
                                     }`}
                             >
                                 <div className="font-medium">{conv.user.first_name} {conv.user.last_name} - {conv.job.job_title}</div>
-                                <div className="text-sm text-gray-600 truncate">
-                                    {conv.messages?.[0]?.text || "No messages yet"}
+                                <div className="flex text-sm text-gray-600">
+                                    <p className="truncate">{conv.messages?.[0]?.text || "No messages yet"}</p>
+                                    <p className="ml-auto">
+                                        {conv.messages?.[0]?.created_at
+                                            ? formatDistanceToNow(parseISO(conv.messages[0].created_at), { addSuffix: true })
+                                            : ""}
+                                    </p>
                                 </div>
-                                {conv.unread_count > 0 && (
+                                {conv.messages?.[0]?.read_at === null && (
                                     <span className="text-xs text-blue-500 font-semibold">
-                                        {conv.unread_count} new
+                                        new
                                     </span>
                                 )}
                             </li>
@@ -93,7 +242,7 @@ export default function AdminMessages({ onJobSelect }) {
                 )}
             </div>
             {/* Chat Window */}
-            <div className="w-2/3 flex flex-col">
+            <div className="w-2/3 h-screen flex flex-col">
                 {/* Header */}
                 <div className="px-4 py-3 font-semibold text-gray-700 bg-gray-50 border-b border-gray-200">
                     {selectedConversation
@@ -127,7 +276,7 @@ export default function AdminMessages({ onJobSelect }) {
                         Array.isArray(messages) && messages.map((msg) => (
                             <div
                                 key={msg.id}
-                                className={`w-fit px-4 py-2 rounded-full text-sm ${msg.sender_id == auth.user.id
+                                className={`w-fit max-w-xs px-4 py-2 break-words overflow-y-auto rounded-lg text-sm ${msg.sender_id == auth.user.id
                                     ? "bg-primary text-white self-end ml-auto"
                                     : "bg-gray-200 text-gray-800"
                                     }`}
@@ -136,6 +285,7 @@ export default function AdminMessages({ onJobSelect }) {
                             </div>
                         ))
                     )}
+                    <div ref={messagesEndRef} />
                 </div>
                 {/* Input */}
                 {selectedConversation && (
@@ -151,6 +301,7 @@ export default function AdminMessages({ onJobSelect }) {
                         <PrimaryButton
                             className="text-sm px-4 py-2 rounded-lg"
                             onClick={handleSend}
+                            disabled={sendMessageLoading}
                         >
                             Send
                         </PrimaryButton>

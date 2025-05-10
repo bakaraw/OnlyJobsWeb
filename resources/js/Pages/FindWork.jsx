@@ -91,9 +91,9 @@ export default function FindWork() {
                 </ContentLayout>
             }
         >
-            <div className="flex w-full mx-0 px-0">
+            <div className="flex flex-col md:flex-row w-full mx-0 px-0">
                 {/* Filter section */}
-                <div className="w-64 flex-none">
+                <div className="w-full md:w-64 flex-none hidden md:block">
                     <div className="bg-light rounded-lg p-4">
                         <div className="font-medium text-md flex flex-col space-y-1">
                             <p>Experience Level</p>
@@ -166,7 +166,7 @@ export default function FindWork() {
                 </div >
 
                 {/* Job listing */}
-                < div className="flex-1 pl-4" >
+                <div className="flex-1 md:pl-4 px-4" >
                     {search && (
                         <div className='pl-6'>
                             <p className='text-xl'>Results for "{search}"</p>
