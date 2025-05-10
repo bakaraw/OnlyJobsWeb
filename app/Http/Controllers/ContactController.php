@@ -12,6 +12,7 @@ class ContactController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
             'email' => 'required|email',
             'message' => 'required|string',
         ]);
@@ -19,5 +20,11 @@ class ContactController extends Controller
         Contact::create($validated);
 
         return response()->json(['message' => 'Message sent successfully']);
+    }
+
+    public function showMessages()
+    {
+        $contacts = Contact::all();
+        return response()->json($contacts);
     }
 }

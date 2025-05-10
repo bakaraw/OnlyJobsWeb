@@ -41,17 +41,20 @@ export default function ContactUs() {
         }
     };
 
+    const companyName = "Confederal Project Manpower Services Inc.";
+    const companyEmail = "company@email.com";
+
     return (
         <MainPageLayout>
             <ContentLayout>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 md:mt-16 sm:mt-16 xs:mt-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 md:mt-16 sm:mt-20">
                     {/* Left Side */}
                     <div className="md:col-span-2 p-4 md:p-6 rounded border">
                         <h1 className="text-3xl md:text-4xl font-black mb-4">Contact Us</h1>
                         <p className="text-gray-600 mb-2 text-sm md:text-base">
-                            Email, call, or complete the form to communicate with an Confederal Project Manpower Services Inc. employee.
+                            Email, call, or complete the form to communicate with an {companyName} employee.
                         </p>
-                        <p className="text-black mb-2 text-sm md:text-base">company@email.com</p>
+                        <p className="text-black mb-2 text-sm md:text-base">{companyEmail}</p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-12">
                             <div>
@@ -60,11 +63,11 @@ export default function ContactUs() {
                             </div>
                             <div>
                                 <h2 className="font-semibold text-base md:text-lg">Feedback and Suggestions</h2>
-                                <p className="text-sm text-gray-600">We value your feedback and continuously work to improve OnlyJobs. Your input is crucial in shaping our future.</p>
+                                <p className="text-sm text-gray-600">We value your feedback and continuously work to improve {companyName} Your input is crucial in shaping our future.</p>
                             </div>
                             <div>
                                 <h2 className="font-semibold text-base md:text-lg">Media Queries</h2>
-                                <p className="text-sm text-gray-600">For media-related or press inquiries, contact us on info@onlyjobs.com.</p>
+                                <p className="text-sm text-gray-600">For media-related or press inquiries, contact us on {companyEmail}.</p>
                             </div>
                         </div>
                     </div>

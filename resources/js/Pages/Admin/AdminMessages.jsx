@@ -70,38 +70,6 @@ export default function AdminMessages({ onJobSelect }) {
             })
             .finally(() => setLoadingConversations(false));
     }, []);
-    //
-    //useEffect(() => {
-    //    if (!selectedConversation) return;
-    //
-    //    setLoadingMessages(true);
-    //
-    //    // 🔹 Step 1: Mark messages as read (this will update read_at on the server)
-    //    axios.post(`/admin/messages/${selectedConversation.id}/mark-read`)
-    //        .then(() => {
-    //            // 🔹 Step 2: Fetch messages after marking as read
-    //            return axios.get(`/admin/messages/${selectedConversation.id}`);
-    //        })
-    //        .then((res) => {
-    //            setMessages(res.data.messages);
-    //
-    //            // 🔹 Step 3: Optimistically update read_at in conversation list
-    //            setConversations((prevConvs) =>
-    //                prevConvs.map((conv) => {
-    //                    if (conv.id === selectedConversation.id) {
-    //                        const updated = { ...conv };
-    //                        if (updated.messages?.[0]) {
-    //                            updated.messages[0].read_at = new Date().toISOString();
-    //                        }
-    //                        return updated;
-    //                    }
-    //                    return conv;
-    //                })
-    //            );
-    //        })
-    //        .finally(() => setLoadingMessages(false));
-    //}, [selectedConversation]);
-    // Simplify your conversation selection effect
 
     useEffect(() => {
         if (!selectedConversation) return;
@@ -165,37 +133,6 @@ export default function AdminMessages({ onJobSelect }) {
 
         return () => clearInterval(interval); // cleanup on unmount
     }, []);
-
-    //useEffect(() => {
-    //    if (!selectedConversation || typeof window.Echo === 'undefined') {
-    //        console.error("Echo is not initialized");
-    //        return;
-    //    }
-    //
-    //    const channel = window.Echo.private(`conversations.${selectedConversation.id}`);
-    //    channel.listen('MessageSent', (e) => {
-    //        setMessages((prev) => {
-    //            if (!prev.find((msg) => msg.id === e.id)) {
-    //                return [...prev, { ...e, fromAdmin: false }];
-    //            }
-    //            return prev;
-    //        });
-    //
-    //        setConversations((prevConvs) => {
-    //            const updated = prevConvs.map((conv) =>
-    //                conv.id === selectedConversation.id
-    //                    ? { ...conv, messages: [{ ...e }] }
-    //                    : conv
-    //            );
-    //            return updated.sort((a, b) => new Date(b.messages?.[0]?.created_at) - new Date(a.messages?.[0]?.created_at));
-    //        });
-    //    });
-    //
-    //    return () => {
-    //        channel.stopListening('MessageSent');
-    //        window.Echo.leave(`conversations.${selectedConversation.id}`);
-    //    };
-    //}, [selectedConversation]);
 
     useEffect(() => {
         if (!selectedConversation || typeof window.Echo === 'undefined') return;

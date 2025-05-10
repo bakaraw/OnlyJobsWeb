@@ -213,8 +213,8 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/{id}', [MessageController::class, 'show']);
     Route::post('/{id}', [MessageController::class, 'sendMessage']);
     Route::post('/{conversation}/mark-read', [MessageController::class, 'markAsRead']);
-    Route::get('/unread-count', [MessageController::class, 'unreadCountAdmin'])
-        ->name('admin.messages.unread-count');
+    Route::get('/unread-count', [MessageController::class, 'unreadCountAdmin'])->name('admin.messages.unread-count');
+    Route::get('/contact/show', [ContactController::class, 'showMessages']);
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [

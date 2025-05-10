@@ -33,7 +33,7 @@ export default function Sidebar({ auth, setActiveView }) {
             <div className="flex flex-col items-center py-6 border-b border-gray-200">
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-2 border-4 border-gray-300 ring-2 ring-white">
                     <img
-                        // src={auth?.user?.profileImage || "/default-profile.png"}
+                        src={auth?.user?.profile_pic_url || 'images/default-profile.webp'}
                         alt="Image"
                         className="w-full h-full object-cover"
                     />
@@ -76,7 +76,7 @@ export default function Sidebar({ auth, setActiveView }) {
                             onClick={() => setActiveView("messages")}
                             className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
                         >
-                            💬 Messages
+                            💬 Job Inquiries
                             {unreadCount > 0 && (
                                 <span className="absolute right-4 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                                     {unreadCount}
@@ -84,6 +84,20 @@ export default function Sidebar({ auth, setActiveView }) {
                             )}
                         </button>
                     </li>
+                    <li className="relative">
+                        <button
+                            onClick={() => setActiveView("contact_us_messages")}
+                            className="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 focus:outline-none"
+                        >
+                            💬 Contact Us Messages
+                            {unreadCount > 0 && (
+                                <span className="absolute right-4 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </button>
+                    </li>
+
                 </ul>
             </nav>
             <div className="mt-auto mb-4 px-6">
