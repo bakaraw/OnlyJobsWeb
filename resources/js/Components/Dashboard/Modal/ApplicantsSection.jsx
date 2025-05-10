@@ -69,19 +69,11 @@ export default function ApplicantsSection({applicants}) {
     const handleAccept = async (application) => {
         try {
             if (application.status === "Pending") {
-                // Get the applicant's education level from their first education record
                 const applicantEducationLevel = application.user.educations?.[0]?.education_level;
-
-                // Get the required education level from the job post
                 const requiredEducationLevel = application.job_post.degree?.name;
-
-                // Get the applicant's skills
                 const applicantSkills = application.user.user_skills || [];
-
-                // Get the job's required skills
                 const jobSkills = application.job_post.skills || [];
 
-                // Check if applicant meets education and skills requirements
                 const educationMet = meetsEducationRequirement(applicantEducationLevel, requiredEducationLevel);
                 const skillsMet = meetsSkillsRequirement(applicantSkills, jobSkills);
 
