@@ -42,9 +42,41 @@ class JobSeekerController extends Controller
         return response()->json(['success' => true]);
     }
 
+    /*public function JobView($id)*/
+    /*{*/
+    /**/
+    /*    $jobview = JobPost::with([*/
+    /*        'skills',*/
+    /*        'requirements:requirement_id,requirement_name',*/
+    /*        'degree',*/
+    /*        'status',*/
+    /*        'applications.user:id,first_name,last_name',*/
+    /*        'applications:id,job_post_id,user_id,status,remarks,created_at,updated_at'*/
+    /*    ])*/
+    /*        ->select(*/
+    /*            'id',*/
+    /*            'job_title',*/
+    /*            'job_description',*/
+    /*            'job_location',*/
+    /*            'job_type',*/
+    /*            'salary_type',*/
+    /*            'min_salary',*/
+    /*            'max_salary',*/
+    /*            'min_experience_years',*/
+    /*            'company',*/
+    /*            'user_id',*/
+    /*            'status_id',*/
+    /*            'degree_id',*/
+    /*            'created_at'*/
+    /*        )*/
+    /*        ->findOrFail($id);*/
+    /**/
+    /*    return Inertia::render('JobView', [*/
+    /*        'jobview' => $jobview,*/
+    /*    ]);*/
+    /*}*/
     public function JobView($id)
     {
-
         $jobview = JobPost::with([
             'skills',
             'requirements:requirement_id,requirement_name',
@@ -71,10 +103,32 @@ class JobSeekerController extends Controller
             )
             ->findOrFail($id);
 
+        // Step 1: Get the skill_ids of the current job
+        $skillIds = $jobview->skills->pluck('skill_id');
+
+        // Step 2: Get other jobs that share these skills
+        $suggestedJobs = JobPost::where('id', '!=', $id)
+            ->whereHas('skills', function ($query) use ($skillIds) {
+                $query->whereIn('skill_id', $skillIds);
+            })
+            ->with('skills') // Eager load skills if needed
+            ->select(
+                'id',
+                'job_title',
+                'company',
+                'job_location',
+                'created_at'
+            )
+            ->distinct()
+            ->take(5)
+            ->get();
+
         return Inertia::render('JobView', [
             'jobview' => $jobview,
+            'suggestedJobs' => $suggestedJobs,
         ]);
     }
+
 
     /*public function show(Request $request)*/
     /*{*/

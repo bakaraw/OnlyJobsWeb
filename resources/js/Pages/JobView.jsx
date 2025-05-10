@@ -3,12 +3,48 @@ import { router, usePage } from '@inertiajs/react';
 import ContentLayout from '@/Layouts/ContentLayout';
 import MainPageLayout from '@/Layouts/MainPageLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import ConfirmModal from '@/Components/ConfirmModal.jsx';
 import ApplicationModal from "@/Components/Applicant/ApplicationModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
+
+function SimilarJobs({ suggestedJobs }) {
+    console.log("Similar jobs: ", suggestedJobs);
+    return (
+        <div className="mt-10">
+            <p className="text-2xl font-semibold mb-4">Explore similar jobs</p>
+            <div className="flex flex-wrap gap-4">
+                {suggestedJobs.map((job, index) => (
+                    <a
+                        key={index}
+                        className="p-4 rounded-xl shadow-md w-full sm:w-[300px] border border-gray-100 hover:bg-gray-100"
+                        onClick={async (e) => {
+                            e.preventDefault();
+                            await axios.post(`/job_posts/${job.id}/increment_views`);
+                            router.visit(route('job.view', job.id));
+                        }}
+
+                    >
+                        <h3 className="text-lg font-bold">{job.job_title}</h3>
+                        <p className="text-sm text-gray-600">{job.type}     • Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
+                        <div className="mt-5 flex flex-wrap gap-2">
+                            {job.skills.map((skill, i) => (
+                                <span
+                                    key={i}
+                                    className="bg-primary-50 text-primary-600 text-xs font-semibold px-2 py-1 rounded-full"
+                                >
+                                    {skill.skill_name}
+                                </span>
+                            ))}
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 const JobDescriptionCard = ({ jobDescription, className }) => (
     <div className={" " + className}>
@@ -126,9 +162,8 @@ const SkillsCard = ({ skills, className }) => {
 
 const JobCompanyCard = ({ JobCompany, className }) => (
     <div className={"mt-10 " + className}>
-        <h3 className="text-lg font-semibold">About the Company:</h3>
-        <div className='flex items-center justify-start gap-3 mt-3'>
-            <div className="w-16 h-16 rounded-full overflow-hidden mb-2 border-4 border-gray-300 ring-2 ring-white"></div>
+        <h3 className="text-lg font-semibold">About the Company</h3>
+        <div className='flex items-center justify-start gap-3 mt-1'>
             <p className="text-gray-700 leading-relaxed font-semibold=">{JobCompany}</p>
         </div>
     </div>
@@ -137,7 +172,7 @@ const JobCompanyCard = ({ JobCompany, className }) => (
 
 
 export default function JobView() {
-    const { jobview } = usePage().props;
+    const { jobview, suggestedJobs } = usePage().props;
 
     const { auth } = usePage().props;
     const [showMessages, setShowMessages] = useState(false);
@@ -227,12 +262,12 @@ export default function JobView() {
                             }
                             <div className="ml-5">
                                 {auth.user && jobview.applications.some(app => app.user_id === auth.user.id) ? (
-                                    <span
-                                        className="text-gray-500 py-2 px-4 border border-gray-300 rounded-lg cursor-pointer"
+                                    <PrimaryButton
+                                        className='min-w-32 flex items-center justify-center'
                                         onClick={() => setShowApplyModal(true)}
                                     >
-                                    Application
-                                </span>
+                                        Apply
+                                    </PrimaryButton>
                                 ) : (
                                     <PrimaryButton
                                         className='min-w-32 flex items-center justify-center'
@@ -256,8 +291,21 @@ export default function JobView() {
 
                 <RequirementsCard requirements={jobview.requirements} />
 
-
                 <JobCompanyCard JobCompany={jobview.company} />
+                {
+                    //<div className='mt-10'>
+                    //    <p className='text-2xl'>Explore similar jobs</p>
+                    //    <div className='flex gap-3'>
+                    //        <div className='bg-red-100 '>
+                    //            heyhey
+                    //        </div>
+                    //        <div className='bg-red-100'>
+                    //            wow2
+                    //        </div>
+                    //    </div>
+                    //</div>
+                }
+                <SimilarJobs suggestedJobs={suggestedJobs} />
             </ContentLayout>
 
             <MessageButton
