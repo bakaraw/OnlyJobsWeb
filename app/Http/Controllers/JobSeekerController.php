@@ -116,6 +116,7 @@ class JobSeekerController extends Controller
                 'id',
                 'job_title',
                 'company',
+                'job_type',
                 'job_location',
                 'created_at'
             )

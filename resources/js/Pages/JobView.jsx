@@ -14,7 +14,7 @@ function SimilarJobs({ suggestedJobs }) {
     console.log("Similar jobs: ", suggestedJobs);
     return (
         <div className="mt-10">
-            <p className="text-2xl font-semibold mb-4">Explore similar jobs</p>
+            <p className="text-2xl font-semibold mb-4 text-gray-800">Explore similar jobs</p>
             <div className="flex flex-wrap gap-4">
                 {suggestedJobs.map((job, index) => (
                     <a
@@ -27,8 +27,8 @@ function SimilarJobs({ suggestedJobs }) {
                         }}
 
                     >
-                        <h3 className="text-lg font-bold">{job.job_title}</h3>
-                        <p className="text-sm text-gray-600">{job.type}     • Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
+                        <h3 className="text-lg font-semibold text-gray-700">{job.job_title}</h3>
+                        <p className="text-sm text-gray-600 mt-2">{job.job_type}     • Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                         <div className="mt-5 flex flex-wrap gap-2">
                             {job.skills.map((skill, i) => (
                                 <span
