@@ -57,7 +57,6 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         job_location: job_details.job_location || "N/A",
         company: job_details.company || "N/A",
         slot: job_details.slot || "N/A",
-        remaining: job_details.remaining || "N/A",
         salary_type: job_details.salary_type || "N/A",
         min_salary: job_details.min_salary || "N/A",
         max_salary: job_details.max_salary || "N/A",
@@ -191,7 +190,6 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                 job_location: form.job_location,
                 company: form.company,
                 slot: form.slot,
-                remaining: form.remaining,
                 salary_type: form.salary_type,
                 min_salary: form.min_salary,
                 max_salary: form.max_salary,
@@ -362,6 +360,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 <TextInput
                                     className="mt-1 block w-20"
                                     value={`${form.slot}`}
+                                    onChange={(e) => setForm((prev) => ({ ...prev, slot: e.target.value }))}
                                 />
 
 
