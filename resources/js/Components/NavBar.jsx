@@ -36,11 +36,16 @@ export default function NavBar() {
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 {/* Logo */}
                 <div className="text-white">
-                    <img src="/images/logo.png" alt="logo" className="h-10" />
-                </div>
+                    <Link
+                        href="/"
+                    >
+                        <img src="/images/logo.png" alt="logo" className="h-10">
+                        </img>
+                    </Link>
+                </div >
 
                 {/* Hamburger for mobile */}
-                <div className="md:hidden">
+                < div className="md:hidden" >
                     <button onClick={() => setMenuOpen(!menuOpen)} className="text-white focus:outline-none">
                         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {menuOpen ? (
@@ -50,27 +55,29 @@ export default function NavBar() {
                             )}
                         </svg>
                     </button>
-                </div>
+                </div >
 
                 {/* Desktop Nav Items */}
-                <div className="hidden md:flex space-x-4">
-                    {navItems.map((item) => (
-                        <Link
-                            href={item.href}
-                            key={item.name}
-                            className={`px-4 py-2 rounded-md text-lg font-medium
+                < div className="hidden md:flex space-x-4" >
+                    {
+                        navItems.map((item) => (
+                            <Link
+                                href={item.href}
+                                key={item.name}
+                                className={`px-4 py-2 rounded-md text-lg font-medium
                         ${active === item.href.toLowerCase()
-                                    ? "underline underline-offset-8 text-white"
-                                    : "text-white hover:bg-light hover:text-dark"}`}
-                            onClick={() => setActive(item.href.toLowerCase())}
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
-                </div>
+                                        ? "underline underline-offset-8 text-white"
+                                        : "text-white hover:bg-light hover:text-dark"}`}
+                                onClick={() => setActive(item.href.toLowerCase())}
+                            >
+                                {item.name}
+                            </Link>
+                        ))
+                    }
+                </div >
 
                 {/* Right side: Search and Auth buttons (hidden on small screens) */}
-                <div className="hidden md:flex items-center space-x-4">
+                < div className="hidden md:flex items-center space-x-4" >
                     <input
                         type="text"
                         placeholder="Search..."
@@ -82,46 +89,8 @@ export default function NavBar() {
                         className="w-64 px-4 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mr-5"
                     />
                     <NavBarAuthBtns />
-                </div>
-            </div>
-
-            {/* Mobile dropdown menu */}
-            {menuOpen && (
-                <div className="md:hidden bg-dark px-4 pb-4 space-y-2">
-                    {navItems.map((item) => (
-                        <Link
-                            href={item.href}
-                            key={item.name}
-                            className={`block px-4 py-2 rounded-md text-white ${active === item.href.toLowerCase()
-                                ? "underline underline-offset-8"
-                                : "hover:bg-light hover:text-dark"
-                                }`}
-                            onClick={() => {
-                                setActive(item.href.toLowerCase());
-                                setMenuOpen(false); // close menu after selection
-                            }}
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
-                    <div className="mt-2">
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSearch();
-                            }}
-                            className="w-full px-4 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
-                    </div>
-                    <div className="mt-2">
-                        <NavBarAuthBtns />
-                    </div>
-                </div>
-            )}
-        </nav>
+                </div >
+            </div >
+        </nav >
     );
 }
-
