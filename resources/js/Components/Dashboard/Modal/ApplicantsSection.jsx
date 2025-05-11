@@ -38,7 +38,6 @@ export default function ApplicantsSection({applicants}) {
     const closeDocumentModal = () => {
         setDocumentModal({ show: false, applicationId: null });
     };
-    console.log('applicants', applicants);
 
     const educationLevel = {
         'Graduate': 1,
@@ -74,13 +73,12 @@ export default function ApplicantsSection({applicants}) {
         type: "success",
         message: "",
         onClose: () => setModalProps((prev) => ({...prev, show: false})),
-        onConfirm: true,
+        onConfirm: null, // Changed to null initially
     });
 
     const closeModal = () => {
         setModalProps(prev => ({...prev, show: false}));
     };
-    const [viewerOpen, setViewerOpen] = useState(false)
 
     const handleAccept = async (application) => {
         try {
@@ -95,6 +93,7 @@ export default function ApplicantsSection({applicants}) {
 
                 console.log('Education Met:', educationMet, 'Skills Met:', skillsMet);
                 console.log('Applicant Education:', applicantEducationLevel, 'Required:', requiredEducationLevel);
+                console.log('Applicant Skills:', applicantSkills.map(s => s.skill_name), 'Required Skills:', jobSkills.map(s => s.skill_name));
 
                 let msg = "";
 
@@ -107,13 +106,12 @@ export default function ApplicantsSection({applicants}) {
                 }
 
                 if (msg) {
+                    // Show warning but still allow qualification
                     msg += " Do you still want to proceed?";
-                    setModalProps({
-                        show: true,
-                        type: "warning",
-                        message: msg,
-                        onClose: closeModal,
-                        onConfirm: async () => {
+
+                    // Define the confirmation action for accepting despite warnings
+                    const confirmAction = async () => {
+                        try {
                             const response = await axios.post("/applicants/qualified", {
                                 application_id: application.id
                             });
@@ -121,9 +119,20 @@ export default function ApplicantsSection({applicants}) {
                                 window.location.reload();
                             }
                             closeModal();
+                        } catch (error) {
+                            console.error("Error qualifying applicant:", error);
+                            closeModal();
                         }
+                    };
+
+                    setModalProps({
+                        show: true,
+                        type: "warning",
+                        message: msg,
+                        onClose: closeModal,
+                        onConfirm: confirmAction // Assign the confirmation action properly
                     });
-                    return; // Return early to prevent the code below from executing
+                    return; // Make sure we don't continue with the function
                 } else {
                     // If all requirements are met, just qualify without warning
                     const response = await axios.post("/applicants/qualified", {
@@ -140,13 +149,18 @@ export default function ApplicantsSection({applicants}) {
                     message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
                     onClose: closeModal,
                     onConfirm: async () => {
-                        const response = await axios.post("/applicants/accepted", {
-                            application_id: application.id
-                        });
-                        if (response.data.success) {
-                            window.location.reload();
+                        try {
+                            const response = await axios.post("/applicants/accepted", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        } catch (error) {
+                            console.error("Error accepting applicant:", error);
+                            closeModal();
                         }
-                        closeModal();
                     }
                 });
             }
@@ -207,15 +221,6 @@ export default function ApplicantsSection({applicants}) {
                     </SecondaryButton>
                 ))}
             </div>
-            {modalProps.show && modalProps.onConfirm && (
-                <div className="mt-2 ml-4">
-                    <PrimaryButton
-                        onClick={() => setViewerOpen(true)}                    >
-                        Proceed
-                    </PrimaryButton>
-                </div>
-            )}
-
 
             {filteredApplicants.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -346,25 +351,21 @@ export default function ApplicantsSection({applicants}) {
                 type={modalProps.type}
                 message={modalProps.message}
                 onClose={modalProps.onClose}
+                onConfirm={modalProps.onConfirm} // This now correctly passes the confirmation function
+                autoClose={modalProps.type !== "warning"} // Don't auto-close warning modals
             />
-            {/*<RequirementsViewerModal*/}
-            {/*    show={documentModal.show}*/}
-            {/*    applicationId={documentModal.applicationId}*/}
-            {/*    onClose={closeDocumentModal}*/}
-            {/*/>*/}
-             <DocumentViewerModal
+            <DocumentViewerModal
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
-                applicationId={documentModal.applicationId} applicantInfo={documentModal.applicationId ? {
+                applicationId={documentModal.applicationId}
+                applicantInfo={documentModal.applicationId ? {
                     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name
                     || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
                     status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
                     dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
                     jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position"
-            } : null}
-                />
-
+                } : null}
+            />
         </DashboardCard>
-
     );
 }

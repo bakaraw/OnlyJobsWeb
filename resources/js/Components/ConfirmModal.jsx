@@ -6,6 +6,7 @@ export default function ConfirmModal({
                                          type = 'success',
                                          message = '',
                                          onClose = () => {},
+                                         onConfirm = null, // Changed from unspecified to explicit null default
                                          autoClose = true,
                                          duration = 3000
                                      }) {
@@ -14,7 +15,6 @@ export default function ConfirmModal({
             const timer = setTimeout(() => {
                 onClose();
             }, duration);
-
             return () => clearTimeout(timer);
         }
     }, [show, autoClose, duration, onClose]);
@@ -53,6 +53,26 @@ export default function ConfirmModal({
                     <div className="ml-3">
                         <p className="text-sm">{message}</p>
                     </div>
+
+                    {/* Display confirmation button if onConfirm is provided */}
+                    {onConfirm && type === 'warning' && (
+                        <button
+                            onClick={onConfirm}
+                            className="ml-3 px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                        >
+                            Proceed
+                        </button>
+                    )}
+
+                    {onConfirm && type === 'success' && (
+                        <button
+                            onClick={onConfirm}
+                            className="ml-3 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                        >
+                            Confirm
+                        </button>
+                    )}
+
                     <button
                         onClick={onClose}
                         className="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex text-gray-500 hover:text-gray-700"
