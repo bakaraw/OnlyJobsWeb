@@ -631,7 +631,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                             <div className="mb-4">
                                 <p className="font-semibold">Slots:</p>
                                 <p className="text-gray-600">
-                                    {job_details.slot}
+                                    {job_details.slot}  / Remaining {job_details.remaining}
                                     {/*{job_details.slot || 'N/A'} ({form.slot || 'N/A'} remaining)*/}
                                 </p>
                             </div>

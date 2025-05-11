@@ -85,6 +85,7 @@ class JobPostController extends Controller
         );
 
         $validatedData['user_id'] = auth()->id();
+        $validatedData['remaining'] = $validatedData['slot'] ?? 0; // Add this line
 
         // Create the job post
         $jobPost = JobPost::create($validatedData);
@@ -159,7 +160,7 @@ public function update(Request $request, $id)
     $skillData = $validatedData['skills'] ?? [];
     unset($validatedData['skills']);
 
-
+    $validatedData['remaining'] = $validatedData['slot'] ?? 0;
     $jobPost->update($validatedData);
     $jobPost->requirements()->sync($requirementIds);
 

@@ -41,7 +41,7 @@ class JobSeekerController extends Controller
             'updated_at' => now(),
         ]);
 
-        $jobPost->decrement('slot');
+        $jobPost->decrement('remaining');
 
         return redirect()
             ->back()
