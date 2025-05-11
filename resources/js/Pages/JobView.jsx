@@ -293,19 +293,15 @@ export default function JobView() {
 
                 <JobCompanyCard JobCompany={jobview.company} />
                 {
-                    //<div className='mt-10'>
-                    //    <p className='text-2xl'>Explore similar jobs</p>
-                    //    <div className='flex gap-3'>
-                    //        <div className='bg-red-100 '>
-                    //            heyhey
-                    //        </div>
-                    //        <div className='bg-red-100'>
-                    //            wow2
-                    //        </div>
-                    //    </div>
-                    //</div>
+                    suggestedJobs.length > 0 ? (
+                        <SimilarJobs suggestedJobs={suggestedJobs} />
+                    ) : (
+                        <div className='mt-5'>
+                            <p className="text-2xl font-semibold mb-4 text-gray-800">Explore similar jobs</p>
+                            <p className='text-sm text-gray-500'> No similar jobs found</p>
+                        </div>
+                    )
                 }
-                <SimilarJobs suggestedJobs={suggestedJobs} />
             </ContentLayout>
 
             <MessageButton

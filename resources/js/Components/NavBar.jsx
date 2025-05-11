@@ -25,20 +25,6 @@ export default function NavBar() {
         console.log("Enter is pressed: ", search);
         if (!search.trim()) return;
 
-        //router.get('/find_work', { search: search });
-        //router.get('/find_work', {
-        //    search,
-        //    experience,
-        //    job_type,
-        //});
-        //router.get('/find_work', {
-        //    search,
-        //    experience: filters?.experience || [],
-        //    job_type: filters?.job_type || [],
-        //}, {
-        //    preserveState: true,
-        //    preserveScroll: true,
-        //});
         router.get('/find_work', {
             ...filters,
             search: search.trim(),
@@ -49,8 +35,12 @@ export default function NavBar() {
         <nav className="fixed top-0 left-0 w-full bg-dark z-50">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div className="text-white">
-                    <img src="/images/logo.png" alt="logo" className="h-10">
-                    </img>
+                    <Link
+                        href="/"
+                    >
+                        <img src="/images/logo.png" alt="logo" className="h-10">
+                        </img>
+                    </Link>
                 </div>
                 <div className="flex space-x-4">
                     {navItems.map((item) => (
@@ -89,7 +79,7 @@ export default function NavBar() {
                     <NavBarAuthBtns />
                 </div>
             </div>
-        </nav>
+        </nav >
     );
 }
 
