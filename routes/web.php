@@ -151,8 +151,8 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/user-skills/{userSkill}', [UserSkillsController::class, 'destroy'])
         ->name('user-skills.destroy');
-
-    Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
+    Route::get('/applicant-details/{id}', [ApplicantController::class, 'show'])
+        ->name('applicant.details');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
 
     Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');

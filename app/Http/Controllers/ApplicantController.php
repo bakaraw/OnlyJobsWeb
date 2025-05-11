@@ -7,6 +7,7 @@ use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
@@ -31,7 +32,25 @@ class ApplicantController extends Controller
 //    }
 
 
+    public function show($id)
+    {
+        $application = \App\Models\Application::with([
+            'user',
+            'user.educations',
 
+            'user.workHistories',
+            'user.certifications',
+            'user.userSkills.skill',
+            'jobPost',
+            'jobPost.skills',
+            'jobPost.requirements',
+            'jobPost.degree'
+        ])->findOrFail($id);
+
+        return Inertia::render('ApplicantDetails', [
+            'application' => $application
+        ]);
+    }
     public function updateRemark(Request $request)
     {
         $request->validate([

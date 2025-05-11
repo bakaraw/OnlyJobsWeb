@@ -29,6 +29,16 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
         setActiveView("applicantDetails");
     };
 
+    const handleApplicantSelectfFromSection = (applicantId) => {
+        const user = users.find(user => user.id === applicantId);
+        if (user) {
+            setSelectedApplicantId(applicantId);
+            setActiveView("applicantDetails");
+        } else {
+            console.error("User not found with id:", applicantId);
+        }
+    };
+
     const handleBackToApplicants = () => {
         setSelectedApplicantId(null);
         setActiveView("applicants");

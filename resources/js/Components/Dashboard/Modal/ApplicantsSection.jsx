@@ -4,7 +4,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
-import {usePage} from "@inertiajs/react";
+import {router, usePage} from "@inertiajs/react";
 import ConfirmModal from "@/Components/ConfirmModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
 import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsViewerModal.jsx";
@@ -19,6 +19,10 @@ export default function ApplicantsSection({applicants}) {
         show: false,
         applicationId: null,
     });
+    const navigateToApplicantDetails = (application) => {
+        // Navigate to the applicant details page with the application ID
+        router.visit(`/applicant-details/${application.id}`);
+    };
 
     const {props} = usePage();
     const {statuses, degrees, requirements, skills} = props;
@@ -238,7 +242,15 @@ export default function ApplicantsSection({applicants}) {
                         </thead>
                         <tbody>
                         {filteredApplicants.map((application, index) => (
-                            <tr key={application.id} className="border-t hover:bg-gray-50">
+                            <tr
+                                key={application.id}
+                                className="border-t hover:bg-gray-50 cursor-pointer"
+                                onClick={(e) => {
+                                    // Don't trigger navigation when clicking buttons
+                                    if (e.target.closest('button')) return;
+                                    navigateToApplicantDetails(application);
+                                }}
+                            >
                                 <td className="py-2 px-4">
                                     <div className="flex items-center">
                       <span className="mr-2 text-gray-500">
