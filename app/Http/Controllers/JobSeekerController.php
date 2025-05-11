@@ -15,22 +15,37 @@ class JobSeekerController extends Controller
 {
     public function apply($jobPostId)
     {
-
         $user = Auth::user();
-        /*if (!$user) {*/
-        /*    redirect()->route('login');*/
-        /*}*/
 
-        if ($user->appliedJobs()->where('job_post_id', $jobPostId)->exists()) {
-            return redirect()->route('find_work')->with('You have already applied for this job');
+        // Load the job post, or fail 404
+        $jobPost = JobPost::findOrFail($jobPostId);
+
+        // If slots are exhausted, don’t allow more applications
+        if ($jobPost->slot <= 0) {
+            return redirect()
+                ->back()
+                ->with('warning', 'Sorry, this job is no longer accepting applications.');
         }
 
+        // Prevent duplicate applications
+        if ($user->appliedJobs()->where('job_post_id', $jobPostId)->exists()) {
+            return redirect()
+                ->back()
+                ->with('info', 'You have already applied for this job.');
+        }
+
+        // Attach the application
         $user->appliedJobs()->attach($jobPostId, [
-            'status' => 'pending',
+            'status'     => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        return redirect()->route('find_work')->with('success');
+
+        $jobPost->decrement('remaining');
+
+        return redirect()
+            ->back()
+            ->with('success', 'Your application has been submitted!');
     }
 
 

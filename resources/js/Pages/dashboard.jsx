@@ -8,6 +8,7 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import ApplicantDetails from "@/Pages/ApplicantDetails.jsx";
 import AdminMessages from "./Admin/AdminMessages";
+import AdminContacts from "./Admin/AdminContacts";
 
 export default function dashboard({ jobView, statuses, requirements, degrees, slot,getJobPostData, jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
     const [activeView, setActiveView] = useState("dashboard");
@@ -111,6 +112,8 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
                     <AdminMessages
                         onJobSelect={handleJobSelect}
                     />
+                ) : activeView === "contact_us_messages" ? (
+                    <AdminContacts />
                 ) : (
                     <div>
                         {auth?.user ? (
@@ -134,6 +137,6 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

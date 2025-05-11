@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationRequirementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DocumentViewController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\LightcastController;
 use App\Http\Controllers\UserSkillsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ContactController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -181,11 +184,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'getMessages']);  // Get messages for a specific conversation
     /*Route::post('/conversations/{conversationId}/send', [MessageController::class, 'sendMessage']);  // Send a message*/
     Route::post('/conversations/{jobId}/create', [MessageController::class, 'createConversation']);  // Create a conversation if it doesn't exist
+    Route::post('/conversations/{conversation}/mark-read', [MessageController::class, 'markAsReadJobSeeker']);
+    Route::get('conversation/unread-count', [MessageController::class, 'unreadCount']);
 
     Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
     Route::post('/application/upload-requirements',[ ApplicationRequirementController::class, 'uploadRequirements'])->name('user-requirement');
+//    Route::get('applications/{application}/requirements', [RequirementController::class, 'index']);
+    Route::get('/applications/{applicationId}/requirements', [ApplicationRequirementController::class, 'getApplicationRequirements']);
+         // Use appropriate middleware for authentication
+
+// Get a specific requirement file
+//    Route::get('/requirements/{id}', [ApplicationRequirementController::class, 'getRequirementFile']);
+//
+//    Route::get('/document/{id}', [DocumentViewController::class, 'getDocument'])->name('document.view');
+//    Route::get('/application/{applicationId}/documents', [DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
+
+    Route::get('/document/{id}', [App\Http\Controllers\DocumentViewController::class, 'getDocument'])->name('document.view');
+    Route::get('/application/{applicationId}/documents', [App\Http\Controllers\DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
+    Route::get('/documents', [App\Http\Controllers\DocumentViewController::class, 'show'])->name('documents.show');
+    Route::post('/document/update-status', [App\Http\Controllers\DocumentStatusController::class, 'updateStatus'])->name('document.update-status');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -217,6 +236,9 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/conversations', [MessageController::class, 'adminConversations']);
     Route::get('/{id}', [MessageController::class, 'show']);
     Route::post('/{id}', [MessageController::class, 'sendMessage']);
+    Route::post('/{conversation}/mark-read', [MessageController::class, 'markAsRead']);
+    Route::get('/unread-count', [MessageController::class, 'unreadCountAdmin'])->name('admin.messages.unread-count');
+    Route::get('/contact/show', [ContactController::class, 'showMessages']);
 });
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard', [
@@ -226,7 +248,11 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
 //    ]);
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
+
+Route::post('/contact', [ContactController::class, 'store']);
+
 Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
 
 // Third Party API
 Route::get('/skills', [LightcastController::class, 'fetchSkills']);
