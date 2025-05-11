@@ -361,7 +361,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 <InputLabel value="Slots" />
                                 <TextInput
                                     className="mt-1 block w-20"
-                                    value={`${form.remaining}/${form.slot}`}
+                                    value={`${form.slot}`}
                                 />
 
 
@@ -636,12 +636,12 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 </p>
                             </div>
 
-                            {/*{status && (*/}
-                            {/*    <div className="mb-4">*/}
-                            {/*        <p className="font-semibold">Status:</p>*/}
-                            {/*        <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>*/}
-                            {/*    </div>*/}
-                            {/*)}*/}
+                            {status && (
+                                <div className="mb-4">
+                                    <p className="font-semibold">Status:</p>
+                                    <p className="text-gray-600">{job_details.status?.name || 'N/A'}</p>
+                                </div>
+                            )}
 
                             <div className="mb-4">
                                 <p className="font-semibold">Views:</p>
