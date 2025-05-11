@@ -27,11 +27,10 @@ class RequirementUser extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function jobPostRequirement()
+    public function requirement()
     {
-        return $this->belongsTo(Requirement::class, 'job_post_requirement_id');
+        return $this->belongsTo(Requirement::class, 'job_post_requirement_id', 'requirement_id');
     }
-
     public function application()
     {
         return $this->belongsTo(Application::class);

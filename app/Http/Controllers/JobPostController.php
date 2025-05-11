@@ -60,6 +60,7 @@ class JobPostController extends Controller
             'degree_id'            => 'nullable|exists:degrees,id',
             'views'                => 'nullable|integer',
             'slot'                => 'nullable|integer',
+            'remaining'                => 'nullable|integer|default:0',
             'requirements'         => 'nullable|array',
             'requirements.*'       => 'exists:requirements,requirement_id',
             'skills'               => 'nullable|array',
@@ -84,6 +85,7 @@ class JobPostController extends Controller
         );
 
         $validatedData['user_id'] = auth()->id();
+        $validatedData['remaining'] = $validatedData['slot'] ?? 0; // Add this line
 
         // Create the job post
         $jobPost = JobPost::create($validatedData);
@@ -142,6 +144,7 @@ public function update(Request $request, $id)
         'degree_id'            => 'nullable|exists:degrees,id',
         'views'                => 'nullable',
         'slot'                => 'nullable| integer',
+        'remaining'                => 'nullable|integer|default:0',
 
         'requirements'          => 'nullable|array',
         'requirements.*'        => 'exists:requirements,requirement_id',
@@ -157,7 +160,7 @@ public function update(Request $request, $id)
     $skillData = $validatedData['skills'] ?? [];
     unset($validatedData['skills']);
 
-
+    $validatedData['remaining'] = $validatedData['slot'] ?? 0;
     $jobPost->update($validatedData);
     $jobPost->requirements()->sync($requirementIds);
 
@@ -193,6 +196,7 @@ public function update(Request $request, $id)
                 'min_experience_years',
                 'company',
                 'views',
+                'remaining',
                 'salary_type',
                 'status_id',
                 'degree_id',
@@ -268,6 +272,7 @@ public function update(Request $request, $id)
             'job_type',
             'created_at',
             'slot',
+            'remaining',
             'company',
             'views',
             'status_id'
@@ -386,6 +391,7 @@ public function update(Request $request, $id)
                 'min_experience_years',
                 'company',
                 'slot',
+                'remaining',
                 'views',
                 'salary_type',
                 'status_id',
@@ -424,6 +430,7 @@ public function update(Request $request, $id)
                 'job_location',
                 'job_type',
                 'slot',
+                'remaining',
                 'salary_type',
                 'min_salary',
                 'max_salary',

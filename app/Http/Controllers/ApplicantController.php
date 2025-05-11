@@ -11,24 +11,24 @@ use Illuminate\Support\Facades\Auth;
 class ApplicantController extends Controller
 {
 
-    public function apply(Request $request)
-    {
-        $request->validate([
-            'job_post_id' => 'required|integer',
-            // add other validation if needed
-        ]);
-
-        $user = Auth::user();
-
-        $application = Application::create([
-            'user_id'     => $user->id,
-            'job_post_id' => $request->job_post_id,
-            'status'      => 'pending', // or a dynamic value if needed
-            'remarks'     => $request->remarks,
-        ]);
-
-        return response()->json(['message' => 'Application submitted successfully', 'application' => $application]);
-    }
+//    public function apply(Request $request)
+//    {
+//        $request->validate([
+//            'job_post_id' => 'required|integer',
+//            // add other validation if needed
+//        ]);
+//
+//        $user = Auth::user();
+//
+//        $application = Application::create([
+//            'user_id'     => $user->id,
+//            'job_post_id' => $request->job_post_id,
+//            'status'      => 'pending', // or a dynamic value if needed
+//            'remarks'     => $request->remarks,
+//        ]);
+//
+//        return response()->json(['message' => 'Application submitted successfully', 'application' => $application]);
+//    }
 
 
 
