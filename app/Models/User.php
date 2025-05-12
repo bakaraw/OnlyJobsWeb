@@ -15,6 +15,7 @@ class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory, Notifiable;
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -93,8 +94,8 @@ class User extends Authenticatable
         return $this->hasMany(UserSkill::class);
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
+    /*public function notifications()*/
+    /*{*/
+    /*    return $this->hasMany(Notification::class);*/
+    /*}*/
 }
