@@ -225,6 +225,8 @@ Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus'
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
+Route::get('/applicants/export', [JobPostController::class, 'exportAll'])
+    ->name('applicants.export');
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
 Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');

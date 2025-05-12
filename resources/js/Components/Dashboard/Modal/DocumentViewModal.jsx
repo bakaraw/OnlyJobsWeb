@@ -271,18 +271,9 @@ export default function DocumentViewerModal({
                                 : 'border-transparent hover:border-gray-300'
                         }`}
                     >
-                        Skills
+                        Qualifications
                     </button>
-                    <button
-                        onClick={() => setActiveTab('education')}
-                        className={`pb-4 px-1 border-b-2 transition-colors ${
-                            activeTab === 'education'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent hover:border-gray-300'
-                        }`}
-                    >
-                        Education
-                    </button>
+
                     <button
                         onClick={() => setActiveTab('work')}
                         className={`pb-4 px-1 border-b-2 transition-colors ${
@@ -291,28 +282,9 @@ export default function DocumentViewerModal({
                                 : 'border-transparent hover:border-gray-300'
                         }`}
                     >
-                        Work Experience
+                        Professional Background
                     </button>
-                    <button
-                        onClick={() => setActiveTab('certifications')}
-                        className={`pb-4 px-1 border-b-2 transition-colors ${
-                            activeTab === 'certifications'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent hover:border-gray-300'
-                        }`}
-                    >
-                        Certifications
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('applications')}
-                        className={`pb-4 px-1 border-b-2 transition-colors ${
-                            activeTab === 'applications'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent hover:border-gray-300'
-                        }`}
-                    >
-                        Applications
-                    </button>
+
                 </div>
             </div>
 
@@ -412,72 +384,103 @@ export default function DocumentViewerModal({
                 )}
 
                 {/* Profile Tab */}
-                {activeTab === 'profile' && applicantDetails && (
-                    <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Personal Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <p className="font-semibold">Full Name:</p>
-                                <p className="text-gray-600">
-                                    {applicantDetails.first_name || ""}
-                                    {applicantDetails.middle_name ? ` ${applicantDetails.middle_name} ` : " "}
-                                    {applicantDetails.last_name || ""}
-                                    {applicantDetails.suffix ? `, ${applicantDetails.suffix}` : ""}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="font-semibold">Email:</p>
-                                <p className="text-gray-600">{applicantDetails.email || "Not specified"}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold">Contact Number:</p>
-                                <p className="text-gray-600">{applicantDetails.contact_number || "Not specified"}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold">Gender:</p>
-                                <p className="text-gray-600">{applicantDetails.gender || "Not specified"}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold">Birthdate:</p>
-                                <p className="text-gray-600">
-                                    {applicantDetails.birthdate
-                                        ? new Date(applicantDetails.birthdate).toLocaleDateString()
-                                        : "Not specified"}
-                                </p>
-                            </div>
-                        </div>
+                {/* Profile Tab */}
+                {/* Profile Tab */}
+                {/* Profile Tab */}
+                {activeTab === 'profile' && (
+                    <div className="mb-6 space-y-8">
+                        {filteredApplicants.length > 0 ? (
+                            filteredApplicants.map((applicant, idx) => {
+                                const u = applicant.user;
+                                const addr = u.address || {};
+                                const fullName = [
+                                    u.first_name,
+                                    u.middle_name,
+                                    u.last_name,
+                                    u.suffix && `, ${u.suffix}`,
+                                ]
+                                    .filter(Boolean)
+                                    .join(' ');
 
-                        {applicantDetails.address && (
-                            <div className="mt-4">
-                                <p className="font-semibold">Address:</p>
-                                <p className="text-gray-600">
-                                    {[
-                                        applicantDetails.address.street,
-                                        applicantDetails.address.street2,
-                                        applicantDetails.address.city,
-                                        applicantDetails.address.province,
-                                        applicantDetails.address.postal_code,
-                                        applicantDetails.address.country,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(", ") || "Not specified"}
-                                </p>
-                            </div>
+                                return (
+                                    <div key={u.id || idx} className="border rounded-lg p-4 shadow-sm">
+                                        <h4 className="text-2xl font-semibold mb-4 text-4xl">{fullName || 'Unnamed Applicant'}</h4>                                        {/* Personal Info Table */}
+                                        <table className="table-auto w-full mb-6">
+                                            <thead className="bg-gray-100">
+
+                                            </thead>
+                                            <tbody>
+
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Email</td>
+                                                <td className="py-1 px-2">{u.email || 'Not specified'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Contact Number</td>
+                                                <td className="py-1 px-2">{u.contact_number || 'Not specified'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Gender</td>
+                                                <td className="py-1 px-2">{u.gender || 'Not specified'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Birthdate</td>
+                                                <td className="py-1 px-2">
+                                                    {u.birthdate
+                                                        ? new Date(u.birthdate).toLocaleDateString()
+                                                        : 'Not specified'}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                        {/* Address Table */}
+                                        <table className="table-auto w-full">
+                                            <thead className="bg-gray-100">
+
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Street</td>
+                                                <td className="py-1 px-2">{addr.street || 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Street 2</td>
+                                                <td className="py-1 px-2">{addr.street2 || 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">City</td>
+                                                <td className="py-1 px-2">{addr.city || 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Province</td>
+                                                <td className="py-1 px-2">{addr.province || 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Postal Code</td>
+                                                <td className="py-1 px-2">{addr.postal_code || 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1 px-2 font-medium">Country</td>
+                                                <td className="py-1 px-2">{addr.country || 'N/A'}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p className="text-gray-600">No personal information available</p>
                         )}
                     </div>
                 )}
-
-                {/* Skills Tab */}
-                {/* Skills Tab */}
                 {activeTab === 'skills' && (
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Skills</h3>
 
                         {filteredApplicants.some(a => a.user.user_skills?.length > 0) ? (
                             <table className="table-auto w-full border-collapse mb-6">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
-                                    <th className="py-2 px-4">Applicant</th>
                                     <th className="py-2 px-4">Skill</th>
                                 </tr>
                                 </thead>
@@ -487,14 +490,7 @@ export default function DocumentViewerModal({
 
                                     return skills.map((skill, rowIdx) => (
                                         <tr key={`${aIdx}-${rowIdx}`} className="border-b">
-                                            {rowIdx === 0 && (
-                                                <td
-                                                    className="py-2 px-4"
-                                                    rowSpan={skills.length}
-                                                >
-                                                    {applicant.user.first_name} {applicant.user.last_name}
-                                                </td>
-                                            )}
+
                                             <td className="py-2 px-4">
                                                 {skill.skill?.name || skill.skill_name || 'N/A'}
                                             </td>
@@ -507,13 +503,11 @@ export default function DocumentViewerModal({
                             <p className="text-gray-600">No skills information available</p>
                         )}
 
-                        <h3 className="text-lg font-semibold mb-2">Education</h3>
 
                         {filteredApplicants.some(a => a.user.educations?.length > 0) ? (
                             <table className="table-auto w-full border-collapse">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
-                                    <th className="py-2 px-4">Applicant</th>
                                     <th className="py-2 px-4">Education Level</th>
                                 </tr>
                                 </thead>
@@ -523,14 +517,7 @@ export default function DocumentViewerModal({
 
                                     return educations.map((education, rowIdx) => (
                                         <tr key={`${aIdx}-${rowIdx}`} className="border-b">
-                                            {rowIdx === 0 && (
-                                                <td
-                                                    className="py-2 px-4"
-                                                    rowSpan={educations.length}
-                                                >
-                                                    {applicant.user.first_name} {applicant.user.last_name}
-                                                </td>
-                                            )}
+
                                             <td className="py-2 px-4">
                                                 {education.education_level || 'N/A'}
                                             </td>
@@ -544,88 +531,46 @@ export default function DocumentViewerModal({
                         )}
                     </div>
                 )}
-                {activeTab === 'education' && (
+                {/* Work Experience Tab */}
+                {/* Work & Certifications Tab */}
+                {activeTab === 'work' && (
                     <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Education</h3>
 
-                        {filteredApplicants.some(a => a.user.educations?.length > 0) ? (
-                            <table className="table-auto w-full border-collapse">
+                        {filteredApplicants.some(applicant => applicant.user.work_histories?.length > 0) ? (
+                            <table className="table-auto w-full border-collapse mb-8">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
-                                    <th className="py-2 px-4">Applicant</th>
-                                    <th className="py-2 px-4">Education Level</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {filteredApplicants.map((applicant, aIdx) => {
-                                    const educations = applicant.user.educations || [];
-
-                                    return educations.map((education, rowIdx) => (
-                                        <tr key={`${aIdx}-${rowIdx}`} className="border-b">
-                                            {rowIdx === 0 && (
-                                                <td
-                                                    className="py-2 px-4"
-                                                    rowSpan={educations.length}
-                                                >
-                                                    {applicant.user.first_name} {applicant.user.last_name}
-                                                </td>
-                                            )}
-                                            <td className="py-2 px-4">
-                                                {education.education_level || 'N/A'}
-                                            </td>
-                                        </tr>
-                                    ));
-                                })}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p className="text-gray-600">No education information available</p>
-                        )}
-                    </div>
-                )}                {/* Work Experience Tab */}
-                {activeTab === 'work' && applicantDetails && (
-                    <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
-                        {applicantDetails.work_histories && applicantDetails.work_histories.length > 0 ? (
-                            <table className="table-auto w-full border-collapse">
-                                <thead className="bg-gray-100 text-left">
-                                <tr>
-                                    <th className="py-2 px-4">Position</th>
+                                    <th className="py-2 px-4">Job Title</th>
                                     <th className="py-2 px-4">Employer</th>
                                     <th className="py-2 px-4">Period</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {applicantDetails.work_histories.map((work, index) => (
-                                    <tr key={work.id || index} className="border-b">
-                                        <td className="py-2 px-4">
-                                            {work.job_title || work.position || "N/A"}
-                                        </td>
-                                        <td className="py-2 px-4">{work.employer || "N/A"}</td>
-                                        <td className="py-2 px-4">
-                                            {work.start_date
-                                                ? new Date(work.start_date).toLocaleDateString()
-                                                : "?"}{" "}
-                                            -{" "}
-                                            {work.end_date
-                                                ? new Date(work.end_date).toLocaleDateString()
-                                                : "Present"}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredApplicants.flatMap((applicant, aIdx) =>
+                                    (applicant.user.work_histories || []).map((hist, hIdx) => {
+                                        const start = hist.start_date
+                                            ? new Date(hist.start_date).toLocaleDateString()
+                                            : '?';
+                                        const end = hist.end_date
+                                            ? new Date(hist.end_date).toLocaleDateString()
+                                            : 'Present';
+                                        return (
+                                            <tr key={`hist-${aIdx}-${hIdx}`} className="border-b">
+                                                <td className="py-2 px-4">{hist.job_title || 'N/A'}</td>
+                                                <td className="py-2 px-4">{hist.employer || 'N/A'}</td>
+                                                <td className="py-2 px-4">{start} – {end}</td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
                                 </tbody>
                             </table>
                         ) : (
-                            <p className="text-gray-600">No work experience information available</p>
+                            <p className="text-gray-600 mb-8">No work history information available</p>
                         )}
-                    </div>
-                )}
 
-                {/* Certifications Tab */}
-                {activeTab === 'certifications' && applicantDetails && (
-                    <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2">Certificates</h3>
-                        {applicantDetails.certifications && applicantDetails.certifications.length > 0 ? (
+                        {/* --- Certifications Table --- */}
+                        {filteredApplicants.some(a => a.user.certifications?.length > 0) ? (
                             <table className="table-auto w-full border-collapse">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
@@ -635,17 +580,16 @@ export default function DocumentViewerModal({
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {applicantDetails.certifications.map((certificate, index) => (
-                                    <tr key={certificate.id || index} className="border-b">
-                                        <td className="py-2 px-4">
-                                            {certificate.title}
-                                        </td>
-                                        <td className="py-2 px-4">{certificate.description || "N/A"}</td>
-                                        <td className="py-2 px-4">
-                                            {certificate.year}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredApplicants.flatMap((applicant, aIdx) =>
+                                    (applicant.user.certifications || []).map((cert, cIdx) => (
+                                        <tr key={`cert-${aIdx}-${cIdx}`} className="border-b">
+
+                                            <td className="py-2 px-4">{cert.title || 'N/A'}</td>
+                                            <td className="py-2 px-4">{cert.description || 'N/A'}</td>
+                                            <td className="py-2 px-4">{cert.year || 'N/A'}</td>
+                                        </tr>
+                                    ))
+                                )}
                                 </tbody>
                             </table>
                         ) : (
@@ -653,6 +597,8 @@ export default function DocumentViewerModal({
                         )}
                     </div>
                 )}
+
+
 
                 {/* Applications Tab */}
                 {activeTab === 'applications' && applicantDetails && (

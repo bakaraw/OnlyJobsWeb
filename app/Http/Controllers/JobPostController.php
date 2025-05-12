@@ -246,17 +246,27 @@ public function update(Request $request, $id)
             'created_at',
         )
             ->with([
-                'user:id,first_name,last_name',
+
+                'user:id,first_name,last_name,middle_name,suffix,email,contact_number,birthdate,gender,address_id,created_at',
+                'user.address',
                 'user.educations:id,user_id,education_level',
-                'user.userSkills:user_id,skill_id,skill_name',
+                'user.workHistories',
+                'user.certifications',
+                'user.userSkills.skill',
+                'user.requirements',
                 'jobPost',
                 'jobPost.skills',
                 'jobPost.requirements',
                 'jobPost.status',
                 'jobPost.degree',
+                'address',
+
+
+
             ])
-            ->with([
-            ])
+
+
+
 
 
 //            ->with([
@@ -474,6 +484,38 @@ public function update(Request $request, $id)
 
         $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
         return $pdf->download('applicant-details.pdf');
+    }
+    public function exportAll(Request $request)
+    {
+        // You can pass specific applicant IDs via query or export all
+        $ids = $request->input('ids', []);
+
+        // Build the base query
+        $query = Application::query()
+            ->with([
+                'user.address',
+                'user.userSkills.skill',
+                'user.educations',
+                'user.experiences',
+                'user.workHistories',
+                'user.certifications',
+                'applications.jobPost',
+            ]);
+
+        // If specific IDs provided, filter, else get all
+        if (!empty($ids)) {
+            $query->whereIn('id', $ids);
+        }
+
+        $filteredApplicants = $query->get();
+
+        // Load the Blade view and pass the data
+        $pdf = Pdf::loadView('export', [
+            'filteredApplicants' => $filteredApplicants,
+        ]);
+
+        // Download the generated PDF
+        return $pdf->download('applicants-export.pdf');
     }
     public function updateStatus(Request $request, $id)
     {
