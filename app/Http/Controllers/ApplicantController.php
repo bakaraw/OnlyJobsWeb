@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\JobPost;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
@@ -31,7 +33,84 @@ class ApplicantController extends Controller
 //    }
 
 
+    public function getApplicantDetails($applicationId)
+    {
+        try {
+            $application = Application::findOrFail($applicationId);
+            $applicant = User::with([
+                'address',
+                'applications' => function ($query) {
+                    $query->select(
+                        'id',
+                        'user_id',
+                        'job_post_id',
+                        'status',
+                        'remarks',
+                        'created_at'
+                    );
+                },
+                'applications.jobPost' => function ($query) {
+                    $query->select(
+                        'id',
+                        'job_title',
+                        'job_type',
+                        'company'
+                    );
+                },
+                'educations',
+                'workHistories',
+                'certifications',
+                'userSkills.skill',
+                'requirements'
+            ])->findOrFail($application->user_id);
 
+            // Format response to match expected structure in DocumentViewModal
+            $formattedApplicant = [
+                'id' => $applicant->id,
+                'first_name' => $applicant->first_name,
+                'last_name' => $applicant->last_name,
+                'email' => $applicant->email,
+                'phone' => $applicant->phone,
+                'address' => $applicant->address,
+                // Map values to match expected keys in frontend
+                'user_skills' => $applicant->userSkills,
+                'educations' => $applicant->educations,
+                'work_histories' => $applicant->workHistories,
+                'certifications' => $applicant->certifications,
+                'applications' => $applicant->applications,
+                'requirements' => $applicant->requirements
+            ];
+
+            return response()->json([
+                'success' => true,
+                'applicant' => $formattedApplicant,
+                'application' => $application
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load applicant details: ' . $e->getMessage()
+            ], 404);
+        }
+    }    public function show($id)
+    {
+        $application = \App\Models\Application::with([
+            'user',
+            'user.educations',
+
+            'user.workHistories',
+            'user.certifications',
+            'user.userSkills.skill',
+            'jobPost',
+            'jobPost.skills',
+            'jobPost.requirements',
+            'jobPost.degree'
+        ])->findOrFail($id);
+
+        return Inertia::render('ApplicantDetails', [
+            'application' => $application
+        ]);
+    }
     public function updateRemark(Request $request)
     {
         $request->validate([

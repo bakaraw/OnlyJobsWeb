@@ -151,8 +151,8 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/user-skills/{userSkill}', [UserSkillsController::class, 'destroy'])
         ->name('user-skills.destroy');
-
-    Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
+    Route::get('/applicant-details/{id}', [ApplicantController::class, 'show'])
+        ->name('applicant.details');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('delete');
 
     Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
@@ -165,6 +165,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
     /*Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');*/
 
+    Route::get('/applicant-details/{applicationId}', [ApplicantController::class, 'getApplicantDetails']);
     // Email Verification Notice
     Route::get('/email/verify', [AuthController::class, 'verifyNotice'])
         ->name('verification.notice');
@@ -224,6 +225,8 @@ Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus'
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
+Route::get('/applicants/{id}/pdf', [JobPostController::class, 'exportPDFApplicant'])
+    ->name('applicants.pdf');
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
 Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');

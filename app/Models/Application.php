@@ -24,6 +24,10 @@ class Application extends Model
         return $this->belongsTo(JobPost::class, "job_post_id");
     }
 
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id', 'id');
+    }
     public function degree()
     {
         return $this->belongsTo(Degree::class);
