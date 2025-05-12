@@ -485,37 +485,21 @@ public function update(Request $request, $id)
         $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
         return $pdf->download('applicant-details.pdf');
     }
-    public function exportAll(Request $request)
+    public function exportPDFApplicant($id)
     {
-        // You can pass specific applicant IDs via query or export all
-        $ids = $request->input('ids', []);
+        $user = User::with([
+            'address',
+            'applications.jobPost',
+            'requirements',
+            'educations',
+            'experiences',
+            'workHistories',
+            'certifications',
+            'userSkills.skill',
+        ])->findOrFail($id);
 
-        // Build the base query
-        $query = Application::query()
-            ->with([
-                'user.address',
-                'user.userSkills.skill',
-                'user.educations',
-                'user.experiences',
-                'user.workHistories',
-                'user.certifications',
-                'applications.jobPost',
-            ]);
-
-        // If specific IDs provided, filter, else get all
-        if (!empty($ids)) {
-            $query->whereIn('id', $ids);
-        }
-
-        $filteredApplicants = $query->get();
-
-        // Load the Blade view and pass the data
-        $pdf = Pdf::loadView('export', [
-            'filteredApplicants' => $filteredApplicants,
-        ]);
-
-        // Download the generated PDF
-        return $pdf->download('applicants-export.pdf');
+        $pdf = Pdf::loadView('pdf.applicant-details', ['user' => $user]);
+        return $pdf->download("applicant-{$id}-profile.pdf");
     }
     public function updateStatus(Request $request, $id)
     {

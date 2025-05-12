@@ -191,22 +191,35 @@ export default function DocumentViewerModal({
         return statusColors[status] || 'bg-gray-300 text-gray-800'
     }
 
-    const handleExportPdf = async () => {
-        if (!applicantDetails || !applicantDetails.id) return;
+    const handleExportAll = async () => {
+        // collect applicant IDs (could be applicantDetails.id for single, or user.id)
+        const ids = filteredApplicants
+            .map(app => app.id || app.user?.id)
+            .filter(Boolean);
+
+        if (ids.length === 0) {
+            alert('No applicants to export.');
+            return;
+        }
 
         try {
-            const response = await axios.get(`/applicants/${applicantDetails.id}/pdf`, { responseType: 'blob' });
+            const params = new URLSearchParams();
+            ids.forEach(id => params.append('ids[]', id));
 
-            // Create a blob URL and trigger download
+            const response = await axios.get(`/applicants/export?${params.toString()}`, {
+                responseType: 'blob',
+                headers: { 'X-CSRF-TOKEN': csrf },
+            });
+
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `user-${applicantDetails.id}-profile.pdf`);
+            link.setAttribute('download', `applicants-export.pdf`);
             document.body.appendChild(link);
             link.click();
             link.remove();
         } catch (err) {
-            console.error('PDF export failed', err);
+            console.error('Bulk PDF export failed', err);
             alert('Failed to download PDF.');
         }
     };
@@ -219,7 +232,7 @@ export default function DocumentViewerModal({
                 <div className="flex justify-between items-center">
                     <span className="text-2xl font-bold">Applicant Information</span>
                     <div className="flex gap-2">
-                        <SecondaryButton onClick={handleExportPdf}>
+                        <SecondaryButton onClick={handleExportAll}>
                             Export PDF
                         </SecondaryButton>
                         <SecondaryButton onClick={onClose}>Close</SecondaryButton>
@@ -404,7 +417,8 @@ export default function DocumentViewerModal({
 
                                 return (
                                     <div key={u.id || idx} className="border rounded-lg p-4 shadow-sm">
-                                        <h4 className="text-2xl font-semibold mb-4 text-4xl">{fullName || 'Unnamed Applicant'}</h4>                                        {/* Personal Info Table */}
+                                        <h4 className="text-md font-semibold mb-4 text-lg">{fullName || 'Unnamed Applicant'}</h4>
+                                        {/* Personal Info Table */}
                                         <table className="table-auto w-full mb-6">
                                             <thead className="bg-gray-100">
 
