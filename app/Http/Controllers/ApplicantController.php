@@ -64,10 +64,26 @@ class ApplicantController extends Controller
                 'requirements'
             ])->findOrFail($application->user_id);
 
-            // Return JSON response instead of Inertia render
+            // Format response to match expected structure in DocumentViewModal
+            $formattedApplicant = [
+                'id' => $applicant->id,
+                'first_name' => $applicant->first_name,
+                'last_name' => $applicant->last_name,
+                'email' => $applicant->email,
+                'phone' => $applicant->phone,
+                'address' => $applicant->address,
+                // Map values to match expected keys in frontend
+                'user_skills' => $applicant->userSkills,
+                'educations' => $applicant->educations,
+                'work_histories' => $applicant->workHistories,
+                'certifications' => $applicant->certifications,
+                'applications' => $applicant->applications,
+                'requirements' => $applicant->requirements
+            ];
+
             return response()->json([
                 'success' => true,
-                'applicant' => $applicant,
+                'applicant' => $formattedApplicant,
                 'application' => $application
             ]);
         } catch (\Exception $e) {
@@ -76,8 +92,7 @@ class ApplicantController extends Controller
                 'message' => 'Failed to load applicant details: ' . $e->getMessage()
             ], 404);
         }
-    }
-    public function show($id)
+    }    public function show($id)
     {
         $application = \App\Models\Application::with([
             'user',

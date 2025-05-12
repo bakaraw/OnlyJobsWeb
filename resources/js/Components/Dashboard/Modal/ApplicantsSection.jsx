@@ -21,6 +21,7 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
     });
 
 
+    console.log("appps", applicants)
     const {props} = usePage();
     const {statuses, degrees, requirements, skills} = props;
 
@@ -31,49 +32,48 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
     );
 
     const openDocumentModal = async (applicationId) => {
-        try {
-            // Add loading state if needed
-            setDocumentModal({
-                ...documentModal,
-                show: true,
-                loading: true,
-                applicationId
-            });
+        setDocumentModal({
+            show: true,
+            loading: true,
+            applicationId
+        });
 
+        try {
             const response = await axios.get(`/applicant-details/${applicationId}`);
 
             if (response.data.success) {
+                // Find the current application from your local data for additional context
+                const currentApplication = filteredApplicants.find(app => app.id === applicationId);
+
                 setDocumentModal({
                     show: true,
-                    applicationId,
                     loading: false,
+                    applicationId,
                     applicantDetails: {
                         ...response.data.applicant,
-                        current_application: response.data.application
+                        current_application: response.data.application,
+                        documents: response.data.documents,
+                        // Make sure all these fields align with what DocumentViewModal expects
+                        userSkills: response.data.applicant.user_skills || [],
+                        educations: response.data.applicant.educations || [],
+                        work_histories: response.data.applicant.work_histories || [],
+                        certifications: response.data.applicant.certifications || [],
+                        applications: response.data.applicant.applications || [],
+                        // Include job post information if available
+                        job_post: currentApplication?.job_post || response.data.job_post
                     }
                 });
-            } else {
-                console.error("Failed to load applicant details:", response.data.message);
-                setDocumentModal({
-                    ...documentModal,
-                    loading: false,
-                    error: response.data.message
-                });
             }
+
         } catch (error) {
-            console.error("Error loading applicant details:", error);
-            setDocumentModal({
-                ...documentModal,
-                loading: false,
-                error: "Failed to load applicant details"
-            });
+            console.error("Error fetching applicant details:", error);
+            setDocumentModal({ show: false, loading: false });
         }
     };
     // Close document modal
     const closeDocumentModal = () => {
         setDocumentModal({ show: false, applicationId: null });
     };
-
     const educationLevel = {
         'Graduate': 1,
         'Undergraduate': 2,
@@ -311,6 +311,7 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                         {application.remarks && application.remarks !== ""
                             ? application.remarks
                             : "No remarks"}
+
                       </span>
                                     )}
                                 </td>
@@ -374,14 +375,17 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                                                 </DangerButton>
                                             )}
 
+
                                         </div>
                                     )}
 
                                 </td>
                                 <td className="py-2 px-4">
+
                                     <SecondaryButton
                                         onClick={() => {
-                                            openDocumentModal(application.id);
+                                            openDocumentModal(application.id).then(() => {});
+
                                         }}
                                     >
                                         View Documents
@@ -406,18 +410,27 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                 autoClose={modalProps.type !== "warning"} // Don't auto-close warning modals
             />
             <DocumentViewerModal
+                // isOpen={documentModal.show}
+                // onClose={closeDocumentModal}
+                // applicationId={documentModal.applicationId}
+                // applicantDetails={documentModal.applicantDetails}
+                // loading={documentModal.loading}
+                // applicantInfo={documentModal.applicationId ? {
+                //     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
+                //     status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
+                //     dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
+                //     jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position",
+                //     email: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.email || "N/A",
+                //     phone: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.phone || "N/A"
+                // } : null}
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
                 applicationId={documentModal.applicationId}
-                applicantDetails={documentModal.applicantDetails || null}
-                applicantInfo={documentModal.applicationId ? {
-                    name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name
-                    || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
-                    status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
-                    dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
-                    jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position"
-                } : null}
+                applicantDetails={documentModal.applicantDetails}
+                loading={documentModal.loading}
+                filteredApplicants={applicants}
             />
         </DashboardCard>
     );
 }
+

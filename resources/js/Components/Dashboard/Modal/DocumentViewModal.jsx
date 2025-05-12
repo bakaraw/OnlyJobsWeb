@@ -10,7 +10,10 @@ export default function DocumentViewerModal({
                                                 onClose,
                                                 documentId,
                                                 applicationId,
-                                                applicantInfo = null
+                                                applicantDetails = null,
+                                                applicantInfo = null,
+                                                filteredApplicants
+
                                             }) {
     const { csrf } = usePage().props
     const [loading, setLoading] = useState(true)
@@ -19,11 +22,18 @@ export default function DocumentViewerModal({
     const [documents, setDocuments] = useState([])
     const [currentDocIndex, setCurrentDocIndex] = useState(0)
     const [activeTab, setActiveTab] = useState('documents') // 'documents', 'profile', 'skills', 'education', 'work', 'certifications'
-    const [applicantDetails, setApplicantDetails] = useState(null)
+    const [applicantData, setApplicantData] = useState(null)
+
+    console.log("Application ID:", applicationId)
+    console.log("Applicant Details:", applicantDetails)
+    console.log("Applicant Info:", applicantInfo)
+    console.log(filteredApplicants)
+    console.log("Applicant Education Levels:", filteredApplicants.map(applicant =>
+        applicant.user.educations.map(education => education.education_level)
+    ));     // Fetch a single document by ID
 
 
 
-    // Fetch a single document by ID
     const fetchDocument = async (id) => {
         try {
             setLoading(true)
@@ -73,8 +83,20 @@ export default function DocumentViewerModal({
             const response = await axios.get(`/applicant-details/${appId}`, {
                 headers: { 'X-CSRF-TOKEN': csrf }
             });
+
             if (response.data.success) {
-                setApplicantDetails(response.data.applicant);
+                setApplicantData({
+                    ...response.data.applicant,
+                    current_application: response.data.application,
+                    documents: response.data.documents
+                });
+
+                // If we get documents from this API call, use them
+                if (response.data.documents && response.data.documents.length > 0) {
+                    setDocuments(response.data.documents);
+                    setDocument(response.data.documents[0]);
+                    setCurrentDocIndex(0);
+                }
             } else {
                 console.error('Failed to load applicant details:', response.data.message);
             }
@@ -85,24 +107,38 @@ export default function DocumentViewerModal({
     // Load data when modal opens
     useEffect(() => {
         if (isOpen) {
+            // If applicantDetails is already provided via props, use it
+            if (applicantDetails) {
+                setApplicantData(applicantDetails);
+
+                // If documents are included in applicantDetails, use them
+                if (applicantDetails.documents && applicantDetails.documents.length > 0) {
+                    setDocuments(applicantDetails.documents);
+                    setDocument(applicantDetails.documents[0]);
+                    setCurrentDocIndex(0);
+                    setLoading(false);
+                    return;
+                }
+            }
+
             if (documentId) {
-                fetchDocument(documentId)
+                fetchDocument(documentId);
             } else if (applicationId) {
-                fetchApplicationDocuments(applicationId)
-                fetchApplicantDetails(applicationId)
+                fetchApplicationDocuments(applicationId);
+                fetchApplicantDetails(applicationId);
             } else {
-                setError('No document or application specified')
-                setLoading(false)
+                setError('No document or application specified');
+                setLoading(false);
             }
         } else {
             // Reset state when modal closes
-            setDocument(null)
-            setDocuments([])
-            setError(null)
-            setActiveTab('documents')
+            setDocument(null);
+            setDocuments([]);
+            setError(null);
+            setActiveTab('documents');
+            setApplicantData(null);
         }
-    }, [isOpen, documentId, applicationId])
-
+    }, [isOpen, documentId, applicationId, applicantDetails])
     // Navigate between documents
     const goToPrevious = () => {
         if (currentDocIndex > 0) {
@@ -432,71 +468,75 @@ export default function DocumentViewerModal({
                 )}
 
                 {/* Skills Tab */}
-                {activeTab === 'skills' && applicantDetails && (
+                {/* Skills Tab */}
+                {activeTab === 'skills' && (
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2">Skills</h3>
-                        {applicantDetails.userSkills && applicantDetails.userSkills.length > 0 ? (
-                            <table className="table-auto w-full border-collapse">
+
+                        {filteredApplicants.some(a => a.user.user_skills?.length > 0) ? (
+                            <table className="table-auto w-full border-collapse mb-6">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
-                                    <th className="py-2 px-4">Skill Name</th>
+                                    <th className="py-2 px-4">Applicant</th>
+                                    <th className="py-2 px-4">Skill</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {applicantDetails.userSkills.map((skill, index) => (
-                                    <tr key={index} className="border-b">
-                                        <td className="py-2 px-4">
-                                            {skill.skill ? skill.skill.name : skill.skill_name}
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        ) : applicantDetails.user_skills && applicantDetails.user_skills.length > 0 ? (
-                            <table className="table-auto w-full">
-                                <thead className="bg-gray-100 text-left">
-                                <tr>
-                                    <th className="py-2 px-4">Skills</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {applicantDetails.user_skills.map((skill, index) => (
-                                    <tr key={skill.id || index} className="border-b">
-                                        <td className="py-2 px-4">{skill.skill_name || "N/A"}</td>
-                                    </tr>
-                                ))}
+                                {filteredApplicants.map((applicant, aIdx) => {
+                                    const skills = applicant.user.user_skills || [];
+
+                                    return skills.map((skill, rowIdx) => (
+                                        <tr key={`${aIdx}-${rowIdx}`} className="border-b">
+                                            {rowIdx === 0 && (
+                                                <td
+                                                    className="py-2 px-4"
+                                                    rowSpan={skills.length}
+                                                >
+                                                    {applicant.user.first_name} {applicant.user.last_name}
+                                                </td>
+                                            )}
+                                            <td className="py-2 px-4">
+                                                {skill.skill?.name || skill.skill_name || 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ));
+                                })}
                                 </tbody>
                             </table>
                         ) : (
                             <p className="text-gray-600">No skills information available</p>
                         )}
-                    </div>
-                )}
 
-                {/* Education Tab */}
-                {activeTab === 'education' && applicantDetails && (
-                    <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2">Education</h3>
-                        {applicantDetails.educations && applicantDetails.educations.length > 0 ? (
+
+                        {filteredApplicants.some(a => a.user.educations?.length > 0) ? (
                             <table className="table-auto w-full border-collapse">
                                 <thead className="bg-gray-100 text-left">
                                 <tr>
-                                    <th className="py-2 px-4">Degree</th>
-                                    <th className="py-2 px-4">School</th>
-                                    <th className="py-2 px-4">Period</th>
+                                    <th className="py-2 px-4">Applicant</th>
+                                    <th className="py-2 px-4">Education Level</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {applicantDetails.educations.map((edu, index) => (
-                                    <tr key={edu.id || index} className="border-b">
-                                        <td className="py-2 px-4">{edu.degree || "N/A"}</td>
-                                        <td className="py-2 px-4">{edu.school || "N/A"}</td>
-                                        <td className="py-2 px-4">
-                                            {edu.start_year || "?"}
-                                            {edu.end_year ? ` - ${edu.end_year}` : " - Present"}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredApplicants.map((applicant, aIdx) => {
+                                    const educations = applicant.user.educations || [];
+
+                                    return educations.map((education, rowIdx) => (
+                                        <tr key={`${aIdx}-${rowIdx}`} className="border-b">
+                                            {rowIdx === 0 && (
+                                                <td
+                                                    className="py-2 px-4"
+                                                    rowSpan={educations.length}
+                                                >
+                                                    {applicant.user.first_name} {applicant.user.last_name}
+                                                </td>
+                                            )}
+                                            <td className="py-2 px-4">
+                                                {education.education_level || 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ));
+                                })}
                                 </tbody>
                             </table>
                         ) : (
@@ -504,8 +544,45 @@ export default function DocumentViewerModal({
                         )}
                     </div>
                 )}
+                {activeTab === 'education' && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Education</h3>
 
-                {/* Work Experience Tab */}
+                        {filteredApplicants.some(a => a.user.educations?.length > 0) ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Applicant</th>
+                                    <th className="py-2 px-4">Education Level</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {filteredApplicants.map((applicant, aIdx) => {
+                                    const educations = applicant.user.educations || [];
+
+                                    return educations.map((education, rowIdx) => (
+                                        <tr key={`${aIdx}-${rowIdx}`} className="border-b">
+                                            {rowIdx === 0 && (
+                                                <td
+                                                    className="py-2 px-4"
+                                                    rowSpan={educations.length}
+                                                >
+                                                    {applicant.user.first_name} {applicant.user.last_name}
+                                                </td>
+                                            )}
+                                            <td className="py-2 px-4">
+                                                {education.education_level || 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ));
+                                })}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No education information available</p>
+                        )}
+                    </div>
+                )}                {/* Work Experience Tab */}
                 {activeTab === 'work' && applicantDetails && (
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
