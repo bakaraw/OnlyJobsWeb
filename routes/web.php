@@ -234,6 +234,7 @@ Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job
 Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
+Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
 
 Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/conversations', [MessageController::class, 'adminConversations']);

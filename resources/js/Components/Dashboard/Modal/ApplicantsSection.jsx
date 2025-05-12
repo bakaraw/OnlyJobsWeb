@@ -267,7 +267,7 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                             <th className="py-2 px-4 text-left">Date Applied</th>
                             <th className="py-2 px-4 text-left">Remarks</th>
                             <th className="py-2 px-4 text-left">Actions</th>
-                            <th className="py-2 px-4 text-left">Documents</th>
+                            <th className="py-2 px-4 text-left">Applicant Information</th>
 
                         </tr>
                         </thead>
@@ -415,14 +415,15 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                 // applicationId={documentModal.applicationId}
                 // applicantDetails={documentModal.applicantDetails}
                 // loading={documentModal.loading}
-                // applicantInfo={documentModal.applicationId ? {
-                //     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
-                //     status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
-                //     dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
-                //     jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position",
-                //     email: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.email || "N/A",
-                //     phone: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.phone || "N/A"
-                // } : null}
+                applicantInfo={documentModal.applicationId ? {
+                    name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
+                    status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
+                    user_id: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user_id || "N/A",
+                    dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
+                    jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position",
+                    email: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.email || "N/A",
+                    phone: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.phone || "N/A"
+                } : null}
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
                 applicationId={documentModal.applicationId}
