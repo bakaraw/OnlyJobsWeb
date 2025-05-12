@@ -1,29 +1,28 @@
 import React from "react";
 import DangerButton from "@/Components/DangerButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
+import axios from "axios";
 
-export default function ApplicantDetails({ selectedApplicant, onClose, onBack }) {
+export default function ApplicantDetails({ selectedApplicant, onBack }) {
+    console.log("Selected applicant in details:", selectedApplicant);
 
-
-    console.log(selectedApplicant)
     if (!selectedApplicant) {
         return (
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">User data not available</h2>
-                    <DangerButton onClick={onClose} className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-                        Close
-                    </DangerButton>
+                    <SecondaryButton onClick={onBack} className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
+                        Back
+                    </SecondaryButton>
                 </div>
                 <p>Unable to display user details. Data might be missing or improperly formatted.</p>
             </div>
         );
     }
-    console.log("certi", selectedApplicant.certifications);
-    console.log("skills", selectedApplicant.user_skills);
-    console.log("skills", selectedApplicant.user_skills);
-    console.log("selected", selectedApplicant);
 
+    console.log("certifications:", selectedApplicant.certifications);
+    console.log("user_skills:", selectedApplicant.user_skills);
+    console.log("selected applicant:", selectedApplicant);
 
     const statusClasses = {
         accepted: "text-green-600",
@@ -36,7 +35,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
     const middleName = selectedApplicant.middle_name || "";
     const lastName = selectedApplicant.last_name || "";
     const suffix = selectedApplicant.suffix || "";
-
 
     const handleExportPdf = async () => {
         try {
@@ -55,6 +53,7 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
             alert('Failed to download PDF.');
         }
     };
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -64,19 +63,18 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                     {suffix ? ", " + suffix : ""}
                 </h2>
 
-                <SecondaryButton
-                    onClick={onBack}
-                    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
-                >
-                    Back
-                </SecondaryButton>
+                <div className="flex gap-2">
+                    <SecondaryButton
+                        onClick={onBack}
+                        className="flex items-center text-blue-600 hover:text-blue-800"
+                    >
+                        Back
+                    </SecondaryButton>
 
-                <SecondaryButton onClick={handleExportPdf}>
-                    Export PDF
-                </SecondaryButton>
-
-
-
+                    <SecondaryButton onClick={handleExportPdf}>
+                        Export PDF
+                    </SecondaryButton>
+                </div>
             </div>
 
             {/* Personal Info */}
@@ -124,48 +122,22 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                 )}
             </div>
 
+            {/* Skills Section */}
             {selectedApplicant.userSkills && selectedApplicant.userSkills.length > 0 && (
                 <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-2">Certificates</h3>
+                    <h3 className="text-lg font-semibold mb-2">Skills</h3>
                     <table className="table-auto w-full border-collapse">
                         <thead className="bg-gray-100 text-left">
                         <tr>
-                            <th className="py-2 px-4">Title</th>
-                            <th className="py-2 px-4">Description</th>
-                            <th className="py-2 px-4">Year</th>
+                            <th className="py-2 px-4">Skill Name</th>
                         </tr>
                         </thead>
                         <tbody>
                         {selectedApplicant.userSkills.map((skill, index) => (
-                            <td className="py-2 px-4">
-                                {skill.skill_name }
-                            </td>
-
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-
-
-
-
-
-            {selectedApplicant.user_skills && selectedApplicant.user_skills.length > 0 && (
-                <div className="mb-6">
-                    <table className="table-auto w-full ">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Skills</th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        {selectedApplicant.user_skills.map((skill, index) => (
-                            <tr key={skill.id || index} className="border-b">
-                                <td className="py-2 px-4">{skill.skill_name|| "N/A"}</td>
+                            <tr key={index} className="border-b">
+                                <td className="py-2 px-4">
+                                    {skill.skill_name}
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -173,7 +145,26 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                 </div>
             )}
 
-
+            {/* Alternative way to display skills */}
+            {selectedApplicant.user_skills && selectedApplicant.user_skills.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-2">Skills</h3>
+                    <table className="table-auto w-full">
+                        <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="py-2 px-4">Skills</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {selectedApplicant.user_skills.map((skill, index) => (
+                            <tr key={skill.id || index} className="border-b">
+                                <td className="py-2 px-4">{skill.skill_name || "N/A"}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {/* Education */}
             {selectedApplicant.educations && selectedApplicant.educations.length > 0 && (
@@ -188,7 +179,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                         </tr>
                         </thead>
                         <tbody>
-
                         {selectedApplicant.educations.map((edu, index) => (
                             <tr key={edu.id || index} className="border-b">
                                 <td className="py-2 px-4">{edu.degree || "N/A"}</td>
@@ -204,7 +194,7 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                 </div>
             )}
 
-
+            {/* Certifications */}
             {selectedApplicant.certifications && selectedApplicant.certifications.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Certificates</h3>
@@ -220,12 +210,11 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                         {selectedApplicant.certifications.map((certificate, index) => (
                             <tr key={certificate.id || index} className="border-b">
                                 <td className="py-2 px-4">
-                                    {certificate.title }
+                                    {certificate.title}
                                 </td>
                                 <td className="py-2 px-4">{certificate.description || "N/A"}</td>
                                 <td className="py-2 px-4">
-                                    {certificate.year
-                                    }
+                                    {certificate.year}
                                 </td>
                             </tr>
                         ))}
@@ -233,8 +222,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                     </table>
                 </div>
             )}
-
-
 
             {/* Work Experience */}
             {selectedApplicant.work_histories && selectedApplicant.work_histories.length > 0 && (
@@ -332,9 +319,6 @@ export default function ApplicantDetails({ selectedApplicant, onClose, onBack })
                     </table>
                 </div>
             )}
-
-
         </div>
-
     );
 }

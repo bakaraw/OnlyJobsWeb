@@ -4,14 +4,14 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
-import {usePage} from "@inertiajs/react";
+import {router, usePage} from "@inertiajs/react";
 import ConfirmModal from "@/Components/ConfirmModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
 import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsViewerModal.jsx";
 import DocumentViewerModal from "@/Components/Dashboard/Modal/DocumentViewModal.jsx";
 
 
-export default function ApplicantsSection({applicants}) {
+export default function ApplicantsSection({applicants, onApplicantSelect}) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
@@ -20,6 +20,8 @@ export default function ApplicantsSection({applicants}) {
         applicationId: null,
     });
 
+
+    console.log("appps", applicants)
     const {props} = usePage();
     const {statuses, degrees, requirements, skills} = props;
 
@@ -29,17 +31,49 @@ export default function ApplicantsSection({applicants}) {
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
 
-    // Open document modal with specific application ID
-    const openDocumentModal = (applicationId) => {
-        setDocumentModal({ show: true, applicationId });
-    };
+    const openDocumentModal = async (applicationId) => {
+        setDocumentModal({
+            show: true,
+            loading: true,
+            applicationId
+        });
 
+        try {
+            const response = await axios.get(`/applicant-details/${applicationId}`);
+
+            if (response.data.success) {
+                // Find the current application from your local data for additional context
+                const currentApplication = filteredApplicants.find(app => app.id === applicationId);
+
+                setDocumentModal({
+                    show: true,
+                    loading: false,
+                    applicationId,
+                    applicantDetails: {
+                        ...response.data.applicant,
+                        current_application: response.data.application,
+                        documents: response.data.documents,
+                        // Make sure all these fields align with what DocumentViewModal expects
+                        userSkills: response.data.applicant.user_skills || [],
+                        educations: response.data.applicant.educations || [],
+                        work_histories: response.data.applicant.work_histories || [],
+                        certifications: response.data.applicant.certifications || [],
+                        applications: response.data.applicant.applications || [],
+                        // Include job post information if available
+                        job_post: currentApplication?.job_post || response.data.job_post
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error("Error fetching applicant details:", error);
+            setDocumentModal({ show: false, loading: false });
+        }
+    };
     // Close document modal
     const closeDocumentModal = () => {
         setDocumentModal({ show: false, applicationId: null });
     };
-    console.log('applicants', applicants);
-
     const educationLevel = {
         'Graduate': 1,
         'Undergraduate': 2,
@@ -74,13 +108,12 @@ export default function ApplicantsSection({applicants}) {
         type: "success",
         message: "",
         onClose: () => setModalProps((prev) => ({...prev, show: false})),
-        onConfirm: true,
+        onConfirm: null, // Changed to null initially
     });
 
     const closeModal = () => {
         setModalProps(prev => ({...prev, show: false}));
     };
-    const [viewerOpen, setViewerOpen] = useState(false)
 
     const handleAccept = async (application) => {
         try {
@@ -95,6 +128,7 @@ export default function ApplicantsSection({applicants}) {
 
                 console.log('Education Met:', educationMet, 'Skills Met:', skillsMet);
                 console.log('Applicant Education:', applicantEducationLevel, 'Required:', requiredEducationLevel);
+                console.log('Applicant Skills:', applicantSkills.map(s => s.skill_name), 'Required Skills:', jobSkills.map(s => s.skill_name));
 
                 let msg = "";
 
@@ -107,13 +141,12 @@ export default function ApplicantsSection({applicants}) {
                 }
 
                 if (msg) {
+                    // Show warning but still allow qualification
                     msg += " Do you still want to proceed?";
-                    setModalProps({
-                        show: true,
-                        type: "warning",
-                        message: msg,
-                        onClose: closeModal,
-                        onConfirm: async () => {
+
+                    // Define the confirmation action for accepting despite warnings
+                    const confirmAction = async () => {
+                        try {
                             const response = await axios.post("/applicants/qualified", {
                                 application_id: application.id
                             });
@@ -121,9 +154,20 @@ export default function ApplicantsSection({applicants}) {
                                 window.location.reload();
                             }
                             closeModal();
+                        } catch (error) {
+                            console.error("Error qualifying applicant:", error);
+                            closeModal();
                         }
+                    };
+
+                    setModalProps({
+                        show: true,
+                        type: "warning",
+                        message: msg,
+                        onClose: closeModal,
+                        onConfirm: confirmAction // Assign the confirmation action properly
                     });
-                    return; // Return early to prevent the code below from executing
+                    return; // Make sure we don't continue with the function
                 } else {
                     // If all requirements are met, just qualify without warning
                     const response = await axios.post("/applicants/qualified", {
@@ -140,13 +184,18 @@ export default function ApplicantsSection({applicants}) {
                     message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
                     onClose: closeModal,
                     onConfirm: async () => {
-                        const response = await axios.post("/applicants/accepted", {
-                            application_id: application.id
-                        });
-                        if (response.data.success) {
-                            window.location.reload();
+                        try {
+                            const response = await axios.post("/applicants/accepted", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        } catch (error) {
+                            console.error("Error accepting applicant:", error);
+                            closeModal();
                         }
-                        closeModal();
                     }
                 });
             }
@@ -207,15 +256,6 @@ export default function ApplicantsSection({applicants}) {
                     </SecondaryButton>
                 ))}
             </div>
-            {modalProps.show && modalProps.onConfirm && (
-                <div className="mt-2 ml-4">
-                    <PrimaryButton
-                        onClick={() => setViewerOpen(true)}                    >
-                        Proceed
-                    </PrimaryButton>
-                </div>
-            )}
-
 
             {filteredApplicants.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -233,13 +273,25 @@ export default function ApplicantsSection({applicants}) {
                         </thead>
                         <tbody>
                         {filteredApplicants.map((application, index) => (
-                            <tr key={application.id} className="border-t hover:bg-gray-50">
+                            <tr
+                                key={application.id}
+                                className="border-t hover:bg-gray-50"
+                            >
                                 <td className="py-2 px-4">
                                     <div className="flex items-center">
-                      <span className="mr-2 text-gray-500">
-                        {index + 1}.
-                      </span>
-                                        {application.user.first_name} {application.user.last_name}
+                                          <span className="mr-2 text-gray-500">
+                                            {index + 1}.
+                                          </span>
+                                        <span
+                                            className="cursor-pointer hover:text-blue-600 hover:underline"
+                                            onClick={() => {
+
+                                                    onApplicantSelect(application.id);
+                                                }
+                                            }
+                                        >
+                              {application.user.first_name} {application.user.last_name}
+                            </span>
                                     </div>
                                 </td>
                                 <td className="py-2 px-4 capitalize">{application.status}</td>
@@ -259,6 +311,7 @@ export default function ApplicantsSection({applicants}) {
                         {application.remarks && application.remarks !== ""
                             ? application.remarks
                             : "No remarks"}
+
                       </span>
                                     )}
                                 </td>
@@ -322,12 +375,19 @@ export default function ApplicantsSection({applicants}) {
                                                 </DangerButton>
                                             )}
 
+
                                         </div>
                                     )}
 
                                 </td>
                                 <td className="py-2 px-4">
-                                    <SecondaryButton onClick={() => openDocumentModal(application.id)}>
+
+                                    <SecondaryButton
+                                        onClick={() => {
+                                            openDocumentModal(application.id).then(() => {});
+
+                                        }}
+                                    >
                                         View Documents
                                     </SecondaryButton>
                                 </td>
@@ -346,25 +406,31 @@ export default function ApplicantsSection({applicants}) {
                 type={modalProps.type}
                 message={modalProps.message}
                 onClose={modalProps.onClose}
+                onConfirm={modalProps.onConfirm} // This now correctly passes the confirmation function
+                autoClose={modalProps.type !== "warning"} // Don't auto-close warning modals
             />
-            {/*<RequirementsViewerModal*/}
-            {/*    show={documentModal.show}*/}
-            {/*    applicationId={documentModal.applicationId}*/}
-            {/*    onClose={closeDocumentModal}*/}
-            {/*/>*/}
-             <DocumentViewerModal
+            <DocumentViewerModal
+                // isOpen={documentModal.show}
+                // onClose={closeDocumentModal}
+                // applicationId={documentModal.applicationId}
+                // applicantDetails={documentModal.applicantDetails}
+                // loading={documentModal.loading}
+                // applicantInfo={documentModal.applicationId ? {
+                //     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
+                //     status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
+                //     dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
+                //     jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position",
+                //     email: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.email || "N/A",
+                //     phone: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.phone || "N/A"
+                // } : null}
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
-                applicationId={documentModal.applicationId} applicantInfo={documentModal.applicationId ? {
-                    name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name
-                    || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
-                    status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
-                    dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
-                    jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position"
-            } : null}
-                />
-
+                applicationId={documentModal.applicationId}
+                applicantDetails={documentModal.applicantDetails}
+                loading={documentModal.loading}
+                filteredApplicants={applicants}
+            />
         </DashboardCard>
-
     );
 }
+
