@@ -165,6 +165,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
     /*Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');*/
 
+    Route::get('/applicant-details/{applicationId}', [ApplicantController::class, 'getApplicantDetails']);
     // Email Verification Notice
     Route::get('/email/verify', [AuthController::class, 'verifyNotice'])
         ->name('verification.notice');

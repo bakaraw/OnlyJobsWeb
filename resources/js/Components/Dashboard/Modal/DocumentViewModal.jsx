@@ -18,6 +18,10 @@ export default function DocumentViewerModal({
     const [document, setDocument] = useState(null)
     const [documents, setDocuments] = useState([])
     const [currentDocIndex, setCurrentDocIndex] = useState(0)
+    const [activeTab, setActiveTab] = useState('documents') // 'documents', 'profile', 'skills', 'education', 'work', 'certifications'
+    const [applicantDetails, setApplicantDetails] = useState(null)
+
+
 
     // Fetch a single document by ID
     const fetchDocument = async (id) => {
@@ -63,6 +67,21 @@ export default function DocumentViewerModal({
         }
     }
 
+    // Fetch applicant details
+    const fetchApplicantDetails = async (appId) => {
+        try {
+            const response = await axios.get(`/applicant-details/${appId}`, {
+                headers: { 'X-CSRF-TOKEN': csrf }
+            });
+            if (response.data.success) {
+                setApplicantDetails(response.data.applicant);
+            } else {
+                console.error('Failed to load applicant details:', response.data.message);
+            }
+        } catch (err) {
+            console.error('Error fetching applicant details:', err);
+        }
+    }
     // Load data when modal opens
     useEffect(() => {
         if (isOpen) {
@@ -70,6 +89,7 @@ export default function DocumentViewerModal({
                 fetchDocument(documentId)
             } else if (applicationId) {
                 fetchApplicationDocuments(applicationId)
+                fetchApplicantDetails(applicationId)
             } else {
                 setError('No document or application specified')
                 setLoading(false)
@@ -79,6 +99,7 @@ export default function DocumentViewerModal({
             setDocument(null)
             setDocuments([])
             setError(null)
+            setActiveTab('documents')
         }
     }, [isOpen, documentId, applicationId])
 
@@ -134,131 +155,467 @@ export default function DocumentViewerModal({
         return statusColors[status] || 'bg-gray-300 text-gray-800'
     }
 
+    const handleExportPdf = async () => {
+        if (!applicantDetails || !applicantDetails.id) return;
+
+        try {
+            const response = await axios.get(`/applicants/${applicantDetails.id}/pdf`, { responseType: 'blob' });
+
+            // Create a blob URL and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `user-${applicantDetails.id}-profile.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error('PDF export failed', err);
+            alert('Failed to download PDF.');
+        }
+    };
+
     if (!isOpen) return null
 
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="6xl">
             <div className="p-6 border-b">
-                <span className="text-2xl font-bold">Applicants Document</span>
                 <div className="flex justify-between items-center">
-                    {applicantInfo && (
-                    <div className="flex flex-col">
-                                <p className="text-gray-600">
-                                    <span className="font-bold"> {applicantInfo.name}</span> -
-                                    <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${getStatusColor(applicantInfo.status)}`}>
-                                        {applicantInfo.status}
-                                    </span>
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    Applied for: {applicantInfo.jobTitle} on {applicantInfo.dateApplied}
-                                </p>
+                    <span className="text-2xl font-bold">Applicant Information</span>
+                    <div className="flex gap-2">
+                        <SecondaryButton onClick={handleExportPdf}>
+                            Export PDF
+                        </SecondaryButton>
+                        <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                     </div>
-                    )}
-                    <SecondaryButton onClick={onClose}>Close</SecondaryButton>
+                </div>
+                {applicantInfo && (
+                    <div className="mt-2">
+                        <p className="text-gray-600">
+                            <span className="font-bold"> {applicantInfo.name}</span> -
+                            <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${getStatusColor(applicantInfo.status)}`}>
+                                {applicantInfo.status}
+                            </span>
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Applied for: {applicantInfo.jobTitle} on {applicantInfo.dateApplied}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="border-b px-6 pt-4">
+                <div className="flex space-x-4">
+                    <button
+                        onClick={() => setActiveTab('documents')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'documents'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Documents
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('profile')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'profile'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Personal Info
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('skills')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'skills'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Skills
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('education')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'education'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Education
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('work')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'work'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Work Experience
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('certifications')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'certifications'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Certifications
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('applications')}
+                        className={`pb-4 px-1 border-b-2 transition-colors ${
+                            activeTab === 'applications'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent hover:border-gray-300'
+                        }`}
+                    >
+                        Applications
+                    </button>
                 </div>
             </div>
 
-            <div className="p-6">
-                {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
-                    </div>
-                ) : error ? (
-                    <div className="text-red-600 text-center py-8">{error}</div>
-                ) : document ? (
-                    <div className="flex flex-col space-y-4">
-                        {/* Document metadata */}
-                        <div className=" text-center">
-                            <h3 className="font-semibold text-lg">{document.requirement_name}</h3>
-                            <p className="text-sm text-gray-600">
-                                Uploaded: {document.created_at}
-                            </p>
-                        </div>
-
-                        {/* Document preview */}
-                        <div className="border rounded-lg overflow-hidden bg-gray-100 min-h-[400px] flex items-center justify-center">
-                            {getFileType(document.original_filename) === 'image' ? (
-                                <img
-                                    src={document.file_path}
-                                    alt={document.original_filename}
-                                    className="max-w-full max-h-[600px] object-contain"
-                                />
-                            ) : canEmbed(document.file_path) ? (
-                                <iframe
-                                    src={document.file_path}
-                                    className="w-full h-[600px]"
-                                    title={document.original_filename}
-                                />
-                            ) : (
-                                <div className="text-center p-8">
-                                    <div className="text-4xl mb-4">📄</div>
-                                    <p className="mb-2">
-                                        {getExtension(document.original_filename).toUpperCase()} file
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {/* Documents Tab */}
+                {activeTab === 'documents' && (
+                    <>
+                        {loading ? (
+                            <div className="flex justify-center items-center h-64">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+                            </div>
+                        ) : error ? (
+                            <div className="text-red-600 text-center py-8">{error}</div>
+                        ) : document ? (
+                            <div className="flex flex-col space-y-4">
+                                {/* Document metadata */}
+                                <div className="text-center">
+                                    <h3 className="font-semibold text-lg">{document.requirement_name}</h3>
+                                    <p className="text-sm text-gray-600">
+                                        Uploaded: {document.created_at}
                                     </p>
+                                </div>
+
+                                {/* Document preview */}
+                                <div className="border rounded-lg overflow-hidden bg-gray-100 min-h-[400px] flex items-center justify-center">
+                                    {getFileType(document.original_filename) === 'image' ? (
+                                        <img
+                                            src={document.file_path}
+                                            alt={document.original_filename}
+                                            className="max-w-full max-h-[600px] object-contain"
+                                        />
+                                    ) : canEmbed(document.file_path) ? (
+                                        <iframe
+                                            src={document.file_path}
+                                            className="w-full h-[600px]"
+                                            title={document.original_filename}
+                                        />
+                                    ) : (
+                                        <div className="text-center p-8">
+                                            <div className="text-4xl mb-4">📄</div>
+                                            <p className="mb-2">
+                                                {getExtension(document.original_filename).toUpperCase()} file
+                                            </p>
+                                            <a
+                                                href={document.file_path}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                Download or Open in New Tab
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Document action buttons */}
+                                <div className="flex justify-center items-center">
                                     <a
                                         href={document.file_path}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-blue-600 hover:underline"
+                                        className="accent-white flex items-center gap-2"
                                     >
-                                        Download or Open in New Tab
+                                        <SecondaryButton>
+                                            Download
+                                        </SecondaryButton>
                                     </a>
                                 </div>
-                            )}
+
+                                {/* Navigation for multiple documents */}
+                                {documents.length > 1 && (
+                                    <div className="flex justify-between items-center pt-4 border-t">
+                                        <SecondaryButton
+                                            onClick={goToPrevious}
+                                            disabled={currentDocIndex === 0}
+                                            className={currentDocIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+                                        >
+                                            Previous
+                                        </SecondaryButton>
+                                        <span>
+                                            Document {currentDocIndex + 1} of {documents.length}
+                                        </span>
+                                        <SecondaryButton
+                                            onClick={goToNext}
+                                            disabled={currentDocIndex === documents.length - 1}
+                                            className={currentDocIndex === documents.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}
+                                        >
+                                            Next
+                                        </SecondaryButton>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8">No document found</div>
+                        )}
+                    </>
+                )}
+
+                {/* Profile Tab */}
+                {activeTab === 'profile' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Personal Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p className="font-semibold">Full Name:</p>
+                                <p className="text-gray-600">
+                                    {applicantDetails.first_name || ""}
+                                    {applicantDetails.middle_name ? ` ${applicantDetails.middle_name} ` : " "}
+                                    {applicantDetails.last_name || ""}
+                                    {applicantDetails.suffix ? `, ${applicantDetails.suffix}` : ""}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold">Email:</p>
+                                <p className="text-gray-600">{applicantDetails.email || "Not specified"}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold">Contact Number:</p>
+                                <p className="text-gray-600">{applicantDetails.contact_number || "Not specified"}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold">Gender:</p>
+                                <p className="text-gray-600">{applicantDetails.gender || "Not specified"}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold">Birthdate:</p>
+                                <p className="text-gray-600">
+                                    {applicantDetails.birthdate
+                                        ? new Date(applicantDetails.birthdate).toLocaleDateString()
+                                        : "Not specified"}
+                                </p>
+                            </div>
                         </div>
 
-                        {/* Document action buttons */}
-                        <div className="flex justify-center items-center">
-
-                            <a
-                                href={document.file_path}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="accent-white flex items-center gap-2"
-                            >
-                                <SecondaryButton>
-                                    Download
-                                </SecondaryButton>
-                            </a>
-                        </div>
-
-                        {/* Navigation for multiple documents */}
-                        {documents.length > 1 && (
-                            <div className="flex justify-between items-center pt-4 border-t">
-                                <SecondaryButton
-                                    onClick={goToPrevious}
-                                    disabled={currentDocIndex === 0}
-                                    className={`px-4 py-2 rounded ${
-                                        currentDocIndex === 0
-                                            ? 'bg-red-300 text-gray-500 cursor-not-allowed'
-                                            : 'bg-orange-700 text-white hover:bg-gray-700'
-                                    }`}
-                                >
-                                    Previous
-                                </SecondaryButton>
-                                <span>
-                                    Document {currentDocIndex + 1} of {documents.length}
-                                </span>
-                                <SecondaryButton
-                                    onClick={goToNext}
-                                    disabled={currentDocIndex === documents.length - 1}
-                                    className={`px-4 py-2 rounded ${
-                                        currentDocIndex === documents.length - 1
-                                            ? 'bg-red-300 text-gray-500 cursor-not-allowed'
-                                            : 'bg-orange-700 text-white hover:bg-gray-700'
-                                    }`}
-                                >
-                                    Next
-                                </SecondaryButton>
+                        {applicantDetails.address && (
+                            <div className="mt-4">
+                                <p className="font-semibold">Address:</p>
+                                <p className="text-gray-600">
+                                    {[
+                                        applicantDetails.address.street,
+                                        applicantDetails.address.street2,
+                                        applicantDetails.address.city,
+                                        applicantDetails.address.province,
+                                        applicantDetails.address.postal_code,
+                                        applicantDetails.address.country,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(", ") || "Not specified"}
+                                </p>
                             </div>
                         )}
                     </div>
-                ) : (
-                    <div className="text-center py-8">No document found</div>
+                )}
+
+                {/* Skills Tab */}
+                {activeTab === 'skills' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Skills</h3>
+                        {applicantDetails.userSkills && applicantDetails.userSkills.length > 0 ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Skill Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.userSkills.map((skill, index) => (
+                                    <tr key={index} className="border-b">
+                                        <td className="py-2 px-4">
+                                            {skill.skill ? skill.skill.name : skill.skill_name}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : applicantDetails.user_skills && applicantDetails.user_skills.length > 0 ? (
+                            <table className="table-auto w-full">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Skills</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.user_skills.map((skill, index) => (
+                                    <tr key={skill.id || index} className="border-b">
+                                        <td className="py-2 px-4">{skill.skill_name || "N/A"}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No skills information available</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Education Tab */}
+                {activeTab === 'education' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Education</h3>
+                        {applicantDetails.educations && applicantDetails.educations.length > 0 ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Degree</th>
+                                    <th className="py-2 px-4">School</th>
+                                    <th className="py-2 px-4">Period</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.educations.map((edu, index) => (
+                                    <tr key={edu.id || index} className="border-b">
+                                        <td className="py-2 px-4">{edu.degree || "N/A"}</td>
+                                        <td className="py-2 px-4">{edu.school || "N/A"}</td>
+                                        <td className="py-2 px-4">
+                                            {edu.start_year || "?"}
+                                            {edu.end_year ? ` - ${edu.end_year}` : " - Present"}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No education information available</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Work Experience Tab */}
+                {activeTab === 'work' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
+                        {applicantDetails.work_histories && applicantDetails.work_histories.length > 0 ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Position</th>
+                                    <th className="py-2 px-4">Employer</th>
+                                    <th className="py-2 px-4">Period</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.work_histories.map((work, index) => (
+                                    <tr key={work.id || index} className="border-b">
+                                        <td className="py-2 px-4">
+                                            {work.job_title || work.position || "N/A"}
+                                        </td>
+                                        <td className="py-2 px-4">{work.employer || "N/A"}</td>
+                                        <td className="py-2 px-4">
+                                            {work.start_date
+                                                ? new Date(work.start_date).toLocaleDateString()
+                                                : "?"}{" "}
+                                            -{" "}
+                                            {work.end_date
+                                                ? new Date(work.end_date).toLocaleDateString()
+                                                : "Present"}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No work experience information available</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Certifications Tab */}
+                {activeTab === 'certifications' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Certificates</h3>
+                        {applicantDetails.certifications && applicantDetails.certifications.length > 0 ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Title</th>
+                                    <th className="py-2 px-4">Description</th>
+                                    <th className="py-2 px-4">Year</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.certifications.map((certificate, index) => (
+                                    <tr key={certificate.id || index} className="border-b">
+                                        <td className="py-2 px-4">
+                                            {certificate.title}
+                                        </td>
+                                        <td className="py-2 px-4">{certificate.description || "N/A"}</td>
+                                        <td className="py-2 px-4">
+                                            {certificate.year}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No certification information available</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Applications Tab */}
+                {activeTab === 'applications' && applicantDetails && (
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Applications</h3>
+                        {applicantDetails.applications && applicantDetails.applications.length > 0 ? (
+                            <table className="table-auto w-full border-collapse">
+                                <thead className="bg-gray-100 text-left">
+                                <tr>
+                                    <th className="py-2 px-4">Job Title</th>
+                                    <th className="py-2 px-4">Company</th>
+                                    <th className="py-2 px-4">Date Applied</th>
+                                    <th className="py-2 px-4">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {applicantDetails.applications.map((application, index) => (
+                                    <tr key={application.id || index} className="border-b">
+                                        <td className="py-2 px-4">
+                                            {application.job_post?.job_title || application.job_title || "N/A"}
+                                        </td>
+                                        <td className="py-2 px-4">{application.job_post?.company || application.company || "N/A"}</td>
+                                        <td className="py-2 px-4">
+                                            {application.created_at
+                                                ? new Date(application.created_at).toLocaleDateString()
+                                                : "N/A"}
+                                        </td>
+                                        <td className={`py-2 px-4 ${getStatusColor(application.status)}`}>
+                                            {application.status || "Pending"}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-gray-600">No application information available</p>
+                        )}
+                    </div>
                 )}
             </div>
-
-
         </Modal>
     )
 }

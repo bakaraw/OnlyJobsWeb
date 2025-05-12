@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\JobPost;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -32,6 +33,50 @@ class ApplicantController extends Controller
 //    }
 
 
+    public function getApplicantDetails($applicationId)
+    {
+        try {
+            $application = Application::findOrFail($applicationId);
+            $applicant = User::with([
+                'address',
+                'applications' => function ($query) {
+                    $query->select(
+                        'id',
+                        'user_id',
+                        'job_post_id',
+                        'status',
+                        'remarks',
+                        'created_at'
+                    );
+                },
+                'applications.jobPost' => function ($query) {
+                    $query->select(
+                        'id',
+                        'job_title',
+                        'job_type',
+                        'company'
+                    );
+                },
+                'educations',
+                'workHistories',
+                'certifications',
+                'userSkills.skill',
+                'requirements'
+            ])->findOrFail($application->user_id);
+
+            // Return JSON response instead of Inertia render
+            return response()->json([
+                'success' => true,
+                'applicant' => $applicant,
+                'application' => $application
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load applicant details: ' . $e->getMessage()
+            ], 404);
+        }
+    }
     public function show($id)
     {
         $application = \App\Models\Application::with([

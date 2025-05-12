@@ -11,7 +11,7 @@ import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsVi
 import DocumentViewerModal from "@/Components/Dashboard/Modal/DocumentViewModal.jsx";
 
 
-export default function ApplicantsSection({applicants}) {
+export default function ApplicantsSection({applicants, onApplicantSelect}) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
@@ -19,10 +19,7 @@ export default function ApplicantsSection({applicants}) {
         show: false,
         applicationId: null,
     });
-    const navigateToApplicantDetails = (application) => {
-        // Navigate to the applicant details page with the application ID
-        router.visit(`/applicant-details/${application.id}`);
-    };
+
 
     const {props} = usePage();
     const {statuses, degrees, requirements, skills} = props;
@@ -33,11 +30,45 @@ export default function ApplicantsSection({applicants}) {
             app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
 
-    // Open document modal with specific application ID
-    const openDocumentModal = (applicationId) => {
-        setDocumentModal({ show: true, applicationId });
-    };
+    const openDocumentModal = async (applicationId) => {
+        try {
+            // Add loading state if needed
+            setDocumentModal({
+                ...documentModal,
+                show: true,
+                loading: true,
+                applicationId
+            });
 
+            const response = await axios.get(`/applicant-details/${applicationId}`);
+
+            if (response.data.success) {
+                setDocumentModal({
+                    show: true,
+                    applicationId,
+                    loading: false,
+                    applicantDetails: {
+                        ...response.data.applicant,
+                        current_application: response.data.application
+                    }
+                });
+            } else {
+                console.error("Failed to load applicant details:", response.data.message);
+                setDocumentModal({
+                    ...documentModal,
+                    loading: false,
+                    error: response.data.message
+                });
+            }
+        } catch (error) {
+            console.error("Error loading applicant details:", error);
+            setDocumentModal({
+                ...documentModal,
+                loading: false,
+                error: "Failed to load applicant details"
+            });
+        }
+    };
     // Close document modal
     const closeDocumentModal = () => {
         setDocumentModal({ show: false, applicationId: null });
@@ -244,19 +275,23 @@ export default function ApplicantsSection({applicants}) {
                         {filteredApplicants.map((application, index) => (
                             <tr
                                 key={application.id}
-                                className="border-t hover:bg-gray-50 cursor-pointer"
-                                onClick={(e) => {
-                                    // Don't trigger navigation when clicking buttons
-                                    if (e.target.closest('button')) return;
-                                    navigateToApplicantDetails(application);
-                                }}
+                                className="border-t hover:bg-gray-50"
                             >
                                 <td className="py-2 px-4">
                                     <div className="flex items-center">
-                      <span className="mr-2 text-gray-500">
-                        {index + 1}.
-                      </span>
-                                        {application.user.first_name} {application.user.last_name}
+                                          <span className="mr-2 text-gray-500">
+                                            {index + 1}.
+                                          </span>
+                                        <span
+                                            className="cursor-pointer hover:text-blue-600 hover:underline"
+                                            onClick={() => {
+
+                                                    onApplicantSelect(application.id);
+                                                }
+                                            }
+                                        >
+                              {application.user.first_name} {application.user.last_name}
+                            </span>
                                     </div>
                                 </td>
                                 <td className="py-2 px-4 capitalize">{application.status}</td>
@@ -344,7 +379,11 @@ export default function ApplicantsSection({applicants}) {
 
                                 </td>
                                 <td className="py-2 px-4">
-                                    <SecondaryButton onClick={() => openDocumentModal(application.id)}>
+                                    <SecondaryButton
+                                        onClick={() => {
+                                            openDocumentModal(application.id);
+                                        }}
+                                    >
                                         View Documents
                                     </SecondaryButton>
                                 </td>
@@ -370,6 +409,7 @@ export default function ApplicantsSection({applicants}) {
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
                 applicationId={documentModal.applicationId}
+                applicantDetails={documentModal.applicantDetails || null}
                 applicantInfo={documentModal.applicationId ? {
                     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name
                     || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,

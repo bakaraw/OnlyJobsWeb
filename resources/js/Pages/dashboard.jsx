@@ -9,12 +9,17 @@ import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import ApplicantDetails from "@/Pages/ApplicantDetails.jsx";
 import AdminMessages from "./Admin/AdminMessages";
 import AdminContacts from "./Admin/AdminContacts";
+import ApplicantsSection from "@/Components/Dashboard/Modal/ApplicantsSection.jsx";
 
-export default function dashboard({ jobView, statuses, requirements, degrees, slot,getJobPostData, jobs, placements, auth, totalApplicants, users, totalViews, totalUsers, totalJob, applicants }) {
+export default function dashboard({ jobView, statuses, requirements,
+                                      applications , degrees, slot,getJobPostData,
+                                      jobs, placements, auth, totalApplicants, users,
+                                      totalViews, totalUsers, totalJob, applicants
+}) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [selectedApplicantId, setSelectedApplicantId] = useState(null);
-
+    const [selectedApplication, setSelectedApplication] = useState(null);
 
     const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
     const selectedApplicant = selectedApplicantId ? users.find(user => user.id === selectedApplicantId) : null;
@@ -23,20 +28,19 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
     console.log("jobs", jobs);
     console.log("users", users);
 
+    const handleSelectedApplication = (applicant) => {
+        setSelectedApplication(applicant);
+        setActiveView("applicantDetails");
+    };
+
+    const handleBackSelectedApplication = () => {
+        setSelectedApplication(null);
+        setActiveView("applicants");
+    };
 
     const handleApplicantSelect = (applicantId) => {
         setSelectedApplicantId(applicantId);
         setActiveView("applicantDetails");
-    };
-
-    const handleApplicantSelectfFromSection = (applicantId) => {
-        const user = users.find(user => user.id === applicantId);
-        if (user) {
-            setSelectedApplicantId(applicantId);
-            setActiveView("applicantDetails");
-        } else {
-            console.error("User not found with id:", applicantId);
-        }
     };
 
     const handleBackToApplicants = () => {
@@ -44,15 +48,14 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
         setActiveView("applicants");
     };
 
-
     const handleJobSelect = (jobId) => {
         setSelectedJobId(jobId);
-        setActiveView("jobDetails"); // Switch to job details view
+        setActiveView("jobDetails");
     };
 
     const handleBackToJobs = () => {
         setSelectedJobId(null);
-        setActiveView("jobs"); // Go back to jobs list
+        setActiveView("jobs");
     };
 
     return (
@@ -74,39 +77,35 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
 
                     />
                 ) : activeView === "applicants" ? (
-                    <ApplicantCard
-                        users={users}
-                        applicants={applicants}
-                        auth={auth}
-                        onApplicantSelect={handleApplicantSelect}
-                        onBack={handleBackToApplicants}
-
-                    />
-                ) : activeView === "applicantDetails" && selectedApplicant ? (
-                    <div>
-                        {/*<SecondaryButton*/}
-                        {/*    onClick={handleBackToApplicants}*/}
-                        {/*    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"*/}
-                        {/*>*/}
-                        {/*    Back*/}
-                        {/*</SecondaryButton>*/}
-                        <ApplicantDetails
-                            selectedApplicant={selectedApplicant}
+                    // Showing only one applicant view at a time based on your requirements
+                    // You can toggle between these two components as needed
+                        <>
+                        <ApplicantCard
+                                users={users}
+                            applicants={applicants}
                             auth={auth}
-                            onBack={handleBackToApplicants}
+                            onApplicantSelect={handleApplicantSelect}
+                        />
+                            </>
+                        ) : activeView === "applications" ? (
+                            <>
+                                {applications && (
+                                    <ApplicantsSection
+                                        applicants={applications}
+                                        onApplicantSelect={handleSelectedApplication}
 
+                                    />
+                                )}
+                            </>
+                        )  : activeView === "applicantDetails" ? (
+                    <div>
+                        <ApplicantDetails
+                            selectedApplicant={selectedApplication || selectedApplicant}
+                            onBack={selectedApplication ? handleBackSelectedApplication : handleBackToApplicants}
                         />
                     </div>
-
                 ) : activeView === "jobDetails" && selectedJob ? (
                     <div>
-                        {/*<SecondaryButton*/}
-                        {/*    onClick={handleBackToJobs}*/}
-                        {/*    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"*/}
-                        {/*>*/}
-
-                        {/*    Back*/}
-                        {/*</SecondaryButton>*/}
                         <JobDetails
                             edit_status={statuses}
                             edit_requirements={requirements}
@@ -115,10 +114,9 @@ export default function dashboard({ jobView, statuses, requirements, degrees, sl
                             job_details={selectedJob}
                             applicants={applicants.filter(app => app.job_post_id === selectedJob.id)}
                             onBack={handleBackToJobs}
-
                         />
                     </div>
-                ) : activeView === "messages" ? (
+                )  : activeView === "messages" ? (
                     <AdminMessages
                         onJobSelect={handleJobSelect}
                     />
