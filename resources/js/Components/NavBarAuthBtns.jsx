@@ -1,6 +1,7 @@
 import { Link, usePage } from "@inertiajs/react";
 import { router } from "@inertiajs/react";
 import Dropdown from '@/Components/Dropdown';
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function NavBarAuthBtns() {
     const { auth } = usePage().props;
@@ -10,22 +11,24 @@ export default function NavBarAuthBtns() {
     // Check if `auth` exists and contains a `user`
     const isAuthenticated = auth && auth.user;
 
+    const notifications = [
+        {
+            title: "New Job Match",
+            message: "A new job was posted that matches your skills.",
+            timeAgo: "3m ago",
+        },
+        {
+            title: "Application Update",
+            message: "Your application for 'Frontend Developer' was viewed.",
+            timeAgo: "1h ago",
+        },
+    ];
+
     return (
         <>
             {isAuthenticated ? (
                 <div className="flex items-center justify-between">
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary active:text-primary transition"></i>
-                        </Dropdown.Trigger>
-                        <Dropdown.Content>
-                            <div className="min-h-16 min-w-48 flex items-center justify-center">
-                                <p className="font-light text-sm">
-                                    No notification
-                                </p>
-                            </div>
-                        </Dropdown.Content>
-                    </Dropdown>
+                    <NotificationDropdown notifications={notifications} className="z-50" />
                     <Dropdown>
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">
