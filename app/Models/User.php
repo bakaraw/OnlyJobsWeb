@@ -68,7 +68,7 @@ class User extends Authenticatable
 
     public function requirements()
     {
-        return $this->hasMany(Requirement::class, 'user_id'); // Specify 'user_id' as foreign key
+        return $this->hasMany(RequirementUser::class, 'user_id'); // Specify 'user_id' as foreign key
     }
 
     public function educations()

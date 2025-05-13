@@ -380,7 +380,8 @@ public function update(Request $request, $id)
                 'educations',     // Load user education history
                 'workHistories',   // Load user work history
                 'certifications',
-                'userSkills.skill'
+                'userSkills.skill',
+                'requirements'
             ])
             ->get();
 

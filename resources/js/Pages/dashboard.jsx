@@ -14,7 +14,7 @@ import ApplicantsSection from "@/Components/Dashboard/Modal/ApplicantsSection.js
 export default function dashboard({ jobView, statuses, requirements,
                                       applications , degrees, slot,getJobPostData,
                                       jobs, placements, auth, totalApplicants, users,
-                                      totalViews, totalUsers, totalJob, applicants
+                                      totalViews, totalUsers, totalJob, applicants, usersss
 }) {
     const [activeView, setActiveView] = useState("dashboard");
     const [selectedJobId, setSelectedJobId] = useState(null);
@@ -22,11 +22,12 @@ export default function dashboard({ jobView, statuses, requirements,
     const [selectedApplication, setSelectedApplication] = useState(null);
 
     const selectedJob = selectedJobId ? getJobPostData.find(job => job.id === selectedJobId) : null;
-    const selectedApplicant = selectedApplicantId ? users.find(user => user.id === selectedApplicantId) : null;
+    const selectedApplicant = selectedApplicantId ? selectedUser.find(user => user.id === selectedApplicantId) : null;
 
     console.log("placements", placements);
     console.log("jobs", jobs);
     console.log("users", users);
+    console.log("seelected", usersss);
 
     const handleSelectedApplication = (applicant) => {
         setSelectedApplication(applicant);

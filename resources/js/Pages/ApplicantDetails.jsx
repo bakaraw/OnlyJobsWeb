@@ -3,7 +3,7 @@ import DangerButton from "@/Components/DangerButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import axios from "axios";
 
-export default function ApplicantDetails({ selectedApplicant, onBack }) {
+export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
     console.log("Selected applicant in details:", selectedApplicant);
 
     if (!selectedApplicant) {
@@ -267,24 +267,38 @@ export default function ApplicantDetails({ selectedApplicant, onBack }) {
                         <tr>
                             <th className="py-2 px-4">Job Title</th>
                             <th className="py-2 px-4">Company</th>
-                            <th className="py-2 px-4">Date Applied</th>
+                            <th className="py-2 px-4">Job Type</th>
                             <th className="py-2 px-4">Status</th>
+                            <th className="py-2 px-4">Remarks</th>
+                            <th className="py-2 px-4">Date Applied</th>
                         </tr>
                         </thead>
                         <tbody>
                         {selectedApplicant.applications.map((application, index) => (
                             <tr key={application.id || index} className="border-b">
                                 <td className="py-2 px-4">
-                                    {application.job_title || "N/A"}
+                                    {application.job_post?.job_title || "N/A"}
                                 </td>
-                                <td className="py-2 px-4">{application.company || "N/A"}</td>
                                 <td className="py-2 px-4">
-                                    {application.application_date
-                                        ? new Date(application.application_date).toLocaleDateString()
-                                        : "N/A"}
+                                    {application.job_post?.company || "N/A"}
                                 </td>
-                                <td className={`py-2 px-4 ${statusClasses[application.status?.toLowerCase()] || ''}`}>
-                                    {application.status || "Pending"}
+                                <td className="py-2 px-4">
+                                    {application.job_post?.job_type || "N/A"}
+                                </td>
+                                <td className="py-2 px-4 capitalize">
+                                    {application.job_post?.status || "Pending"}
+                                </td>
+                                <td className="py-2 px-4">
+                                    {application.remarks || "None"}
+                                </td>
+                                <td className="py-2 px-4">
+                                    {application.created_at
+                                        ? new Date(application.created_at).toLocaleDateString("en-US", {
+                                            month: "long",
+                                            day: "2-digit",
+                                            year: "numeric",
+                                        })
+                                        : "N/A"}
                                 </td>
                             </tr>
                         ))}
@@ -292,7 +306,6 @@ export default function ApplicantDetails({ selectedApplicant, onBack }) {
                     </table>
                 </div>
             )}
-
             {/* Requirements/Documents */}
             {selectedApplicant.requirements && selectedApplicant.requirements.length > 0 && (
                 <div className="mb-6">
