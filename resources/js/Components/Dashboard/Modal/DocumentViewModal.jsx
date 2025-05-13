@@ -25,19 +25,7 @@
         const [applicantData, setApplicantData] = useState(null)
 
 
-        console.log("Application ID:", applicationId)
-        console.log("Applicant Details:", applicantDetails)
-        console.log("Applicant Info:", applicantInfo)
         console.log(filteredApplicants)
-
-        console.log("Applicant Education Levels:", filteredApplicants.map(applicant =>
-            applicant.user.educations.map(education => education.education_level)
-        ));
-        console.log("User ID Match Check:", {
-            'applicantInfo user_id': applicantInfo?.user_id,
-            'filteredApplicants user IDs': filteredApplicants?.map(a => a.user?.id),
-            'isMatching': filteredApplicants?.some(app => app.user?.id === applicantInfo?.user_id)
-        });
 
 
         const matchingApplicant = applicantInfo;
@@ -200,39 +188,63 @@
             return statusColors[status] || 'bg-gray-300 text-gray-800'
         }
 
-        // const handleExportAll = async () => {
-        //     // collect applicant IDs (could be applicantDetails.id for single, or user.id)
-        //     const ids = filteredApplicants
-        //         .map(app => app.id || app.user?.id)
-        //         .filter(Boolean);
-        //
-        //     if (ids.length === 0) {
-        //         alert('No applicants to export.');
-        //         return;
-        //     }
-        //
-        //     try {
-        //         const params = new URLSearchParams();
-        //         ids.forEach(id => params.append('ids[]', id));
-        //
-        //         const response = await axios.get(`/applicants/export?${params.toString()}`, {
-        //             responseType: 'blob',
-        //             headers: { 'X-CSRF-TOKEN': csrf },
-        //         });
-        //
-        //         const url = window.URL.createObjectURL(new Blob([response.data]));
-        //         const link = document.createElement('a');
-        //         link.href = url;
-        //         link.setAttribute('download', `applicants-export.pdf`);
-        //         document.body.appendChild(link);
-        //         link.click();
-        //         link.remove();
-        //     } catch (err) {
-        //         console.error('Bulk PDF export failed', err);
-        //         alert('Failed to download PDF.');
-        //     }
-        // };
 
+// 1. First, add this function to your DocumentViewerModal component:
+
+        const exportPDF = async () => {
+            try {
+                // Show loading state if you have one
+                setLoading(true);
+
+                if (!filteredApplicants || filteredApplicants.length === 0) {
+                    alert('No applicant data available for export.');
+                    return;
+                }
+
+                // Get applicant ID from filtered applicants
+                const applicantId = filteredApplicants[0]?.user?.id || filteredApplicants[0]?.id;
+
+                if (!applicantId) {
+                    alert('Unable to export: Applicant ID not found');
+                    return;
+                }
+
+                // Build URL with application ID if available
+                let url = `/applicants/${applicantId}/pdf`;
+                if (applicationId) {
+                    url += `?application_id=${applicationId}`;
+                }
+
+                // Make the API request
+                const response = await axios.get(url, {
+                    responseType: 'blob' // Important for handling PDF binary data
+                });
+
+                // Create a blob from the PDF data
+                const blob = new Blob([response.data], { type: 'application/pdf' });
+
+                // Create download URL
+                const fileURL = window.URL.createObjectURL(blob);
+
+                // Use window.document explicitly to avoid conflicts
+                const downloadLink = window.document.createElement('a');
+                downloadLink.href = fileURL;
+                downloadLink.setAttribute('download', `applicant_${applicantId}_profile.pdf`);
+
+                // Append to body, click, and remove
+                window.document.body.appendChild(downloadLink);
+                downloadLink.click();
+                window.document.body.removeChild(downloadLink);
+
+                // Clean up URL object
+                window.URL.revokeObjectURL(fileURL);
+            } catch (err) {
+                console.error('Error exporting PDF:', err);
+                alert(`Failed to export PDF: ${err.message || 'Unknown error'}`);
+            } finally {
+                setLoading(false);
+            }
+        };
         if (!isOpen) return null
 
         return (
@@ -241,9 +253,9 @@
                     <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold">Applicant Information</span>
                         <div className="flex gap-2">
-                            {/*<SecondaryButton onClick={handleExportAll}>*/}
-                            {/*    Export PDF*/}
-                            {/*</SecondaryButton>*/}
+                            <SecondaryButton onClick={exportPDF}>
+                                Export PDF
+                            </SecondaryButton>
                             <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                         </div>
                     </div>

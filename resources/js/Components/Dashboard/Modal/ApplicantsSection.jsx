@@ -75,6 +75,37 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
     // Define helpers and handlers (meetsEducationRequirement, meetSkillsRequirement, handleAccept, handleReject, saveRemark) unchanged...
     // For brevity, assume they remain the same as before
 
+    function handleReject(application) {
+        setModalProps({
+            show: true,
+            type: "warning",
+            message: `Are you sure you want to reject ${application.user.first_name} ${application.user.last_name}'s application?`,
+            onConfirm: async () => {
+                try {
+                    const response = await axios.post(`/api/reject-applicant`, {
+                        job_post_id: application.job_post_id,
+                        user_id: application.user.id,
+                    });
+
+                    if (response.data.success) {
+                        setFilteredApplicants((prev) =>
+                            prev.map((app) =>
+                                app.id === application.id
+                                    ? { ...app, status: "rejected", remarks: remarkInput || app.remarks }
+                                    : app
+                            )
+                        );
+                        setModalProps((prev) => ({ ...prev, show: false }));
+                        setEditingId(null);
+                        setRemarkInput("");
+                    }
+                } catch (error) {
+                    console.error("Error rejecting application:", error);
+                }
+            },
+            onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
+        });
+    }
     return (
         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
             {/* Filter Buttons */}

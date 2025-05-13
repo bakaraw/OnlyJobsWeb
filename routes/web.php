@@ -4,12 +4,14 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationRequirementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DocumentExportController;
 use App\Http\Controllers\DocumentViewController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\JobSeekerDocumentController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PDFExportController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
@@ -228,6 +230,9 @@ Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name
 Route::get('/applicants/{id}/pdf', [JobPostController::class, 'exportPDFApplicant'])
     ->name('applicants.pdf');
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
+
+Route::get('/applicants/{applicantId}/pdf', [DocumentExportController::class, 'exportApplicantDocuments'])
+    ->name('applicants.export-pdf');
 
 Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
 Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
