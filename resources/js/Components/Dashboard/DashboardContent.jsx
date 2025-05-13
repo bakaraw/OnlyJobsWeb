@@ -24,7 +24,7 @@ import {
 import ApplicantPipelineCard from "@/Components/Dashboard/Modal/ApplicantPipelineCard.jsx";
 import CreateJobPost from "@/Pages/CreateJobPost.jsx";
 import CreateJobPostModal from "./Modal/CreateJobPostModal.jsx";
-import {Button} from "@headlessui/react";
+import { Button } from "@headlessui/react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
@@ -143,9 +143,11 @@ export default function DashboardContent({
                     </DashboardCard>
                     <div className="space-y-2.5">
                         <div className="text-center">
-                        <SecondaryButton onClick={() => setIsModalOpen(true)}>
-                            + Create
-                        </SecondaryButton>
+                            <SecondaryButton
+                                className="w-full"
+                                onClick={() => setIsModalOpen(true)}>
+                                + Create
+                            </SecondaryButton>
                         </div>
                         <CreateJobPostModal
                             show={isModalOpen}

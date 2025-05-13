@@ -1,31 +1,50 @@
 import { Link, usePage } from "@inertiajs/react";
 import { router } from "@inertiajs/react";
 import Dropdown from '@/Components/Dropdown';
+import NotificationDropdown from "./NotificationDropdown";
+import { useState, useEffect } from "react";
 
 export default function NavBarAuthBtns() {
     const { auth } = usePage().props;
+    const [notifications, setNotifications] = useState([]);
 
     console.log("Auth props:", auth); // Debugging
 
     // Check if `auth` exists and contains a `user`
     const isAuthenticated = auth && auth.user;
 
+    //const notifications = [
+    //    {
+    //        title: "New Job Match",
+    //        message: "A new job was posted that matches your skills.",
+    //        timeAgo: "3m ago",
+    //    },
+    //    {
+    //        title: "Application Update",
+    //        message: "Your application for 'Frontend Developer' was viewed.",
+    //        timeAgo: "1h ago",
+    //    },
+    //];
+
+    useEffect(() => {
+        if (!auth?.user) return;
+        axios.get("/notifications").then(res => {
+            setNotifications(res.data);
+            console.log("notif: ", res.data);
+        });
+
+        // Listen for broadcasts
+        window.Echo.private(`App.Models.User.${auth.user.id}`)
+            .notification((notification) => {
+                setNotifications(prev => [notification, ...prev]);
+            });
+    }, [auth?.user?.id]);
+
     return (
         <>
             {isAuthenticated ? (
                 <div className="flex items-center justify-between">
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <i className="fa-solid fa-bell text-xl mr-2 text-white hover:text-primary active:text-primary transition"></i>
-                        </Dropdown.Trigger>
-                        <Dropdown.Content>
-                            <div className="min-h-16 min-w-48 flex items-center justify-center">
-                                <p className="font-light text-sm">
-                                    No notification
-                                </p>
-                            </div>
-                        </Dropdown.Content>
-                    </Dropdown>
+                    <NotificationDropdown notifications={notifications} setNotifications={setNotifications} className="z-50" />
                     <Dropdown>
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">

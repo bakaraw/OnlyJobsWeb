@@ -4,14 +4,14 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
-import {router, usePage} from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import ConfirmModal from "@/Components/ConfirmModal.jsx";
 import MessageButton from "@/Components/MessageButton.jsx";
 import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsViewerModal.jsx";
 import DocumentViewerModal from "@/Components/Dashboard/Modal/DocumentViewModal.jsx";
 
 
-export default function ApplicantsSection({applicants, onApplicantSelect}) {
+export default function ApplicantsSection({ applicants, onApplicantSelect }) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
@@ -22,8 +22,8 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
 
 
     console.log("appps", applicants)
-    const {props} = usePage();
-    const {statuses, degrees, requirements, skills} = props;
+    const { props } = usePage();
+    const { statuses, degrees, requirements, skills } = props;
 
     const filteredApplicants = applicants.filter(
         (app) =>
@@ -107,12 +107,12 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
         show: false,
         type: "success",
         message: "",
-        onClose: () => setModalProps((prev) => ({...prev, show: false})),
+        onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
         onConfirm: null, // Changed to null initially
     });
 
     const closeModal = () => {
-        setModalProps(prev => ({...prev, show: false}));
+        setModalProps(prev => ({ ...prev, show: false }));
     };
 
     const handleAccept = async (application) => {
@@ -246,11 +246,10 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                     <SecondaryButton
                         key={status}
                         onClick={() => setSelectedStatus(status)}
-                        className={`px-4 py-2 rounded-full border transition-all ${
-                            selectedStatus === status
+                        className={`px-4 py-2 rounded-full border transition-all ${selectedStatus === status
                                 ? 'bg-blue-600 text-black'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
+                            }`}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)}
                     </SecondaryButton>
@@ -261,138 +260,138 @@ export default function ApplicantsSection({applicants, onApplicantSelect}) {
                 <div className="overflow-x-auto">
                     <table className="table-auto w-full border-collapse">
                         <thead className="bg-gray-50">
-                        <tr>
-                            <th className="py-2 px-4 text-left">Applicant</th>
-                            <th className="py-2 px-4 text-left">Status</th>
-                            <th className="py-2 px-4 text-left">Date Applied</th>
-                            <th className="py-2 px-4 text-left">Remarks</th>
-                            <th className="py-2 px-4 text-left">Actions</th>
-                            <th className="py-2 px-4 text-left">Documents</th>
+                            <tr>
+                                <th className="py-2 px-4 text-left">Applicant</th>
+                                <th className="py-2 px-4 text-left">Status</th>
+                                <th className="py-2 px-4 text-left">Date Applied</th>
+                                <th className="py-2 px-4 text-left">Remarks</th>
+                                <th className="py-2 px-4 text-left">Actions</th>
+                                <th className="py-2 px-4 text-left">Documents</th>
 
-                        </tr>
+                            </tr>
                         </thead>
                         <tbody>
-                        {filteredApplicants.map((application, index) => (
-                            <tr
-                                key={application.id}
-                                className="border-t hover:bg-gray-50"
-                            >
-                                <td className="py-2 px-4">
-                                    <div className="flex items-center">
-                                          <span className="mr-2 text-gray-500">
-                                            {index + 1}.
-                                          </span>
-                                        <span
-                                            className="cursor-pointer hover:text-blue-600 hover:underline"
-                                            onClick={() => {
+                            {filteredApplicants.map((application, index) => (
+                                <tr
+                                    key={application.id}
+                                    className="border-t hover:bg-gray-50"
+                                >
+                                    <td className="py-2 px-4">
+                                        <div className="flex items-center">
+                                            <span className="mr-2 text-gray-500">
+                                                {index + 1}.
+                                            </span>
+                                            <span
+                                                className="cursor-pointer hover:text-blue-600 hover:underline"
+                                                onClick={() => {
 
                                                     onApplicantSelect(application.id);
                                                 }
-                                            }
+                                                }
+                                            >
+                                                {application.user.first_name} {application.user.last_name}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="py-2 px-4 capitalize">{application.status}</td>
+                                    <td className="py-2 px-4">
+                                        {new Date(application.created_at).toLocaleDateString()}
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        {editingId === application.id ? (
+                                            <textarea
+                                                className="w-full border p-1 rounded"
+                                                value={remarkInput}
+                                                onChange={(e) => setRemarkInput(e.target.value)}
+                                                rows={2}
+                                            />
+                                        ) : (
+                                            <span>
+                                                {application.remarks && application.remarks !== ""
+                                                    ? application.remarks
+                                                    : "No remarks"}
+
+                                            </span>
+                                        )}
+                                    </td>
+
+                                    <td className="py-2 px-4">
+
+                                        {editingId === application.id ? (
+                                            <div className="flex space-x-2">
+                                                <PrimaryButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => saveRemark(application)}
+                                                >
+                                                    Save
+                                                </PrimaryButton>
+                                                <SecondaryButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => {
+                                                        setEditingId(null);
+                                                        setRemarkInput("");
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </SecondaryButton>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-wrap gap-2">
+                                                <SecondaryButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => {
+                                                        setEditingId(application.id);
+                                                        setRemarkInput(application.remarks || "");
+                                                    }}
+                                                >
+                                                    Add Remark
+                                                </SecondaryButton>
+
+                                                {application.status === 'Pending' && (
+                                                    <PrimaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => handleAccept(application)}
+                                                    >
+                                                        Qualify
+                                                    </PrimaryButton>
+                                                )}
+
+                                                {application.status === 'Qualified' && (
+                                                    <PrimaryButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => handleAccept(application)}
+                                                    >
+                                                        Accept
+                                                    </PrimaryButton>
+                                                )}
+
+                                                {(application.status === 'Pending' || application.status === 'Qualified') && (
+                                                    <DangerButton
+                                                        className="px-3 py-1"
+                                                        onClick={() => handleReject(application)}
+                                                    >
+                                                        Reject
+                                                    </DangerButton>
+                                                )}
+
+
+                                            </div>
+                                        )}
+
+                                    </td>
+                                    <td className="py-2 px-4">
+
+                                        <SecondaryButton
+                                            onClick={() => {
+                                                openDocumentModal(application.id).then(() => { });
+
+                                            }}
                                         >
-                              {application.user.first_name} {application.user.last_name}
-                            </span>
-                                    </div>
-                                </td>
-                                <td className="py-2 px-4 capitalize">{application.status}</td>
-                                <td className="py-2 px-4">
-                                    {new Date(application.created_at).toLocaleDateString()}
-                                </td>
-                                <td className="py-2 px-4">
-                                    {editingId === application.id ? (
-                                        <textarea
-                                            className="w-full border p-1 rounded"
-                                            value={remarkInput}
-                                            onChange={(e) => setRemarkInput(e.target.value)}
-                                            rows={2}
-                                        />
-                                    ) : (
-                                        <span>
-                        {application.remarks && application.remarks !== ""
-                            ? application.remarks
-                            : "No remarks"}
-
-                      </span>
-                                    )}
-                                </td>
-
-                                <td className="py-2 px-4">
-
-                                    {editingId === application.id ? (
-                                        <div className="flex space-x-2">
-                                            <PrimaryButton
-                                                className="px-3 py-1"
-                                                onClick={() => saveRemark(application)}
-                                            >
-                                                Save
-                                            </PrimaryButton>
-                                            <SecondaryButton
-                                                className="px-3 py-1"
-                                                onClick={() => {
-                                                    setEditingId(null);
-                                                    setRemarkInput("");
-                                                }}
-                                            >
-                                                Cancel
-                                            </SecondaryButton>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-wrap gap-2">
-                                            <SecondaryButton
-                                                className="px-3 py-1"
-                                                onClick={() => {
-                                                    setEditingId(application.id);
-                                                    setRemarkInput(application.remarks || "");
-                                                }}
-                                            >
-                                                Add Remark
-                                            </SecondaryButton>
-
-                                            {application.status === 'Pending' && (
-                                                <PrimaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => handleAccept(application)}
-                                                >
-                                                    Qualify
-                                                </PrimaryButton>
-                                            )}
-
-                                            {application.status === 'Qualified' && (
-                                                <PrimaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => handleAccept(application)}
-                                                >
-                                                    Accept
-                                                </PrimaryButton>
-                                            )}
-
-                                            {(application.status === 'Pending' || application.status === 'Qualified') && (
-                                                <DangerButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => handleReject(application)}
-                                                >
-                                                    Reject
-                                                </DangerButton>
-                                            )}
-
-
-                                        </div>
-                                    )}
-
-                                </td>
-                                <td className="py-2 px-4">
-
-                                    <SecondaryButton
-                                        onClick={() => {
-                                            openDocumentModal(application.id).then(() => {});
-
-                                        }}
-                                    >
-                                        View Documents
-                                    </SecondaryButton>
-                                </td>
-                            </tr>
-                        ))}
+                                            View Documents
+                                        </SecondaryButton>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>

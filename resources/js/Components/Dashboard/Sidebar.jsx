@@ -33,7 +33,7 @@ export default function Sidebar({ auth, setActiveView }) {
             <div className="flex flex-col items-center py-6 border-b border-gray-200">
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-2 border-4 border-gray-300 ring-2 ring-white">
                     <img
-                        src={auth?.user?.profile_pic_url || 'images/default-profile.webp'}
+                        src={auth?.user?.profile_pic_url || '/images/default-profile.webp'}
                         alt="Image"
                         className="w-full h-full object-cover"
                     />

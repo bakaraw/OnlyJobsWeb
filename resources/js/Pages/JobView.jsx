@@ -261,23 +261,18 @@ export default function JobView() {
                                 </button>)
                             }
                             <div className="ml-5">
-                                {auth.user && jobview.applications.some(app => app.user_id === auth.user.id) ? (
-                                    <PrimaryButton
-                                        className='min-w-32 flex items-center justify-center'
-                                        onClick={() => setShowApplyModal(true)}
-                                    >
-                                        Apply
-                                    </PrimaryButton>
-                                ) : (
-                                    <PrimaryButton
-                                        className='min-w-32 flex items-center justify-center'
-                                        onClick={() => {
+                                <PrimaryButton
+                                    className='min-w-32 flex items-center justify-center'
+                                    onClick={() => {
+                                        const alreadyApplied = jobview.applications.some(app => app.user_id === auth.user.id);
+                                        if (!alreadyApplied) {
                                             handleApply(jobview.id);
-                                        }}
-                                    >
-                                        Apply
-                                    </PrimaryButton>
-                                )}
+                                        }
+                                        setShowApplyModal(true);
+                                    }}
+                                >
+                                    Apply
+                                </PrimaryButton>
                             </div>
                         </div>
                     </div>
@@ -324,6 +319,6 @@ export default function JobView() {
                 onClose={() => setNotification({ show: false, message: '', type: '' })}
             />
 
-        </MainPageLayout>
+        </MainPageLayout >
     );
 }

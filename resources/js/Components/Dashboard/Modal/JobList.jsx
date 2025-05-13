@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
+import CreateJobPostModal from "./CreateJobPostModal";
 
 const handleDeleteJob = async (jobId) => {
     if (confirm("Are you sure you want to delete this job post?")) {
@@ -24,10 +25,22 @@ const statusStyles = {
 };
 
 export default function JobList({ jobs, onJobSelect }) {
-    console.log("joblistwithslot: ", jobs);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div className="w-full px-4">
-            <h3 className="text-xl font-semibold mb-4">Job Listings</h3>
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold">Job Listings</h3>
+                <SecondaryButton
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    + Create Job
+                </SecondaryButton>
+            </div>
+            <CreateJobPostModal
+                show={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
             <div className="overflow-x-auto">
                 <table className="table-auto w-full border-collapse">
                     <thead className="bg-gray-100 text-left">

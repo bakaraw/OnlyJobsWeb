@@ -22,6 +22,7 @@ use App\Http\Controllers\UserSkillsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ContactController;
+use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
@@ -84,9 +85,6 @@ Route::get('/create', function () {
 Route::get('/contact_us', function () {
     return Inertia::render('ContactUs');
 })->name('contact_us');
-
-
-
 
 //Route::get('/company/dashboard', [DashboardController::class, 'company'])->name('company.dashboard');
 
@@ -188,19 +186,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/conversations/{conversation}/mark-read', [MessageController::class, 'markAsReadJobSeeker']);
     Route::get('conversation/unread-count', [MessageController::class, 'unreadCount']);
 
+    Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
+
     Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
     Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
-    Route::post('/application/upload-requirements',[ ApplicationRequirementController::class, 'uploadRequirements'])->name('user-requirement');
-//    Route::get('applications/{application}/requirements', [RequirementController::class, 'index']);
+    Route::post('/application/upload-requirements', [ApplicationRequirementController::class, 'uploadRequirements'])->name('user-requirement');
+    //    Route::get('applications/{application}/requirements', [RequirementController::class, 'index']);
     Route::get('/applications/{applicationId}/requirements', [ApplicationRequirementController::class, 'getApplicationRequirements']);
-         // Use appropriate middleware for authentication
+    // Use appropriate middleware for authentication
 
-// Get a specific requirement file
-//    Route::get('/requirements/{id}', [ApplicationRequirementController::class, 'getRequirementFile']);
-//
-//    Route::get('/document/{id}', [DocumentViewController::class, 'getDocument'])->name('document.view');
-//    Route::get('/application/{applicationId}/documents', [DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
+    // Get a specific requirement file
+    //    Route::get('/requirements/{id}', [ApplicationRequirementController::class, 'getRequirementFile']);
+    //
+    //    Route::get('/document/{id}', [DocumentViewController::class, 'getDocument'])->name('document.view');
+    //    Route::get('/application/{applicationId}/documents', [DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
 
     Route::get('/document/{id}', [App\Http\Controllers\DocumentViewController::class, 'getDocument'])->name('document.view');
     Route::get('/application/{applicationId}/documents', [App\Http\Controllers\DocumentViewController::class, 'getApplicationDocuments'])->name('application.documents');
@@ -220,9 +220,9 @@ Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('j
 
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
-    Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
-    Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
+Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
+Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
 Route::get('/applicants/{id}/pdf', [JobPostController::class, 'exportPDFApplicant'])
@@ -250,6 +250,28 @@ Route::middleware('auth')->prefix('admin/messages')->group(function () {
 //        ],
 //    ]);
 //})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
+    return $request->user()->notifications->map(function ($notification) {
+        return [
+            'id' => $notification->id,
+            'title' => $notification->data['title'],
+            'message' => $notification->data['message'],
+            'timeAgo' => \Carbon\Carbon::parse($notification->created_at)->diffForHumans(),
+            'link' => $notification->data['link'] ?? null,
+            'read' => $notification->read_at !== null,
+        ];
+    });
+});
+
+/*Route::middleware('auth:sanctum')->post('/notifications/read', function (Request $request) {*/
+/*    $request->user()->unreadNotifications()->update(['read_at' => now()]);*/
+/*    return response()->json(['success' => true]);*/
+/*});*/
+Route::middleware('auth:sanctum')->post('/notifications/mark-as-read', function (Request $request) {
+    $request->user()->unreadNotifications->markAsRead();
+    return response()->json(['success' => true]);
+});
 
 
 Route::post('/contact', [ContactController::class, 'store']);
