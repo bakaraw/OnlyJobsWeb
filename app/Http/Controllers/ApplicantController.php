@@ -7,13 +7,11 @@ use App\Models\JobPost;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Notifications\ApplicantAccepted;
-use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Notifications\ApplicantQualified;
 use App\Notifications\ApplicantRemarks;
-use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {

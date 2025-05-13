@@ -40,6 +40,8 @@
         });
 
 
+        const matchingApplicant = applicantInfo;
+
 
         const fetchDocument = async (id) => {
             try {
@@ -312,94 +314,92 @@
                 <div className="p-6 max-h-[70vh] overflow-y-auto">
                     {/* Documents Tab */}
                     {activeTab === 'profile' && (
-                        <div className="mb-6 space-y-8">
-                            {filteredApplicants.length > 0 ? (
-                                filteredApplicants.map((applicant, idx) => {
-                                    const u = applicant.user;
-                                    const addr = u.address || {};
-                                    const fullName = [
-                                        u.first_name,
-                                        u.middle_name,
-                                        u.last_name,
-                                        u.suffix && `, ${u.suffix}`,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(' ');
+                        matchingApplicant ? (
+                            <div className="mb-6 space-y-8">
+                                {filteredApplicants.length > 0 ? (
+                                    filteredApplicants.map((applicant, idx) => {
+                                        const u = applicant.user;
+                                        const addr = u.address || {};
+                                        const fullName = [
+                                            u.first_name,
+                                            u.middle_name,
+                                            u.last_name,
+                                            u.suffix && `, ${u.suffix}`,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(' ');
 
-                                    return (
-                                        <div key={u.id || idx} className="border rounded-lg p-4 shadow-sm">
-                                            <h4 className="text-md font-semibold mb-4 text-lg">{fullName || 'Unnamed Applicant'}</h4>
-                                            {/* Personal Info Table */}
-                                            <table className="table-auto w-full mb-6">
-                                                <thead className="bg-gray-100">
+                                        return (
+                                            <div key={u.id || idx} className="border rounded-lg p-4 shadow-sm">
+                                                <h4 className="text-md font-semibold mb-4 text-lg">{fullName || 'Unnamed Applicant'}</h4>
+                                                {matchingApplicant.user.first_name} {matchingApplicant.user.last_name}
 
-                                                </thead>
-                                                <tbody>
+                                                {/* Personal Info Table */}
+                                                <table className="table-auto w-full mb-6">
+                                                    <thead className="bg-gray-100"></thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Email</td>
+                                                        <td className="py-1 px-2">{u.email || 'Not specified'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Contact Number</td>
+                                                        <td className="py-1 px-2">{u.contact_number || 'Not specified'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Gender</td>
+                                                        <td className="py-1 px-2">{u.gender || 'Not specified'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Birthdate</td>
+                                                        <td className="py-1 px-2">
+                                                            {u.birthdate
+                                                                ? new Date(u.birthdate).toLocaleDateString()
+                                                                : 'Not specified'}
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
 
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Email</td>
-                                                    <td className="py-1 px-2">{u.email || 'Not specified'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Contact Number</td>
-                                                    <td className="py-1 px-2">{u.contact_number || 'Not specified'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Gender</td>
-                                                    <td className="py-1 px-2">{u.gender || 'Not specified'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Birthdate</td>
-                                                    <td className="py-1 px-2">
-                                                        {u.birthdate
-                                                            ? new Date(u.birthdate).toLocaleDateString()
-                                                            : 'Not specified'}
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-
-                                            {/* Address Table */}
-                                            <table className="table-auto w-full">
-                                                <thead className="bg-gray-100">
-
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Street</td>
-                                                    <td className="py-1 px-2">{addr.street || 'N/A'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Street 2</td>
-                                                    <td className="py-1 px-2">{addr.street2 || 'N/A'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">City</td>
-                                                    <td className="py-1 px-2">{addr.city || 'N/A'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Province</td>
-                                                    <td className="py-1 px-2">{addr.province || 'N/A'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Postal Code</td>
-                                                    <td className="py-1 px-2">{addr.postal_code || 'N/A'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-1 px-2 font-medium">Country</td>
-                                                    <td className="py-1 px-2">{addr.country || 'N/A'}</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p className="text-gray-600">No personal information available</p>
-                            )}
-                        </div>
+                                                {/* Address Table */}
+                                                <table className="table-auto w-full">
+                                                    <thead className="bg-gray-100"></thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Street</td>
+                                                        <td className="py-1 px-2">{addr.street || 'N/A'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Street 2</td>
+                                                        <td className="py-1 px-2">{addr.street2 || 'N/A'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">City</td>
+                                                        <td className="py-1 px-2">{addr.city || 'N/A'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Province</td>
+                                                        <td className="py-1 px-2">{addr.province || 'N/A'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Postal Code</td>
+                                                        <td className="py-1 px-2">{addr.postal_code || 'N/A'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-1 px-2 font-medium">Country</td>
+                                                        <td className="py-1 px-2">{addr.country || 'N/A'}</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p className="text-gray-600">No personal information available</p>
+                                )}
+                            </div>
+                        ) : null
                     )}
-
                     {activeTab === 'documents' && (
                         <>
                             {loading ? (
