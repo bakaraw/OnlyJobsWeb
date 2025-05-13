@@ -104,16 +104,16 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job }) {
             <Modal show={isOpen} onClose={onClose} maxWidth="4xl">
                 <form onSubmit={submit} encType="multipart/form-data">
                     <div className="p-6 border-b">
-            <span className={`px-2 py-1 rounded-full text-sm font-medium ${ yourApp ? statusStyles[yourApp.status] : 'bg-gray-300 text-gray-800' }`}>
-              {yourApp?.status || 'No Status'}
-            </span>
+                        <span className={`px-2 py-1 rounded-full text-sm font-medium ${yourApp ? statusStyles[yourApp.status] : 'bg-gray-300 text-gray-800'}`}>
+                            {yourApp?.status || 'No Status'}
+                        </span>
                         <div className="flex justify-between items-center mt-4">
                             <h2 className="text-2xl font-bold">{job.job_title}</h2>
                             <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                         </div>
                     </div>
 
-                    <div className="p-6 flex flex-col md:flex-row gap-6">
+                    <div className="p-6 flex flex-col text-gray-600 md:flex-row gap-6">
                         {/* Left: Requirements list */}
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold mb-2">Requirements</h3>
@@ -125,7 +125,7 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job }) {
                                 </ul>
                                 : <p>No requirements specified.</p>
                             }
-                            <div>
+                            <div className='mt-4'>
                                 <dt className="text-lg font-semibold text-dark">Company Remarks on you:</dt>
                                 <dd className="mt-1 text-gray-600 leading-relaxed">
                                     {job.applications?.[0]?.remarks || "None"}
@@ -163,7 +163,6 @@ export default function ApplicationModal({ isOpen, onClose, onApply, job }) {
                             <p>{job.company}</p>
                         </div>
                         <div className="space-x-2">
-                            <SecondaryButton type="button" onClick={onClose}>Cancel</SecondaryButton>
                             <PrimaryButton type="submit" disabled={uploading}>
                                 {uploading ? 'Uploading…' : 'Submit Application'}
                             </PrimaryButton>

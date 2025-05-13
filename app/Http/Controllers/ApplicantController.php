@@ -6,31 +6,36 @@ use App\Models\Application;
 use App\Models\JobPost;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\ApplicantAccepted;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use App\Notifications\ApplicantQualified;
+use App\Notifications\ApplicantRemarks;
 use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
 
-//    public function apply(Request $request)
-//    {
-//        $request->validate([
-//            'job_post_id' => 'required|integer',
-//            // add other validation if needed
-//        ]);
-//
-//        $user = Auth::user();
-//
-//        $application = Application::create([
-//            'user_id'     => $user->id,
-//            'job_post_id' => $request->job_post_id,
-//            'status'      => 'pending', // or a dynamic value if needed
-//            'remarks'     => $request->remarks,
-//        ]);
-//
-//        return response()->json(['message' => 'Application submitted successfully', 'application' => $application]);
-//    }
+    //    public function apply(Request $request)
+    //    {
+    //        $request->validate([
+    //            'job_post_id' => 'required|integer',
+    //            // add other validation if needed
+    //        ]);
+    //
+    //        $user = Auth::user();
+    //
+    //        $application = Application::create([
+    //            'user_id'     => $user->id,
+    //            'job_post_id' => $request->job_post_id,
+    //            'status'      => 'pending', // or a dynamic value if needed
+    //            'remarks'     => $request->remarks,
+    //        ]);
+    //
+    //        return response()->json(['message' => 'Application submitted successfully', 'application' => $application]);
+    //    }
 
 
     public function getApplicantDetails($applicationId)
@@ -121,23 +126,57 @@ class ApplicantController extends Controller
         $application = Application::findOrFail($request->application_id);
         $application->update(['remarks' => $request->remarks]);
 
+        $application->user->notify(
+            new ApplicantRemarks($application->jobPost, $request->remarks)
+        );
+
         return response()->json(['success' => true, 'message' => 'Remark updated successfully']);
     }
 
+    /*public function qualifiedAccepted(Request $request)*/
+    /*{*/
+    /*    $validated = $request->validate([*/
+    /*        'application_id' => 'required|integer',*/
+    /*    ]);*/
+    /**/
+    /*    $applicant = Application::findOrFail($validated['application_id']);*/
+    /**/
+    /*    if ($applicant->status == 'Pending') {*/
+    /*        $applicant->status = 'Qualified';*/
+    /*        $applicant->save();*/
+    /*        return response()->json(['success' => true, 'message' => 'Application submitted successfully']);*/
+    /*    }*/
+    /**/
+    /*    return response()->json(['success' => false, 'message' => 'Application already submitted']);*/
+    /*}*/
     public function qualifiedAccepted(Request $request)
     {
         $validated = $request->validate([
             'application_id' => 'required|integer',
         ]);
 
-        $applicant = Application::findOrFail($validated['application_id']);
+        $applicant = Application::with('user', 'jobPost')->findOrFail($validated['application_id']);
+        /*$applicant = Application::findOrFail($validated['application_id']);*/
 
         if ($applicant->status == 'Pending') {
             $applicant->status = 'Qualified';
             $applicant->save();
-            return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
+
+            // Broadcast the notification to the user
+            $applicant->user->notify(
+                new ApplicantQualified($applicant->jobPost)
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Application marked as qualified and notification sent.'
+            ]);
         }
-        return response()->json(['success' => false, 'message' => 'Application already submitted']);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Application already processed.'
+        ]);
     }
 
 
@@ -148,11 +187,16 @@ class ApplicantController extends Controller
             'application_id' => 'required|integer',
         ]);
 
-        $applicant = Application::findOrFail($validated['application_id']);
+        $applicant = Application::with('user', 'jobPost')->findOrFail($validated['application_id']);
 
         if ($applicant->status == 'Qualified') {
             $applicant->status = 'Accepted';
             $applicant->save();
+
+            $applicant->user->notify(
+                new ApplicantAccepted($applicant->jobPost)
+            );
+
             return response()->json(['success' => true, 'message' => 'Application submitted successfully']);
         }
         return response()->json(['success' => false, 'message' => 'Application already submitted']);
