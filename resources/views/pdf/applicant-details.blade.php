@@ -39,7 +39,7 @@
     {{-- Left column: Personal & Contact --}}
     <div class="section bg-white p-4 rounded-lg shadow">
         <h4>Personal Information</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <p class="font-semibold">Email:</p>
                 <p class="text-gray-600">{{ $user->email ?? 'Not specified' }}</p>
@@ -56,23 +56,22 @@
                 <p class="font-semibold">Birthdate:</p>
                 <p class="text-gray-600">{{ optional($user->birthdate)->format('M d, Y') ?? 'Not specified' }}</p>
             </div>
+            @if($user->address)
+                <div class="col-span-2">
+                    <p class="font-semibold">Address:</p>
+                    <p class="text-gray-600">
+                        {{ implode(', ', array_filter([
+                            $user->address->street,
+                            $user->address->street2,
+                            $user->address->city,
+                            $user->address->province,
+                            $user->address->postal_code,
+                            $user->address->country
+                        ])) }}
+                    </p>
+                </div>
+            @endif
         </div>
-        @if($user->address)
-            <div class="mt-4">
-                <p class="font-semibold">Address:</p>
-                <p class="text-gray-600">
-                    {{ implode(', ', array_filter([
-                        $user->address->street,
-                        $user->address->street2,
-                        $user->address->city,
-                        $user->address->province,
-                        $user->address->postal_code,
-                        $user->address->country
-                    ])) }}
-                </p>
-            </div>
-        @endif
-    </div>
 
     {{-- Right column: Skills & Certifications --}}
     <div>
@@ -204,8 +203,7 @@
                                     @foreach($app->jobPost->requirements as $req)
                                         <tr>
                                             <td class="capitalize">{{ $req->requirement_name }}</td>
-                                            <td class="capitalize">{{ $user->requirements->contains(function($sub) use($req, $app) { return $sub->job_post_requirement_id == $req->id && $sub->application_id == $app->id; }) ? 'Submitted':'Not Submitted' }}</td>
-                                        </tr>
+                                            <td class="capitalize">{{ $user->requirements->contains(fn($sub) => $sub->job_post_requirement_id === $req->id && $sub->application_id === $app->id) ? 'Submitted' : 'Not Submitted' }}</td>                                        </tr>
                                     @endforeach
                                     </tbody>
                                 </table>

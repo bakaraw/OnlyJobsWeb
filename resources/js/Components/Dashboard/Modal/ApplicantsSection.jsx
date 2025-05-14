@@ -136,7 +136,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                                 application_id: application.id
                             });
                             if (response.data.success) {
-                                window.location.reload();
+                                application.status = "Qualified"; // Update the status locally
+                                setSelectedApplicant({ ...application });
                             }
                             closeModal();
                         } catch (error) {
@@ -159,7 +160,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                         application_id: application.id
                     });
                     if (response.data.success) {
-                        window.location.reload();
+                        application.status = "Qualified"; // Update the status locally
+                        setSelectedApplicant({ ...application });
                     }
                 }
             } else if (application.status === "Qualified") {
@@ -174,7 +176,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                                 application_id: application.id
                             });
                             if (response.data.success) {
-                                window.location.reload();
+                                application.status = "Accepted"; // Update the status locally
+                                setSelectedApplicant({ ...application });
                             }
                             closeModal();
                         } catch (error) {
@@ -188,7 +191,6 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
             console.error("Error updating application status:", error);
         }
     };
-
     const handleReject = async (application) => {
         try {
             const confirmAction = async () => {
@@ -198,17 +200,16 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                     });
 
                     if (data.success) {
-                        console.error('Rejection failed:', data.message);
+                        application.status = "Reject"; // Update the status locally
+                        setSelectedApplicant({ ...application }); // Update the selected applicant
                     } else {
-                        console.error(data.message);
+                        console.error('Rejection failed:', data.message);
                     }
                 } catch (error) {
                     console.error('Error rejecting application:', error);
 
                     if (error.response && error.response.data && error.response.data.message) {
                         console.error(`Error: ${error.response.data.message}`);
-
-
                     } else {
                         console.error('Failed to reject application. Please try again.');
                     }
@@ -225,17 +226,16 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
         } catch (error) {
             console.error('Error preparing rejection confirmation:', error);
         }
-    };
-    const saveRemark = async (application) => {
+    };    const saveRemark = async (application) => {
         try {
             const response = await axios.patch("/applications/update-remark", {
                 application_id: application.id,
                 remarks: remarkInput.trim(),
             });
             if (response.data.success) {
+                application.remarks = remarkInput.trim(); // Update the remark locally
                 setEditingId(null);
                 setRemarkInput("");
-                window.location.reload();
             } else {
                 throw new Error(response.data.message);
             }
@@ -245,12 +245,11 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                 error.response?.data?.message || "Failed to save remark. Please try again."
             );
         }
-    };
-    return (
+    };    return (
         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {['all', 'pending', 'qualified', 'accepted', 'rejected'].map((status) => (
+                {['all', 'pending', 'qualified', 'accepted', 'reject'].map((status) => (
                     <SecondaryButton
                         key={status}
                         onClick={() => setSelectedStatus(status)}
