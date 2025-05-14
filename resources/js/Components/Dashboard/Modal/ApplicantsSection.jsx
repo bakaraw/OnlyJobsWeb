@@ -191,14 +191,39 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
 
     const handleReject = async (application) => {
         try {
-            const response = await axios.post("/applicants/rejected", {
-                application_id: application.id,
+            const confirmAction = async () => {
+                try {
+                    const { data } = await axios.post('/applicants/reject', {
+                        application_id: application.id,
+                    });
+
+                    if (data.success) {
+                        console.error('Rejection failed:', data.message);
+                    } else {
+                        console.error(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error rejecting application:', error);
+
+                    if (error.response && error.response.data && error.response.data.message) {
+                        console.error(`Error: ${error.response.data.message}`);
+
+
+                    } else {
+                        console.error('Failed to reject application. Please try again.');
+                    }
+                }
+            };
+
+            setModalProps({
+                show: true,
+                type: "warning",
+                message: `Are you sure you want to reject ${application.user.first_name} ${application.user.last_name}?`,
+                onClose: closeModal,
+                onConfirm: confirmAction,
             });
-            if (response.data.success) {
-                window.location.reload();
-            }
         } catch (error) {
-            console.error("Error rejecting application:", error);
+            console.error('Error preparing rejection confirmation:', error);
         }
     };
     const saveRemark = async (application) => {

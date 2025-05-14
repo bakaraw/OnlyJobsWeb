@@ -35,7 +35,23 @@ class ApplicantController extends Controller
     //        return response()->json(['message' => 'Application submitted successfully', 'application' => $application]);
     //    }
 
+    public function rejectApplicant(Request $request)
+    {
+        $validated = $request->validate([
+            'application_id' => 'required|integer',
+        ]);
 
+        $applicant = Application::with('user', 'jobPost')->findOrFail($validated['application_id']);
+
+        if ($applicant->status !== 'Reject') {
+            $applicant->status = 'Reject';
+            $applicant->save();
+
+            return response()->json(['success' => true, 'message' => 'Application rejected successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Application already rejected']);
+    }
     public function getApplicantDetails($applicationId)
     {
         try {
@@ -200,15 +216,7 @@ class ApplicantController extends Controller
         return response()->json(['success' => false, 'message' => 'Application already submitted']);
     }
 
-    public function rejectApplicant(Request $request)
-    {
-        $user = Auth::user();
 
-        $user->appliedJobs()
-            ->where('job_post_id', $request->job_post_id)
-            ->where('user_id', $request->user_id)
-            ->update(['rejected' => true]);
-    }
 
     public function pipeLineData(Request $request)
     {
