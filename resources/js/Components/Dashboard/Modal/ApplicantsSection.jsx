@@ -19,7 +19,6 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
     const { props } = usePage();
     const { statuses, degrees, requirements, skills } = props;
 
-    // Filter applicants by status
     const filteredApplicants = applicants.filter(
         (app) => selectedStatus === "all" || app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
@@ -70,42 +69,158 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
         onConfirm: null
     });
 
+    const educationLevel = {
+        'Graduate': 1,
+        'Undergraduate': 2,
+        'Vocational': 3,
+        'High School': 4,
+        'Elementary': 5,
+    };
+    const meetsEducationRequirement = (applicantLevel, requiredLevel) => {
+        const applicantRank = educationLevel[applicantLevel] || 0;
+        const requiredRank = educationLevel[requiredLevel] || 0;
+        return applicantRank <= requiredRank; // Lower rank is higher education
+    };
+
+    // Check if applicant has the required skills
+    const meetsSkillsRequirement = (applicantSkills, jobSkills) => {
+        if (!applicantSkills || !jobSkills || applicantSkills.length === 0 || jobSkills.length === 0) {
+            return false;
+        }
+
+        // Check if applicant has at least one of the required skills
+        return jobSkills.some(jobSkill =>
+            applicantSkills.some(appSkill =>
+                appSkill.skill_name.toLowerCase() === jobSkill.skill_name.toLowerCase()
+            )
+        );
+    };
+
+
+
+
     const closeModal = () => setModalProps((prev) => ({ ...prev, show: false }));
+    const handleAccept = async (application) => {
+        try {
+            if (application.status === "Pending") {
+                const applicantEducationLevel = application.user.educations?.[0]?.education_level;
+                const requiredEducationLevel = application.job_post.degree?.name;
+                const applicantSkills = application.user.user_skills || [];
+                const jobSkills = application.job_post.skills || [];
 
-    // Define helpers and handlers (meetsEducationRequirement, meetSkillsRequirement, handleAccept, handleReject, saveRemark) unchanged...
-    // For brevity, assume they remain the same as before
+                const educationMet = meetsEducationRequirement(applicantEducationLevel, requiredEducationLevel);
+                const skillsMet = meetsSkillsRequirement(applicantSkills, jobSkills);
 
-    function handleReject(application) {
-        setModalProps({
-            show: true,
-            type: "warning",
-            message: `Are you sure you want to reject ${application.user.first_name} ${application.user.last_name}'s application?`,
-            onConfirm: async () => {
-                try {
-                    const response = await axios.post(`/api/reject-applicant`, {
-                        job_post_id: application.job_post_id,
-                        user_id: application.user.id,
-                    });
+                console.log('Education Met:', educationMet, 'Skills Met:', skillsMet);
+                console.log('Applicant Education:', applicantEducationLevel, 'Required:', requiredEducationLevel);
+                console.log('Applicant Skills:', applicantSkills.map(s => s.skill_name), 'Required Skills:', jobSkills.map(s => s.skill_name));
 
-                    if (response.data.success) {
-                        setFilteredApplicants((prev) =>
-                            prev.map((app) =>
-                                app.id === application.id
-                                    ? { ...app, status: "rejected", remarks: remarkInput || app.remarks }
-                                    : app
-                            )
-                        );
-                        setModalProps((prev) => ({ ...prev, show: false }));
-                        setEditingId(null);
-                        setRemarkInput("");
-                    }
-                } catch (error) {
-                    console.error("Error rejecting application:", error);
+                let msg = "";
+
+                if (!educationMet && !skillsMet) {
+                    msg = "Applicant does not meet education level and skills requirements.";
+                } else if (!educationMet) {
+                    msg = "Applicant does not meet education level requirements.";
+                } else if (!skillsMet) {
+                    msg = "Applicant does not meet skills requirements.";
                 }
-            },
-            onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
-        });
-    }
+
+                if (msg) {
+                    // Show warning but still allow qualification
+                    msg += " Do you still want to proceed?";
+
+                    // Define the confirmation action for accepting despite warnings
+                    const confirmAction = async () => {
+                        try {
+                            const response = await axios.post("/applicants/qualified", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        } catch (error) {
+                            console.error("Error qualifying applicant:", error);
+                            closeModal();
+                        }
+                    };
+
+                    setModalProps({
+                        show: true,
+                        type: "warning",
+                        message: msg,
+                        onClose: closeModal,
+                        onConfirm: confirmAction // Assign the confirmation action properly
+                    });
+                    return; // Make sure we don't continue with the function
+                } else {
+                    // If all requirements are met, just qualify without warning
+                    const response = await axios.post("/applicants/qualified", {
+                        application_id: application.id
+                    });
+                    if (response.data.success) {
+                        window.location.reload();
+                    }
+                }
+            } else if (application.status === "Qualified") {
+                setModalProps({
+                    show: true,
+                    type: "success",
+                    message: `Are you sure you want to accept ${application.user.first_name} ${application.user.last_name}?`,
+                    onClose: closeModal,
+                    onConfirm: async () => {
+                        try {
+                            const response = await axios.post("/applicants/accepted", {
+                                application_id: application.id
+                            });
+                            if (response.data.success) {
+                                window.location.reload();
+                            }
+                            closeModal();
+                        } catch (error) {
+                            console.error("Error accepting applicant:", error);
+                            closeModal();
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error updating application status:", error);
+        }
+    };
+
+    const handleReject = async (application) => {
+        try {
+            const response = await axios.post("/applicants/rejected", {
+                application_id: application.id,
+            });
+            if (response.data.success) {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error rejecting application:", error);
+        }
+    };
+    const saveRemark = async (application) => {
+        try {
+            const response = await axios.patch("/applications/update-remark", {
+                application_id: application.id,
+                remarks: remarkInput.trim(),
+            });
+            if (response.data.success) {
+                setEditingId(null);
+                setRemarkInput("");
+                window.location.reload();
+            } else {
+                throw new Error(response.data.message);
+            }
+        } catch (error) {
+            console.error("Failed to save remark:", error);
+            alert(
+                error.response?.data?.message || "Failed to save remark. Please try again."
+            );
+        }
+    };
     return (
         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
             {/* Filter Buttons */}

@@ -490,10 +490,11 @@ public function update(Request $request, $id)
     {
         $user = User::with([
             'address',
+            'applications',
             'applications.jobPost',
+            'applications.jobPost.requirements',
             'requirements',
             'educations',
-            'experiences',
             'workHistories',
             'certifications',
             'userSkills.skill',
