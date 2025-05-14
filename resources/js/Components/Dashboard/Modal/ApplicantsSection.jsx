@@ -4,76 +4,71 @@ import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import DashboardCard from "@/Components/Dashboard/Modal/DashboardCard.jsx";
-import { router, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import ConfirmModal from "@/Components/ConfirmModal.jsx";
-import MessageButton from "@/Components/MessageButton.jsx";
 import RequirementsViewerModal from "@/Components/Dashboard/Modal/RequirementsViewerModal.jsx";
 import DocumentViewerModal from "@/Components/Dashboard/Modal/DocumentViewModal.jsx";
-
 
 export default function ApplicantsSection({ applicants, onApplicantSelect }) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [editingId, setEditingId] = useState(null);
     const [remarkInput, setRemarkInput] = useState("");
-    const [documentModal, setDocumentModal] = useState({
-        show: false,
-        applicationId: null,
-    });
+    const [documentModal, setDocumentModal] = useState({ show: false, applicationId: null, loading: false, applicantDetails: null });
+    const [selectedApplicant, setSelectedApplicant] = useState(null);
 
-
-    console.log("appps", applicants)
     const { props } = usePage();
     const { statuses, degrees, requirements, skills } = props;
 
     const filteredApplicants = applicants.filter(
-        (app) =>
-            selectedStatus === "all" ||
-            app.status?.toLowerCase() === selectedStatus.toLowerCase()
+        (app) => selectedStatus === "all" || app.status?.toLowerCase() === selectedStatus.toLowerCase()
     );
 
+    // Open document modal for selected applicant
     const openDocumentModal = async (applicationId) => {
-        setDocumentModal({
-            show: true,
-            loading: true,
-            applicationId
-        });
+        const app = filteredApplicants.find((a) => a.id === applicationId);
+        setSelectedApplicant(app);
+        setDocumentModal({ show: true, applicationId, loading: true, applicantDetails: null });
 
         try {
             const response = await axios.get(`/applicant-details/${applicationId}`);
-
             if (response.data.success) {
-                // Find the current application from your local data for additional context
-                const currentApplication = filteredApplicants.find(app => app.id === applicationId);
-
                 setDocumentModal({
                     show: true,
-                    loading: false,
                     applicationId,
+                    loading: false,
                     applicantDetails: {
                         ...response.data.applicant,
                         current_application: response.data.application,
                         documents: response.data.documents,
-                        // Make sure all these fields align with what DocumentViewModal expects
                         userSkills: response.data.applicant.user_skills || [],
                         educations: response.data.applicant.educations || [],
                         work_histories: response.data.applicant.work_histories || [],
                         certifications: response.data.applicant.certifications || [],
                         applications: response.data.applicant.applications || [],
-                        // Include job post information if available
-                        job_post: currentApplication?.job_post || response.data.job_post
+                        job_post: response.data.application.job_post || {}
                     }
                 });
             }
-
         } catch (error) {
             console.error("Error fetching applicant details:", error);
-            setDocumentModal({ show: false, loading: false });
+            setDocumentModal({ show: false, applicationId: null, loading: false, applicantDetails: null });
         }
     };
-    // Close document modal
+
     const closeDocumentModal = () => {
-        setDocumentModal({ show: false, applicationId: null });
+        setDocumentModal({ show: false, applicationId: null, loading: false, applicantDetails: null });
+        setSelectedApplicant(null);
     };
+
+    // Confirmation modal state
+    const [modalProps, setModalProps] = useState({
+        show: false,
+        type: "success",
+        message: "",
+        onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
+        onConfirm: null
+    });
+
     const educationLevel = {
         'Graduate': 1,
         'Undergraduate': 2,
@@ -81,8 +76,6 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
         'High School': 4,
         'Elementary': 5,
     };
-
-    // Check if applicant meets education requirement
     const meetsEducationRequirement = (applicantLevel, requiredLevel) => {
         const applicantRank = educationLevel[applicantLevel] || 0;
         const requiredRank = educationLevel[requiredLevel] || 0;
@@ -103,18 +96,10 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
         );
     };
 
-    const [modalProps, setModalProps] = useState({
-        show: false,
-        type: "success",
-        message: "",
-        onClose: () => setModalProps((prev) => ({ ...prev, show: false })),
-        onConfirm: null, // Changed to null initially
-    });
 
-    const closeModal = () => {
-        setModalProps(prev => ({ ...prev, show: false }));
-    };
 
+
+    const closeModal = () => setModalProps((prev) => ({ ...prev, show: false }));
     const handleAccept = async (application) => {
         try {
             if (application.status === "Pending") {
@@ -151,7 +136,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                                 application_id: application.id
                             });
                             if (response.data.success) {
-                                window.location.reload();
+                                application.status = "Qualified"; // Update the status locally
+                                setSelectedApplicant({ ...application });
                             }
                             closeModal();
                         } catch (error) {
@@ -174,7 +160,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                         application_id: application.id
                     });
                     if (response.data.success) {
-                        window.location.reload();
+                        application.status = "Qualified"; // Update the status locally
+                        setSelectedApplicant({ ...application });
                     }
                 }
             } else if (application.status === "Qualified") {
@@ -189,7 +176,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                                 application_id: application.id
                             });
                             if (response.data.success) {
-                                window.location.reload();
+                                application.status = "Accepted"; // Update the status locally
+                                setSelectedApplicant({ ...application });
                             }
                             closeModal();
                         } catch (error) {
@@ -203,30 +191,51 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
             console.error("Error updating application status:", error);
         }
     };
-
     const handleReject = async (application) => {
         try {
-            const response = await axios.post("/applicants/rejected", {
-                application_id: application.id,
-            });
-            if (response.data.success) {
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error rejecting application:", error);
-        }
-    };
+            const confirmAction = async () => {
+                try {
+                    const { data } = await axios.post('/applicants/reject', {
+                        application_id: application.id,
+                    });
 
-    const saveRemark = async (application) => {
+                    if (data.success) {
+                        application.status = "Reject"; // Update the status locally
+                        setSelectedApplicant({ ...application }); // Update the selected applicant
+                    } else {
+                        console.error('Rejection failed:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error rejecting application:', error);
+
+                    if (error.response && error.response.data && error.response.data.message) {
+                        console.error(`Error: ${error.response.data.message}`);
+                    } else {
+                        console.error('Failed to reject application. Please try again.');
+                    }
+                }
+            };
+
+            setModalProps({
+                show: true,
+                type: "warning",
+                message: `Are you sure you want to reject ${application.user.first_name} ${application.user.last_name}?`,
+                onClose: closeModal,
+                onConfirm: confirmAction,
+            });
+        } catch (error) {
+            console.error('Error preparing rejection confirmation:', error);
+        }
+    };    const saveRemark = async (application) => {
         try {
             const response = await axios.patch("/applications/update-remark", {
                 application_id: application.id,
                 remarks: remarkInput.trim(),
             });
             if (response.data.success) {
+                application.remarks = remarkInput.trim(); // Update the remark locally
                 setEditingId(null);
                 setRemarkInput("");
-                window.location.reload();
             } else {
                 throw new Error(response.data.message);
             }
@@ -236,162 +245,150 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                 error.response?.data?.message || "Failed to save remark. Please try again."
             );
         }
-    };
-
-    return (
+    };    return (
         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {['all', 'pending', 'qualified', 'accepted', 'rejected'].map((status) => (
+                {['all', 'pending', 'qualified', 'accepted', 'reject'].map((status) => (
                     <SecondaryButton
                         key={status}
                         onClick={() => setSelectedStatus(status)}
-                        className={`px-4 py-2 rounded-full border transition-all ${selectedStatus === status
+                        className={`px-4 py-2 rounded-full border transition-all ${
+                            selectedStatus === status
                                 ? 'bg-blue-600 text-black'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
+                        }`}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)}
                     </SecondaryButton>
                 ))}
             </div>
 
+            {/* Applicants Table */}
             {filteredApplicants.length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="table-auto w-full border-collapse">
                         <thead className="bg-gray-50">
-                            <tr>
-                                <th className="py-2 px-4 text-left">Applicant</th>
-                                <th className="py-2 px-4 text-left">Status</th>
-                                <th className="py-2 px-4 text-left">Date Applied</th>
-                                <th className="py-2 px-4 text-left">Remarks</th>
-                                <th className="py-2 px-4 text-left">Actions</th>
-                                <th className="py-2 px-4 text-left">Documents</th>
-
-                            </tr>
+                        <tr>
+                            <th className="py-2 px-4 text-left">Applicant</th>
+                            <th className="py-2 px-4 text-left">Status</th>
+                            <th className="py-2 px-4 text-left">Date Applied</th>
+                            <th className="py-2 px-4 text-left">Remarks</th>
+                            <th className="py-2 px-4 text-left">Actions</th>
+                            <th className="py-2 px-4 text-left">Applicant Information</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {filteredApplicants.map((application, index) => (
-                                <tr
-                                    key={application.id}
-                                    className="border-t hover:bg-gray-50"
-                                >
-                                    <td className="py-2 px-4">
-                                        <div className="flex items-center">
-                                            <span className="mr-2 text-gray-500">
-                                                {index + 1}.
-                                            </span>
-                                            <span
-                                                className="cursor-pointer hover:text-blue-600 hover:underline"
-                                                onClick={() => {
-
-                                                    onApplicantSelect(application.id);
-                                                }
-                                                }
-                                            >
-                                                {application.user.first_name} {application.user.last_name}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="py-2 px-4 capitalize">{application.status}</td>
-                                    <td className="py-2 px-4">
-                                        {new Date(application.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {editingId === application.id ? (
-                                            <textarea
-                                                className="w-full border p-1 rounded"
-                                                value={remarkInput}
-                                                onChange={(e) => setRemarkInput(e.target.value)}
-                                                rows={2}
-                                            />
-                                        ) : (
-                                            <span>
-                                                {application.remarks && application.remarks !== ""
-                                                    ? application.remarks
-                                                    : "No remarks"}
-
-                                            </span>
-                                        )}
-                                    </td>
-
-                                    <td className="py-2 px-4">
-
-                                        {editingId === application.id ? (
-                                            <div className="flex space-x-2">
-                                                <PrimaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => saveRemark(application)}
-                                                >
-                                                    Save
-                                                </PrimaryButton>
-                                                <SecondaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => {
-                                                        setEditingId(null);
-                                                        setRemarkInput("");
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </SecondaryButton>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-wrap gap-2">
-                                                <SecondaryButton
-                                                    className="px-3 py-1"
-                                                    onClick={() => {
-                                                        setEditingId(application.id);
-                                                        setRemarkInput(application.remarks || "");
-                                                    }}
-                                                >
-                                                    Add Remark
-                                                </SecondaryButton>
-
-                                                {application.status === 'Pending' && (
-                                                    <PrimaryButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleAccept(application)}
-                                                    >
-                                                        Qualify
-                                                    </PrimaryButton>
-                                                )}
-
-                                                {application.status === 'Qualified' && (
-                                                    <PrimaryButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleAccept(application)}
-                                                    >
-                                                        Accept
-                                                    </PrimaryButton>
-                                                )}
-
-                                                {(application.status === 'Pending' || application.status === 'Qualified') && (
-                                                    <DangerButton
-                                                        className="px-3 py-1"
-                                                        onClick={() => handleReject(application)}
-                                                    >
-                                                        Reject
-                                                    </DangerButton>
-                                                )}
-
-
-                                            </div>
-                                        )}
-
-                                    </td>
-                                    <td className="py-2 px-4">
-
-                                        <SecondaryButton
+                        {filteredApplicants.map((application, index) => (
+                            <tr key={application.id} className="border-t hover:bg-gray-50">
+                                <td className="py-2 px-4">
+                                    <div className="flex items-center">
+                                        <span className="mr-2 text-gray-500">{index + 1}.</span>
+                                        <span
+                                            className="cursor-pointer hover:text-blue-600 hover:underline"
                                             onClick={() => {
-                                                openDocumentModal(application.id).then(() => { });
-
+                                                onApplicantSelect(application.id);
+                                                setSelectedApplicant(application);
                                             }}
                                         >
-                                            View Documents
-                                        </SecondaryButton>
-                                    </td>
-                                </tr>
-                            ))}
+                        {application.user.first_name} {application.user.last_name}
+                      </span>
+                                    </div>
+                                </td>
+
+                                <td className="py-2 px-4 capitalize">{application.status}</td>
+                                <td className="py-2 px-4">
+                                    {new Date(application.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="py-2 px-4">
+                                    {editingId === application.id ? (
+                                        <textarea
+                                            className="w-full border p-1 rounded"
+                                            value={remarkInput}
+                                            onChange={(e) => setRemarkInput(e.target.value)}
+                                            rows={2}
+                                        />
+                                    ) : (
+                                        <span>
+                        {application.remarks && application.remarks !== ""
+                            ? application.remarks
+                            : "No remarks"}
+
+                      </span>
+                                    )}
+                                </td>
+
+                                <td className="py-2 px-4">
+
+                                    {editingId === application.id ? (
+                                        <div className="flex space-x-2">
+                                            <PrimaryButton
+                                                className="px-3 py-1"
+                                                onClick={() => saveRemark(application)}
+                                            >
+                                                Save
+                                            </PrimaryButton>
+                                            <SecondaryButton
+                                                className="px-3 py-1"
+                                                onClick={() => {
+                                                    setEditingId(null);
+                                                    setRemarkInput("");
+                                                }}
+                                            >
+                                                Cancel
+                                            </SecondaryButton>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-wrap gap-2">
+                                            <SecondaryButton
+                                                className="px-3 py-1"
+                                                onClick={() => {
+                                                    setEditingId(application.id);
+                                                    setRemarkInput(application.remarks || "");
+                                                }}
+                                            >
+                                                Add Remark
+                                            </SecondaryButton>
+
+                                            {application.status === 'Pending' && (
+                                                <PrimaryButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => handleAccept(application)}
+                                                >
+                                                    Qualify
+                                                </PrimaryButton>
+                                            )}
+
+                                            {application.status === 'Qualified' && (
+                                                <PrimaryButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => handleAccept(application)}
+                                                >
+                                                    Accept
+                                                </PrimaryButton>
+                                            )}
+
+                                            {(application.status === 'Pending' || application.status === 'Qualified') && (
+                                                <DangerButton
+                                                    className="px-3 py-1"
+                                                    onClick={() => handleReject(application)}
+                                                >
+                                                    Reject
+                                                </DangerButton>
+                                            )}
+
+
+                                        </div>
+                                    )}
+
+                                </td>
+                                <td className="py-2 px-4">
+                                    <SecondaryButton onClick={() => openDocumentModal(application.id)}>
+                                        View Documents
+                                    </SecondaryButton>
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
@@ -400,36 +397,18 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                     No {selectedStatus !== 'all' ? selectedStatus : ''} applicants available.
                 </p>
             )}
-            <ConfirmModal
-                show={modalProps.show}
-                type={modalProps.type}
-                message={modalProps.message}
-                onClose={modalProps.onClose}
-                onConfirm={modalProps.onConfirm} // This now correctly passes the confirmation function
-                autoClose={modalProps.type !== "warning"} // Don't auto-close warning modals
-            />
+
+            <ConfirmModal {...modalProps} autoClose={modalProps.type !== "warning"} />
+
             <DocumentViewerModal
-                // isOpen={documentModal.show}
-                // onClose={closeDocumentModal}
-                // applicationId={documentModal.applicationId}
-                // applicantDetails={documentModal.applicantDetails}
-                // loading={documentModal.loading}
-                // applicantInfo={documentModal.applicationId ? {
-                //     name: `${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.first_name || ''} ${filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.last_name || ''}`,
-                //     status: filteredApplicants.find(app => app.id === documentModal.applicationId)?.status || "N/A",
-                //     dateApplied: new Date(filteredApplicants.find(app => app.id === documentModal.applicationId)?.created_at || "").toLocaleDateString(),
-                //     jobTitle: filteredApplicants.find(app => app.id === documentModal.applicationId)?.job_post?.job_title || "Job Position",
-                //     email: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.email || "N/A",
-                //     phone: filteredApplicants.find(app => app.id === documentModal.applicationId)?.user.phone || "N/A"
-                // } : null}
                 isOpen={documentModal.show}
                 onClose={closeDocumentModal}
                 applicationId={documentModal.applicationId}
                 applicantDetails={documentModal.applicantDetails}
                 loading={documentModal.loading}
-                filteredApplicants={applicants}
+                applicantInfo={selectedApplicant}
+                filteredApplicants={selectedApplicant ? [selectedApplicant] : []}
             />
         </DashboardCard>
     );
 }
-

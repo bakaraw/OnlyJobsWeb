@@ -13,7 +13,7 @@ const ApplicantPipelineCard = ({
         Pending: 0,
         Qualified: 0,
         Accepted: 0,
-        Rejected: 0
+        Reject: 0
     });
 
     const statusConfig = {
@@ -35,8 +35,8 @@ const ApplicantPipelineCard = ({
             border: 'rgb(75, 192, 192)',
             bgClass: 'bg-green-100 hover:bg-green-200'
         },
-        Rejected: {
-            label: "Rejected",
+        Reject: {
+            label: "Reject",
             color: 'rgba(255, 99, 132, 0.7)',
             border: 'rgb(255, 99, 132)',
             bgClass: 'bg-red-100 hover:bg-red-200'
@@ -48,32 +48,32 @@ const ApplicantPipelineCard = ({
             Pending: applications.filter(app => app.status?.trim() === 'Pending').length,
             Qualified: applications.filter(app => app.status?.trim() === 'Qualified').length,
             Accepted: applications.filter(app => app.status?.trim() === 'Accepted').length,
-            Rejected: applications.filter(app => app.status?.trim() === 'Rejected').length
+            Reject: applications.filter(app => app.status?.trim() === 'Reject').length
         };
         setStatusCounts(counts);
     }, [applications]);
 
     const chartData = {
-        labels: ['Pending', 'Qualified', 'Accepted', 'Rejected'],
+        labels: ['Pending', 'Qualified', 'Accepted', 'Reject'],
         datasets: [{
             label: 'Applicant Pipeline',
             data: [
                 statusCounts.Pending,
                 statusCounts.Qualified,
                 statusCounts.Accepted,
-                statusCounts.Rejected
+                statusCounts.Reject
             ],
             backgroundColor: [
                 statusConfig.Pending.color,
                 statusConfig.Qualified.color,
                 statusConfig.Accepted.color,
-                statusConfig.Rejected.color
+                statusConfig.Reject.color
             ],
             borderColor: [
                 statusConfig.Pending.border,
                 statusConfig.Qualified.border,
                 statusConfig.Accepted.border,
-                statusConfig.Rejected.border
+                statusConfig.Reject.border
             ],
             borderWidth: 1
         }]

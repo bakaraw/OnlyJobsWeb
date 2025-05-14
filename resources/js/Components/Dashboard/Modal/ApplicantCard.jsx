@@ -72,7 +72,6 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
                             <th className="py-3 px-4">Email</th>
                             <th className="py-3 px-4">Contact</th>
                             <th className="py-3 px-4">Applied Jobs</th>
-                            <th className="py-3 px-4 text-center">Application Status</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -101,21 +100,21 @@ export default function ApplicantCard({ users, onApplicantSelect }) {
                                         <span className="text-gray-500">No jobs applied</span>
                                     )}
                                 </td>
-                                <td className="py-3 px-4 text-center">
-                                    {user.applications && user.applications.length > 0 ? (
-                                        <div className="flex flex-wrap justify-center gap-1">
-                                            {user.applications.map((app, i) => (
-                                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[app.status.charAt(0).toUpperCase() + app.status.slice(1)]}`}>
-                                                {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                                            </span>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">
-                                    No Status
-                                </span>
-                                    )}
-                                </td>
+                                {/*<td className="py-3 px-4 text-center">*/}
+                                {/*    {user.applications && user.applications.length > 0 ? (*/}
+                                {/*        <div className="flex flex-wrap justify-center gap-1">*/}
+                                {/*            {user.applications.map((app, i) => (*/}
+                                {/*                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[app.status.charAt(0).toUpperCase() + app.status.slice(1)]}`}>*/}
+                                {/*                {app.status.charAt(0).toUpperCase() + app.status.slice(1)}*/}
+                                {/*            </span>*/}
+                                {/*            ))}*/}
+                                {/*        </div>*/}
+                                {/*    ) : (*/}
+                                {/*        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-300 text-gray-800">*/}
+                                {/*    No Status*/}
+                                {/*</span>*/}
+                                {/*    )}*/}
+                                {/*</td>*/}
 
 
 

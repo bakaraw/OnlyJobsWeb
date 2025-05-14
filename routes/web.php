@@ -4,12 +4,14 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationRequirementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DocumentExportController;
 use App\Http\Controllers\DocumentViewController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\JobSeekerDocumentController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PDFExportController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequirementController;
@@ -162,7 +164,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/job-posts/{id}', [JobPostController::class, 'viewJobPost'])->name('job-posts.view');
     Route::get('/job-posts/{id}/edit', [JobPostController::class, 'edit'])->name('job-posts.edit');
     /*Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');*/
-
+    Route::post('/applicants/reject', [ApplicantController::class, 'rejectApplicant'])->name('applicants.reject');
     Route::get('/applicant-details/{applicationId}', [ApplicantController::class, 'getApplicantDetails']);
     // Email Verification Notice
     Route::get('/email/verify', [AuthController::class, 'verifyNotice'])
@@ -229,11 +231,15 @@ Route::get('/applicants/{id}/pdf', [JobPostController::class, 'exportPDFApplican
     ->name('applicants.pdf');
 Route::patch('/job-posts/{id}/status', [JobPostController::class, 'updateStatus']);
 
+Route::get('/applicants/{applicantId}/pdf', [DocumentExportController::class, 'exportApplicantDocuments'])
+    ->name('applicants.export-pdf');
+
 Route::put('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
 Route::patch('/job-posts/{id}', [JobPostController::class, 'update'])->name('job-posts.update');
 Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job-posts.destroy');
 
 Route::get('applicants/{id}/pdf', [JobPostController::class, 'exportPdf'])->name('applicants.pdf');
+Route::post('/jobs/{id}/apply', [JobSeekerController::class, 'apply'])->name('apply');
 
 Route::middleware('auth')->prefix('admin/messages')->group(function () {
     Route::get('/conversations', [MessageController::class, 'adminConversations']);

@@ -380,7 +380,8 @@ public function update(Request $request, $id)
                 'educations',     // Load user education history
                 'workHistories',   // Load user work history
                 'certifications',
-                'userSkills.skill'
+                'userSkills.skill',
+                'requirements'
             ])
             ->get();
 
@@ -489,10 +490,11 @@ public function update(Request $request, $id)
     {
         $user = User::with([
             'address',
+            'applications',
             'applications.jobPost',
+            'applications.jobPost.requirements',
             'requirements',
             'educations',
-            'experiences',
             'workHistories',
             'certifications',
             'userSkills.skill',
