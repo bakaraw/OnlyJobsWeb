@@ -41,7 +41,7 @@ class JobSeekerController extends Controller
             'updated_at' => now(),
         ]);
 
-        $jobPost->decrement('remaining');
+        /*$jobPost->decrement('remaining');*/
 
         return redirect()
             ->back()
@@ -107,6 +107,8 @@ class JobSeekerController extends Controller
                 'job_location',
                 'job_type',
                 'salary_type',
+                'slot',
+                'remaining',
                 'min_salary',
                 'max_salary',
                 'min_experience_years',
