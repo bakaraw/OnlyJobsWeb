@@ -117,8 +117,7 @@ class ApplicantController extends Controller
                 'message' => 'Failed to load applicant details: ' . $e->getMessage()
             ], 404);
         }
-    }
-    public function show($id)
+    }    public function show($id)
     {
         $application = \App\Models\Application::with([
             'user',

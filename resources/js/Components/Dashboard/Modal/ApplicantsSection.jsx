@@ -226,7 +226,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
         } catch (error) {
             console.error('Error preparing rejection confirmation:', error);
         }
-    };    const saveRemark = async (application) => {
+    };
+    const saveRemark = async (application) => {
         try {
             const response = await axios.patch("/applications/update-remark", {
                 application_id: application.id,
@@ -245,7 +246,8 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                 error.response?.data?.message || "Failed to save remark. Please try again."
             );
         }
-    };    return (
+    };
+    return (
         <DashboardCard className="border rounded-lg shadow p-4 bg-white">
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2 mb-4">

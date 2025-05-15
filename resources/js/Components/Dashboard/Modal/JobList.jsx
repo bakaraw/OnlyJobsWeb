@@ -3,30 +3,56 @@ import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import axios from "axios";
 import CreateJobPostModal from "./CreateJobPostModal";
+import ConfirmModal from "@/Components/ConfirmModal.jsx";
 
-const handleDeleteJob = async (jobId) => {
-    if (confirm("Are you sure you want to delete this job post?")) {
-        try {
-            await axios.delete(`/job-posts/${jobId}`);
-            alert("Job deleted successfully!");
-            // window.location.reload();
-        } catch (error) {
-            alert("Something went wrong!");
-            console.error(error);
-        }
-    }
-};
 
-const statusStyles = {
-    Active: 'bg-green-300 text-green-900',
-    Closed: 'bg-red-300 text-red-900',
-    'Temporary Closed': 'bg-yellow-300 text-yellow-900',
-    Updated: 'bg-blue-300 text-blue-900',
-};
+
 
 export default function JobList({ jobs, onJobSelect }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [jobList, setJobList] = useState(jobs);
+    const [confirmModal, setConfirmModal] = useState({
+        show: false,
+        type: "warning",
+        message: "",
+        onConfirm: null,
+        onClose: () => setConfirmModal(prev => ({ ...prev, show: false }))
+    });
+    const handleDeleteJob = (jobId) => {
+        setConfirmModal({
+            show: true,
+            type: "warning",
+            message: "Are you sure you want to delete this job post?",
+            onClose: () => setConfirmModal(prev => ({ ...prev, show: false })),
+            onConfirm: async () => {
+                try {
+                    await axios.delete(`/job-posts/${jobId}`);
+                    setJobList(prev => prev.filter(job => job.id !== jobId));
+                    setConfirmModal({
+                        show: true,
+                        type: "success",
+                        message: "Job deleted successfully!",
+                        onClose: () => setConfirmModal(prev => ({ ...prev, show: false }))
+                    });
+                } catch (error) {
+                    console.error(error);
+                    setConfirmModal({
+                        show: true,
+                        type: "error",
+                        message: "Something went wrong!",
+                        onClose: () => setConfirmModal(prev => ({ ...prev, show: false }))
+                    });
+                }
+            }
+        });
+    };
 
+    const statusStyles = {
+        Active: 'bg-green-300 text-green-900',
+        Closed: 'bg-red-300 text-red-900',
+        'Temporary Closed': 'bg-yellow-300 text-yellow-900',
+        Updated: 'bg-blue-300 text-blue-900',
+    };
     return (
         <div className="w-full px-4">
             <div className="flex items-center justify-between mb-4">
@@ -59,7 +85,7 @@ export default function JobList({ jobs, onJobSelect }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {jobs.map((job, index) => (
+                    {jobList.map((job, index) => (
                             <tr
                                 key={job.id}
                                 className="border-b hover:bg-gray-50 cursor-pointer"
@@ -104,6 +130,13 @@ export default function JobList({ jobs, onJobSelect }) {
                     </tbody>
                 </table>
             </div>
+            <ConfirmModal
+                show={confirmModal.show}
+                type={confirmModal.type}
+                message={confirmModal.message}
+                onConfirm={confirmModal.onConfirm}
+                onClose={confirmModal.onClose}
+            />
         </div >
     );
 }

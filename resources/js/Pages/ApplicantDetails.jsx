@@ -126,22 +126,22 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.userSkills && selectedApplicant.userSkills.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Skills</h3>
-                    <table className="table-auto w-full border-collapse">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Skill Name</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.userSkills.map((skill, index) => (
-                            <tr key={index} className="border-b">
-                                <td className="py-2 px-4">
-                                    {skill.skill_name}
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Skill Name</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.userSkills.map((skill, index) => (
+                                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                    <td className="py-2 px-4 border-b">{skill.skill_name}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -149,20 +149,22 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.user_skills && selectedApplicant.user_skills.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Skills</h3>
-                    <table className="table-auto w-full">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Skills</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.user_skills.map((skill, index) => (
-                            <tr key={skill.id || index} className="border-b">
-                                <td className="py-2 px-4">{skill.skill_name || "N/A"}</td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Skills</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.user_skills.map((skill, index) => (
+                                <tr key={skill.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                    <td className="py-2 px-4 border-b">{skill.skill_name || "N/A"}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -170,27 +172,29 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.educations && selectedApplicant.educations.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Education</h3>
-                    <table className="table-auto w-full border-collapse">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Degree</th>
-                            <th className="py-2 px-4">School</th>
-                            <th className="py-2 px-4">Period</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.educations.map((edu, index) => (
-                            <tr key={edu.id || index} className="border-b">
-                                <td className="py-2 px-4">{edu.degree || "N/A"}</td>
-                                <td className="py-2 px-4">{edu.school || "N/A"}</td>
-                                <td className="py-2 px-4">
-                                    {edu.start_year || "?"}
-                                    {edu.end_year ? ` - ${edu.end_year}` : " - Present"}
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Degree</th>
+                                <th className="py-2 px-4 text-left border-b">School</th>
+                                <th className="py-2 px-4 text-left border-b">Period</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.educations.map((edu, index) => (
+                                <tr key={edu.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                    <td className="py-2 px-4 border-b">{edu.degree || "N/A"}</td>
+                                    <td className="py-2 px-4 border-b">{edu.school || "N/A"}</td>
+                                    <td className="py-2 px-4 border-b">
+                                        {edu.start_year || "?"}
+                                        {edu.end_year ? ` - ${edu.end_year}` : " - Present"}
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -198,28 +202,26 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.certifications && selectedApplicant.certifications.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Certificates</h3>
-                    <table className="table-auto w-full border-collapse">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Title</th>
-                            <th className="py-2 px-4">Description</th>
-                            <th className="py-2 px-4">Year</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.certifications.map((certificate, index) => (
-                            <tr key={certificate.id || index} className="border-b">
-                                <td className="py-2 px-4">
-                                    {certificate.title}
-                                </td>
-                                <td className="py-2 px-4">{certificate.description || "N/A"}</td>
-                                <td className="py-2 px-4">
-                                    {certificate.year}
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Title</th>
+                                <th className="py-2 px-4 text-left border-b">Description</th>
+                                <th className="py-2 px-4 text-left border-b">Year</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.certifications.map((certificate, index) => (
+                                <tr key={certificate.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                    <td className="py-2 px-4 border-b">{certificate.title}</td>
+                                    <td className="py-2 px-4 border-b">{certificate.description || "N/A"}</td>
+                                    <td className="py-2 px-4 border-b">{certificate.year}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -227,34 +229,34 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.work_histories && selectedApplicant.work_histories.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
-                    <table className="table-auto w-full border-collapse">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Position</th>
-                            <th className="py-2 px-4">Employer</th>
-                            <th className="py-2 px-4">Period</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.work_histories.map((work, index) => (
-                            <tr key={work.id || index} className="border-b">
-                                <td className="py-2 px-4">
-                                    {work.job_title || work.position || "N/A"}
-                                </td>
-                                <td className="py-2 px-4">{work.employer || "N/A"}</td>
-                                <td className="py-2 px-4">
-                                    {work.start_date
-                                        ? new Date(work.start_date).toLocaleDateString()
-                                        : "?"}{" "}
-                                    -{" "}
-                                    {work.end_date
-                                        ? new Date(work.end_date).toLocaleDateString()
-                                        : "Present"}
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Position</th>
+                                <th className="py-2 px-4 text-left border-b">Employer</th>
+                                <th className="py-2 px-4 text-left border-b">Period</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.work_histories.map((work, index) => (
+                                <tr key={work.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                    <td className="py-2 px-4 border-b">{work.job_title || work.position || "N/A"}</td>
+                                    <td className="py-2 px-4 border-b">{work.employer || "N/A"}</td>
+                                    <td className="py-2 px-4 border-b">
+                                        {work.start_date
+                                            ? new Date(work.start_date).toLocaleDateString()
+                                            : "?"}{" "}
+                                        -{" "}
+                                        {work.end_date
+                                            ? new Date(work.end_date).toLocaleDateString()
+                                            : "Present"}
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -262,138 +264,93 @@ export default function ApplicantDetails({ user, selectedApplicant, onBack }) {
             {selectedApplicant.applications && selectedApplicant.applications.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Applications</h3>
-                    <table className="table-auto w-full border-collapse">
-                        <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="py-2 px-4">Job Title</th>
-                            <th className="py-2 px-4">Company</th>
-                            <th className="py-2 px-4">Job Type</th>
-                            <th className="py-2 px-4">Status</th>
-                            <th className="py-2 px-4">Remarks</th>
-                            <th className="py-2 px-4">Date Applied</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedApplicant.applications.map((application, appIndex) => (
-                            <React.Fragment key={application.id || appIndex}>
-                                <tr className="border-b">
-                                    <td className="py-2 px-4">
-                                        {application.job_post?.job_title || "N/A"}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {application.job_post?.company || "N/A"}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {application.job_post?.job_type || "N/A"}
-                                    </td>
-                                    <td className="py-2 px-4 capitalize">
-                                        {application.status || "Pending"}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {application.remarks || "None"}
-                                    </td>
-                                    <td className="py-2 px-4">
-                                        {application.created_at
-                                            ? new Date(application.created_at).toLocaleDateString("en-US", {
-                                                month: "long",
-                                                day: "2-digit",
-                                                year: "numeric",
-                                            })
-                                            : "N/A"}
-                                    </td>
-                                </tr>
-                                {application?.job_post?.requirements?.length > 0 && (
-                                    <>
-                                        {/* Main application row - displays job details */}
-                                        {/*<tr>*/}
-                                        {/*    <td>{application.job_post.job_title}</td>*/}
-                                        {/*    <td>{application.job_post.company}</td>*/}
-                                        {/*    <td>{application.job_post.job_type}</td>*/}
-                                        {/*    <td>{application.status}</td>*/}
-                                        {/*    <td>{application.remarks || "None"}</td>*/}
-                                        {/*    <td>{new Date(application.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>*/}
-                                        {/*</tr>*/}
-
-                                        {/* Requirements row - shows only requirements for this specific application */}
-                                        <tr>
-                                            <td colSpan={6} className="p-0">
-                                                <div className="bg-gray-50 p-4">
-                                                    <h4 className="text-md font-semibold mb-2 bg-gray-50 p-4">
-                                                        Requirements/Documents for {application.job_post.job_title}
-                                                    </h4>
-                                                    <table className="table-auto w-full border-collapse">
-                                                        <thead className="bg-gray-100 text-left">
-                                                        <tr>
-                                                            <th className="py-2 px-4">Document</th>
-                                                            <th className="py-2 px-4">Status</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        {application.job_post.requirements.map((req, reqIndex) => {
-                                                            const isSubmitted = selectedApplicant?.requirements?.some(
-                                                                (submitted) =>
-                                                                    submitted.job_post_requirement_id === req.requirement_id &&
-                                                                    submitted.application_id === application.id
-                                                            );
-
-                                                            return (
-                                                                <tr key={`req-${req.requirement_id || reqIndex}`} className="border-b">
-                                                                    <td className="py-2 px-4 capitalize">
-                                                                        {req.requirement_name || "N/A"}
-                                                                    </td>
-                                                                    <td className="py-2 px-4 capitalize">
-                                                                        {isSubmitted ? "Submitted" : "Not Submitted"}
-                                                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-2 px-4 text-left border-b">Job Title</th>
+                                <th className="py-2 px-4 text-left border-b">Company</th>
+                                <th className="py-2 px-4 text-left border-b">Job Type</th>
+                                <th className="py-2 px-4 text-left border-b">Status</th>
+                                <th className="py-2 px-4 text-left border-b">Remarks</th>
+                                <th className="py-2 px-4 text-left border-b">Date Applied</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {selectedApplicant.applications.map((application, appIndex) => (
+                                <React.Fragment key={application.id || appIndex}>
+                                    <tr className={appIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                        <td className="py-2 px-4 border-b">{application.job_post?.job_title || "N/A"}</td>
+                                        <td className="py-2 px-4 border-b">{application.job_post?.company || "N/A"}</td>
+                                        <td className="py-2 px-4 border-b">{application.job_post?.job_type || "N/A"}</td>
+                                        <td className="py-2 px-4 border-b capitalize">{application.status || "Pending"}</td>
+                                        <td className="py-2 px-4 border-b">{application.remarks || "None"}</td>
+                                        <td className="py-2 px-4 border-b">
+                                            {application.created_at
+                                                ? new Date(application.created_at).toLocaleDateString("en-US", {
+                                                    month: "long",
+                                                    day: "2-digit",
+                                                    year: "numeric",
+                                                })
+                                                : "N/A"}
+                                        </td>
+                                    </tr>
+                                    {application?.job_post?.requirements?.length > 0 && (
+                                        <>
+                                            <tr>
+                                                <td colSpan={6} className="p-0">
+                                                    <div className="bg-gray-50 p-4">
+                                                        <h4 className="text-md font-semibold mb-2 bg-gray-50 p-4">
+                                                            Requirements/Documents for {application.job_post.job_title}
+                                                        </h4>
+                                                        <div className="overflow-x-auto">
+                                                            <table className="min-w-full bg-white border border-gray-200">
+                                                                <thead className="bg-gray-100">
+                                                                <tr>
+                                                                    <th className="py-2 px-4 text-left border-b">Document</th>
+                                                                    <th className="py-2 px-4 text-left border-b">Status</th>
                                                                 </tr>
-                                                            );
-                                                        })}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan={6} className="py-2"></td>
-                                        </tr>
-                                    </>
-                                )}
-                            </React.Fragment>
-                        ))}
-                        </tbody>
-                    </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                {application.job_post.requirements.map((req, reqIndex) => {
+                                                                    const isSubmitted = selectedApplicant?.requirements?.some(
+                                                                        (submitted) =>
+                                                                            submitted.job_post_requirement_id === req.requirement_id &&
+                                                                            submitted.application_id === application.id
+                                                                    );
+
+                                                                    return (
+                                                                        <tr
+                                                                            key={`req-${req.requirement_id || reqIndex}`}
+                                                                            className={reqIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                                                                        >
+                                                                            <td className="py-2 px-4 border-b capitalize">
+                                                                                {req.requirement_name || "N/A"}
+                                                                            </td>
+                                                                            <td className="py-2 px-4 border-b capitalize">
+                                                                                {isSubmitted ? "Submitted" : "Not Submitted"}
+                                                                            </td>
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan={6} className="py-2"></td>
+                                            </tr>
+                                        </>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
-            {/* Requirements/Documents */}
-            {/*{selectedApplicant.applications &&*/}
-            {/*    selectedApplicant.applications.some(app => app.job_post?.requirements?.length > 0) && (*/}
-            {/*        <div className="mb-6">*/}
-            {/*            <h3 className="text-lg font-semibold mb-2">*/}
-            {/*                Requirements/Documents*/}
-            {/*            </h3>*/}
-            {/*            <table className="table-auto w-full border-collapse">*/}
-            {/*                <thead className="bg-gray-100 text-left">*/}
-            {/*                <tr>*/}
-            {/*                    <th className="py-2 px-4">Document</th>*/}
-            {/*                    <th className="py-2 px-4">Status</th>*/}
-            {/*                </tr>*/}
-            {/*                </thead>*/}
-            {/*                <tbody>*/}
-            {/*                {selectedApplicant.applications.map((app, appIndex) =>*/}
-            {/*                    app.job_post?.requirements?.map((req, reqIndex) => (*/}
-            {/*                        <tr key={`${appIndex}-${req.id || reqIndex}`} className="border-b">*/}
-            {/*                            <td className="py-2 px-4 capitalize">*/}
-            {/*                                {req.requirement_name || "N/A"}*/}
-            {/*                            </td>*/}
-            {/*                            <td className="py-2 px-4 capitalize">*/}
-            {/*                                {req.status || "Submitted"}*/}
-            {/*                            </td>*/}
-            {/*                        </tr>*/}
-            {/*                    ))*/}
-            {/*                )}*/}
-            {/*                </tbody>*/}
-            {/*            </table>*/}
-            {/*        </div>*/}
-            {/*    )}*/}
         </div>
     );
 }
