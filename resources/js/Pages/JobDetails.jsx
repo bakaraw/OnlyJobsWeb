@@ -156,12 +156,13 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
         setStatus(newStatusId);
 
         try {
-            // Use the dedicated endpoint for status updates
             const res = await axios.patch(`/job-posts/${job_details.id}/status`, {
                 status_id: newStatusId
             });
 
             if (res.data.success) {
+                setForm((prev) => ({ ...prev, status_id: newStatusId }));
+
                 console.log("Status updated successfully");
             }
         } catch (err) {

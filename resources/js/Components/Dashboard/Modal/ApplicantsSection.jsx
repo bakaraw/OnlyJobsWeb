@@ -234,7 +234,7 @@ export default function ApplicantsSection({ applicants, onApplicantSelect }) {
                 remarks: remarkInput.trim(),
             });
             if (response.data.success) {
-                application.remarks = remarkInput.trim(); // Update the remark locally
+                application.remarks = remarkInput.trim();
                 setEditingId(null);
                 setRemarkInput("");
             } else {
