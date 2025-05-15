@@ -20,7 +20,6 @@ class JobSeekerController extends Controller
         // Load the job post, or fail 404
         $jobPost = JobPost::findOrFail($jobPostId);
 
-        // If slots are exhausted, don’t allow more applications
         if ($jobPost->slot <= 0) {
             return redirect()
                 ->back()
