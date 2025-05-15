@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Notifications\ApplicantQualified;
+use App\Notifications\ApplicantRejected;
 use App\Notifications\ApplicantRemarks;
 
 class ApplicantController extends Controller
@@ -46,6 +47,11 @@ class ApplicantController extends Controller
         if ($applicant->status !== 'Reject') {
             $applicant->status = 'Reject';
             $applicant->save();
+
+
+            $applicant->user->notify(
+                new ApplicantRejected($applicant->jobPost)
+            );
 
             return response()->json(['success' => true, 'message' => 'Application rejected successfully']);
         }
@@ -206,6 +212,9 @@ class ApplicantController extends Controller
         if ($applicant->status == 'Qualified') {
             $applicant->status = 'Accepted';
             $applicant->save();
+
+            $jobPost = $applicant->jobPost;
+            $jobPost->decrement('remaining');
 
             $applicant->user->notify(
                 new ApplicantAccepted($applicant->jobPost)

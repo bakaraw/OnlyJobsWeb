@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 
 
@@ -10,7 +10,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import debounce from "lodash.debounce";
 import Chip from "@/Components/Chip.jsx";
 
-export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_requirements, onBack}) {
+export default function JobDetails({ job_details, applicants, degrees, edit_status, edit_requirements, onBack }) {
     const {
         job_title = "N/A",
         job_type = "N/A",
@@ -243,7 +243,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 <label className="font-semibold">Job Title:   </label>
                                 <input
                                     type="text"
-                                    name="jobtitle"
+                                    name="job_title"
                                     value={form.job_title}
                                     onChange={handleChange}
                                     className="border border-gray-300 rounded-md px-3 py-2 w-full"
@@ -275,7 +275,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                             <div className="text">
                                 <label className="font-semibold">Job Type: </label>
                                 <select
-                                    name ="job_type"
+                                    name="job_type"
                                     value={form.job_type}
                                     onChange={handleChange}
                                     className="border border-gray-300 rounded-md px-3 py-2 mb-2 w-1/4"
@@ -367,7 +367,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                             </div>
 
                             <div className="mt-4 relative w-full">
-                                <InputLabel value="Skills"/>
+                                <InputLabel value="Skills" />
                                 <div className="flex items-center">
                                     <TextInput
                                         className="mt-1 block w-full"
@@ -430,7 +430,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 </div>
                             </div>
                             <div className="mt-4 relative">
-                                <InputLabel value="Requirements"/>
+                                <InputLabel value="Requirements" />
                                 <input
                                     type="text"
                                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
@@ -457,7 +457,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     }}
                                     placeholder="Search or add new requirement"
                                 />
-                                <InputError message={error?.requirements}/>
+                                <InputError message={error?.requirements} />
                                 {searchRequirement && (
                                     <div
                                         className="absolute top-full left-0 bg-white border border-gray-300 rounded-md shadow-lg w-full max-h-60 overflow-y-auto z-50">
@@ -511,7 +511,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                 name="job_description"
                                 value={form.job_description}
                                 onChange={handleChange}
-                                className="mt-1 block w-full h-80 p-2 border border-gray-500 rounded-md align-top"/>                        </div>
+                                className="mt-1 block w-full h-80 p-2 border border-gray-500 rounded-md align-top" />                        </div>
                     </div>
 
                     <div className="flex justify-end mt-4">
@@ -547,11 +547,10 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                         className="rounded-md py-2 w-auto min-w-[120px] border"
                                         style={{
                                             width: 'auto',
-                                            borderWidth: `${
-                                                edit_status.find(s => s.id.toString() === form.status_id.toString())?.name.length > 10
-                                                    ? '2px'
-                                                    : '1px'
-                                            }`
+                                            borderWidth: `${edit_status.find(s => s.id.toString() === form.status_id.toString())?.name.length > 10
+                                                ? '2px'
+                                                : '1px'
+                                                }`
                                         }}
                                         value={form.status_id}
                                         onChange={handleStatusChange}
@@ -562,10 +561,10 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     </select>
                                 </div>
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 mt-3">
 
                                 <SecondaryButton
-                                    className="px-4 py-2 black-white rounded-md flex justify-center"
+                                    className="px-4 py-2 mr-3 black-white rounded-md flex justify-center"
                                     onClick={() => setIsEditing(true)}
                                 >
                                     Edit
@@ -573,7 +572,7 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
 
                                 <SecondaryButton
                                     onClick={onBack}
-                                    className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+                                    className="mb-4 flex items-center"
                                 >
                                     Back
                                 </SecondaryButton>
@@ -659,8 +658,8 @@ export default function JobDetails({ job_details, applicants, degrees, edit_stat
                                     <div className="flex flex-wrap gap-2">
                                         {skills.map((skill, index) => (
                                             <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                            {skill.skill_name}
-                                        </span>
+                                                {skill.skill_name}
+                                            </span>
                                         ))}
                                     </div>
                                 </div>
