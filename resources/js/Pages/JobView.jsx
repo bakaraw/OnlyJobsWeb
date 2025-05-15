@@ -250,6 +250,7 @@ export default function JobView() {
                             </p>
                         </div>
                         <div className='flex items-center justify-between'>
+                            <p className='mr-5 text-gray-500 font-medium'> Remaining slots: {jobview.remaining}</p>
                             {
 
                                 auth.user && (<button
@@ -287,6 +288,7 @@ export default function JobView() {
                 <RequirementsCard requirements={jobview.requirements} />
 
                 <JobCompanyCard JobCompany={jobview.company} />
+
                 {
                     suggestedJobs.length > 0 ? (
                         <SimilarJobs suggestedJobs={suggestedJobs} />

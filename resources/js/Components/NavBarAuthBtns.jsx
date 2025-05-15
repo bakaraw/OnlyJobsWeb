@@ -12,32 +12,47 @@ export default function NavBarAuthBtns() {
 
     // Check if `auth` exists and contains a `user`
     const isAuthenticated = auth && auth.user;
-
-    //const notifications = [
-    //    {
-    //        title: "New Job Match",
-    //        message: "A new job was posted that matches your skills.",
-    //        timeAgo: "3m ago",
-    //    },
-    //    {
-    //        title: "Application Update",
-    //        message: "Your application for 'Frontend Developer' was viewed.",
-    //        timeAgo: "1h ago",
-    //    },
-    //];
-
+    //useEffect(() => {
+    //    if (!auth?.user) return;
+    //    axios.get("/notifications").then(res => {
+    //        setNotifications(res.data);
+    //        console.log("notif: ", res.data);
+    //    });
+    //
+    //    // Listen for broadcasts
+    //    window.Echo.private(`App.Models.User.${auth.user.id}`)
+    //        .notification((notification) => {
+    //            setNotifications(prev => [notification, ...prev]);
+    //        });
+    //}, [auth?.user?.id]);
     useEffect(() => {
-        if (!auth?.user) return;
+        if (!auth?.user?.id) return;
+
+        // Initial fetch
         axios.get("/notifications").then(res => {
             setNotifications(res.data);
-            console.log("notif: ", res.data);
+            console.log("Initial notif: ", res.data);
         });
 
+        // Polling every 10 seconds
+        const interval = setInterval(() => {
+            axios.get("/notifications").then(res => {
+                setNotifications(res.data);
+                console.log("Polling notif: ", res.data);
+            });
+        }, 10000); // 10 seconds
+
         // Listen for broadcasts
-        window.Echo.private(`App.Models.User.${auth.user.id}`)
+        const channel = window.Echo.private(`App.Models.User.${auth.user.id}`)
             .notification((notification) => {
                 setNotifications(prev => [notification, ...prev]);
             });
+
+        // Cleanup on unmount or auth change
+        return () => {
+            clearInterval(interval);
+            channel.stopListening(`App.Models.User.${auth.user.id}`);
+        };
     }, [auth?.user?.id]);
 
     return (
