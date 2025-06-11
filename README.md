@@ -14,6 +14,8 @@
 
 - **mysql 8.0.41**
 
+- **React** for front-end
+
 ## Features
 
 - In app messaging with the use of Pusher for real time updates
