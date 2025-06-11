@@ -14,7 +14,7 @@
 
 - **mysql 8.0.41**
 
-- **React** for front-end
+- **ReactJS**
 
 ## Features
 
