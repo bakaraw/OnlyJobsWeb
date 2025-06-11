@@ -1,6 +1,10 @@
-# Only jobs wow
+# Only jobs
 
 - Job listing platform
+
+- Recommends related jobs for the job seeker based on their skills
+
+![me](screenshots/demo.gif)
 
 ## Tech Stack and Version
 
@@ -10,36 +14,12 @@
 
 - **mysql 8.0.41**
 
-## Setting up
+- **ReactJS**
 
-- install `Composer`,`xampp`, and`PHP 8.2 or higher`
+## Features
 
-- clone repo
+- In app messaging with the use of Pusher for real time updates
 
-- install nodejs and npm package manager
+- Notifications to notify job seekers on their application status
 
-- turn on `mysql` and `apache` in your `xampp` control panel
-
-- create a file named `.env` in the projects folder and copy the contents of `.env.example` to the `.env`
-
-- in the projects folder, open powershell or cmd and run the following: 
-
-```sh
-composer install
-npm install
-php artisan migrate
-npm run dev
-```
-
-- open another instance of terminal, then run
-
-```sh
-php artisan serve
-```
-
-- go to this page http://127.0.0.1:8000
-
-done
-
-
-
+- Admin Panel
