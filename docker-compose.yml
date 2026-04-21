@@ -1,0 +1,61 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/var/www
+      - /var/www/vendor
+      - /var/www/public/build
+      - /var/www/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - onlyjobs
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - onlyjobs
+  vite:
+    image: node:20
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - vite_node_modules:/var/www/node_modules    # ← named volume
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"    # ← install first
+    networks:
+      - onlyjobs
+  db:
+    image: mysql:8.0.41
+    environment:
+      MYSQL_DATABASE: only_jobs
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - onlyjobs
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+networks:
+  onlyjobs:
+    driver: bridge
+volumes:
+  db_data:
+  vite_node_modules:
